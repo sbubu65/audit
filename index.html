@@ -1,33 +1,239 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#0B7A66">
-  <title>Asset Audit V0.8</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="css/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Audit Fisik</title>
+    <style>
+        /* Desain Tampilan (CSS) */
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        
+        /* Navigasi */
+        .nav { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
+        .nav button { background: none; border: none; font-size: 16px; cursor: pointer; padding: 10px 15px; border-radius: 5px; transition: 0.2s; }
+        .nav button.active { background: #e8f5e9; color: #2e7d32; font-weight: bold; }
+        .nav button:hover:not(.active) { background: #f0f0f0; }
+
+        /* Halaman / View */
+        .view { display: none; }
+        .view.active { display: block; }
+
+        /* Kartu Pilihan Perangkat */
+        .cards { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+        .card { flex: 1; min-width: 150px; border: 1px solid #ddd; border-radius: 8px; padding: 30px 10px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .card:hover, .card.selected { border-color: #2e7d32; background: #f1f8f1; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .card.selected { border-width: 2px; font-weight: bold; }
+        .card-icon { font-size: 40px; margin-bottom: 10px; }
+
+        /* Form & Tabel */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .btn { background: #2e7d32; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px;}
+        .btn:hover { background: #1b5e20; }
+        .btn:disabled { background: #9e9e9e; cursor: not-allowed; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background-color: #f8f9fa; }
+        .table-responsive { overflow-x: auto; }
+    </style>
 </head>
 <body>
-  <header class="app-header">
-    <div class="app-header__inner">
-      <div class="brand">
-        <span class="brand__name" id="app-name">Asset Audit</span>
-        <span class="brand__version" id="app-version">V0.8</span>
-      </div>
-      <nav class="nav" id="main-nav" aria-label="Menu utama"></nav>
+
+<div class="container">
+    <!-- Menu Navigasi -->
+    <div class="nav">
+        <button id="btnDashboard" class="active" onclick="switchView('dashboard')">Dashboard</button>
+        <button id="btnAudit" onclick="switchView('audit')">Mulai Audit</button>
     </div>
-  </header>
 
-  <main class="app-main" id="app" tabindex="-1"></main>
+    <!-- Halaman Dashboard -->
+    <div id="view-dashboard" class="view active">
+        <h2>Dashboard Audit</h2>
+        <p>Menampilkan data aset yang telah diaudit.</p>
+        <button onclick="loadData()" style="padding: 5px 10px; margin-bottom:10px; cursor:pointer;">🔄 Refresh Data</button>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tgl Audit</th>
+                        <th>No Inventori</th>
+                        <th>Perangkat</th>
+                        <th>Merek/Tipe</th>
+                        <th>Kondisi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="5" style="text-align: center;">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-  <script src="js/core.js"></script>
-  <script src="js/data-engine.js"></script>
-  <script src="js/components.js"></script>
-  <script src="js/audit-defs.js"></script>
-  <script src="js/pages.js"></script>
+    <!-- Halaman Mulai Audit -->
+    <div id="view-audit" class="view">
+        <h2>Mulai Audit</h2>
+        <p>Pilih jenis perangkat yang akan diaudit.</p>
+        
+        <!-- Pilihan Perangkat -->
+        <div class="cards" id="deviceCards">
+            <div class="card" onclick="selectDevice('Laptop', this)">
+                <div class="card-icon">💻</div>
+                <div>Laptop</div>
+            </div>
+            <div class="card" onclick="selectDevice('iMac', this)">
+                <div class="card-icon">🖥️</div>
+                <div>iMac / PC</div>
+            </div>
+            <div class="card" onclick="selectDevice('Tablet', this)">
+                <div class="card-icon">💊</div>
+                <div>Tablet</div>
+            </div>
+            <div class="card" onclick="selectDevice('Smartphone', this)">
+                <div class="card-icon">📱</div>
+                <div>Smartphone</div>
+            </div>
+        </div>
+
+        <!-- Form Input (Disembunyikan sampai perangkat dipilih) -->
+        <form id="auditForm" style="display: none; margin-top: 30px;" onsubmit="submitForm(event)">
+            <h3 id="formTitle">Form Audit Perangkat</h3>
+            <input type="hidden" id="jenisPerangkat" required>
+
+            <div class="form-group">
+                <label>No Inventori</label>
+                <input type="text" id="noInventori" placeholder="Contoh: INV-LTP-001" required>
+            </div>
+            <div class="form-group">
+                <label>Merek & Tipe</label>
+                <input type="text" id="merekTipe" placeholder="Contoh: Lenovo ThinkPad T14" required>
+            </div>
+            <div class="form-group">
+                <label>Spesifikasi (CPU / RAM / Storage)</label>
+                <textarea id="spesifikasi" rows="3" placeholder="Contoh: Core i5 / 16GB RAM / 512GB SSD" required></textarea>
+            </div>
+            <div class="form-group">
+                <label>Kondisi Fisik</label>
+                <select id="kondisi" required>
+                    <option value="">-- Pilih Kondisi --</option>
+                    <option value="Baik">Baik</option>
+                    <option value="Rusak Ringan">Rusak Ringan</option>
+                    <option value="Rusak Berat">Rusak Berat</option>
+                    <option value="Hilang">Hilang</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Catatan Tambahan (Opsional)</label>
+                <textarea id="catatan" rows="2" placeholder="Contoh: Terdapat goresan di layar"></textarea>
+            </div>
+            
+            <button type="submit" class="btn" id="submitBtn">Simpan Data Audit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw06ivG4Olw2mjFqy5LLni7touJKCkjS7jvFljQ48cmE3o3MYP1H-2aNH06ywR3Si5AGg/exec";
+
+    // Fungsi pindah halaman (Dashboard vs Form)
+    function switchView(viewName) {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav button').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById('view-' + viewName).classList.add('active');
+        
+        if(viewName === 'dashboard') {
+            document.getElementById('btnDashboard').classList.add('active');
+            loadData(); // Otomatis refresh data saat buka dashboard
+        } else {
+            document.getElementById('btnAudit').classList.add('active');
+        }
+    }
+
+    // Fungsi memilih perangkat (Animasi Kartu)
+    function selectDevice(device, cardElement) {
+        document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
+        cardElement.classList.add('selected');
+        
+        document.getElementById('jenisPerangkat').value = device;
+        document.getElementById('formTitle').innerText = "Form Audit: " + device;
+        document.getElementById('auditForm').style.display = 'block';
+    }
+
+    // Fungsi kirim data ke Google Sheets
+    function submitForm(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerText = "Menyimpan...";
+        submitBtn.disabled = true;
+
+        const data = {
+            noInventori: document.getElementById('noInventori').value,
+            jenisPerangkat: document.getElementById('jenisPerangkat').value,
+            merekTipe: document.getElementById('merekTipe').value,
+            spesifikasi: document.getElementById('spesifikasi').value,
+            kondisi: document.getElementById('kondisi').value,
+            catatan: document.getElementById('catatan').value
+        };
+
+        fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if(result.status === "success") {
+                alert("Data audit berhasil disimpan!");
+                document.getElementById('auditForm').reset();
+                document.getElementById('auditForm').style.display = 'none';
+                document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
+                switchView('dashboard'); // Kembali ke dashboard
+            }
+        })
+        .catch(error => alert("Terjadi kesalahan!"))
+        .finally(() => {
+            submitBtn.innerText = "Simpan Data Audit";
+            submitBtn.disabled = false;
+        });
+    }
+
+    // Fungsi ambil data dari Google Sheets
+    function loadData() {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Memuat data...</td></tr>';
+
+        fetch(APPS_SCRIPT_URL)
+        .then(response => response.json())
+        .then(data => {
+            tbody.innerHTML = '';
+            if(data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Belum ada data audit.</td></tr>';
+                return;
+            }
+            // Balik urutan data agar yang terbaru ada di atas
+            data.reverse().forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row['Tanggal']}</td>
+                    <td>${row['No Inventori']}</td>
+                    <td>${row['Jenis Perangkat']}</td>
+                    <td>${row['Merek & Tipe']}</td>
+                    <td>${row['Kondisi']}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        })
+        .catch(error => {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color:red;">Gagal memuat data.</td></tr>';
+        });
+    }
+
+    // Load data otomatis saat web pertama kali dibuka
+    window.onload = loadData;
+</script>
+
 </body>
 </html>
