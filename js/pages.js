@@ -64,10 +64,18 @@
     title: "Riwayat Audit",
     render: function (container) {
       var rows = AA.storage.list();
-      var cols = [
+var cols = [
         { key: "auditId", label: "ID Audit" },
         { key: "deviceLabel", label: "Device" },
-        { key: "createdAt", label: "Tanggal", render: function (r) { return AA.utils.formatDateID(r.createdAt.substring(0, 10)); } },
+        { 
+          key: "createdAt", 
+          label: "Tanggal", 
+          render: function (r) { 
+            // Tambahkan fallback jika createdAt kosong
+            var dateStr = r.createdAt || r.savedAt || r.tanggal || ""; 
+            return dateStr ? AA.utils.formatDateID(dateStr.substring(0, 10)) : "-"; 
+          } 
+        },
         { key: "syncStatus", label: "Status", render: function (r) { return AA.sync.isSynced(r) ? "Tersinkron" : "Belum Sinkron"; } }
       ];
       container.innerHTML =
