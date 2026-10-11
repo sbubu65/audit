@@ -3,103 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aplikasi Audit Fisik</title>
+    <title>Sistem Audit Fisik Aset</title>
     <style>
-        /* Desain Tampilan (CSS) */
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
-        /* Navigasi */
-        .nav { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; }
-        .nav button { background: none; border: none; font-size: 16px; cursor: pointer; padding: 10px 15px; border-radius: 5px; transition: 0.2s; }
+        /* Navigasi 3 Menu */
+        .nav { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; overflow-x: auto;}
+        .nav button { background: none; border: none; font-size: 16px; cursor: pointer; padding: 10px 15px; border-radius: 5px; transition: 0.2s; white-space: nowrap; }
         .nav button.active { background: #e8f5e9; color: #2e7d32; font-weight: bold; }
         .nav button:hover:not(.active) { background: #f0f0f0; }
 
-        /* Halaman / View */
         .view { display: none; }
         .view.active { display: block; }
 
-        /* Kartu Pilihan Perangkat */
-        .cards { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
-        .card { flex: 1; min-width: 150px; border: 1px solid #ddd; border-radius: 8px; padding: 30px 10px; text-align: center; cursor: pointer; transition: 0.3s; }
-        .card:hover, .card.selected { border-color: #2e7d32; background: #f1f8f1; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
-        .card.selected { border-width: 2px; font-weight: bold; }
-        .card-icon { font-size: 40px; margin-bottom: 10px; }
+        /* Grid Statistik Dashboard */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .stat-card { background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0; text-align: center; }
+        .stat-card h3 { margin: 0; font-size: 28px; color: #2e7d32; }
+        .stat-card.alert h3 { color: #d32f2f; }
+        .stat-card p { margin: 5px 0 0; font-size: 14px; color: #555; font-weight: 500; }
 
-        /* Form & Tabel */
+        /* Kartu Perangkat */
+        .cards { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+        .card { flex: 1; min-width: 130px; border: 1px solid #ddd; border-radius: 8px; padding: 20px 10px; text-align: center; cursor: pointer; transition: 0.3s; }
+        .card:hover, .card.selected { border-color: #2e7d32; background: #f1f8f1; }
+        .card.selected { border-width: 2px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+        .card-icon { font-size: 35px; margin-bottom: 10px; }
+
+        /* Form */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
-        .btn { background: #2e7d32; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; margin-top: 10px;}
+        .sop-section { background: #fcfcfc; border: 1px solid #e0e0e0; padding: 15px; border-radius: 5px; margin-bottom: 15px; }
+        .btn { background: #2e7d32; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; font-weight: bold;}
         .btn:hover { background: #1b5e20; }
         .btn:disabled { background: #9e9e9e; cursor: not-allowed; }
         
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #f8f9fa; }
+        .badge-baik { background: #c8e6c9; color: #2e7d32; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-ringan { background: #fff9c4; color: #f57f17; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
+        .badge-berat { background: #ffcdd2; color: #c62828; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
         .table-responsive { overflow-x: auto; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Menu Navigasi -->
     <div class="nav">
-        <button id="btnDashboard" class="active" onclick="switchView('dashboard')">Dashboard</button>
-        <button id="btnAudit" onclick="switchView('audit')">Mulai Audit</button>
+        <button id="btnDashboard" class="active" onclick="switchView('dashboard')">📊 Dashboard</button>
+        <button id="btnAudit" onclick="switchView('audit')">📝 Mulai Audit</button>
+        <button id="btnHistory" onclick="switchView('history')">🕒 Riwayat Audit</button>
     </div>
 
-    <!-- Halaman Dashboard -->
+    <!-- 1. DASHBOARD -->
     <div id="view-dashboard" class="view active">
-        <h2>Dashboard Audit</h2>
-        <p>Menampilkan data aset yang telah diaudit.</p>
-        <button onclick="loadData()" style="padding: 5px 10px; margin-bottom:10px; cursor:pointer;">🔄 Refresh Data</button>
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tgl Audit</th>
-                        <th>No Inventori</th>
-                        <th>Perangkat</th>
-                        <th>Merek/Tipe</th>
-                        <th>Kondisi</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr><td colspan="5" style="text-align: center;">Memuat data...</td></tr>
-                </tbody>
-            </table>
+        <h2>Dashboard Statistik</h2>
+        
+        <h4 style="margin-bottom: 10px;">Ringkasan Kondisi (Status Fungsional)</h4>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="statBaik">0</h3>
+                <p>Baik (Siap Pakai)</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="statRingan">0</h3>
+                <p>Rusak Ringan</p>
+            </div>
+            <div class="stat-card alert">
+                <h3 id="statBerat">0</h3>
+                <p>Rusak Berat (Butuh Servis)</p>
+            </div>
+        </div>
+
+        <h4 style="margin-bottom: 10px;">Total Perangkat Diaudit</h4>
+        <div class="stats-grid">
+            <div class="stat-card"><h3 id="statTotal">0</h3><p>Total Keseluruhan</p></div>
+            <div class="stat-card"><h3 id="statLaptop">0</h3><p>Laptop</p></div>
+            <div class="stat-card"><h3 id="statImac">0</h3><p>iMac / PC</p></div>
+            <div class="stat-card"><h3 id="statTablet">0</h3><p>Tablet</p></div>
+            <div class="stat-card"><h3 id="statPhone">0</h3><p>Smartphone</p></div>
         </div>
     </div>
 
-    <!-- Halaman Mulai Audit -->
+    <!-- 2. MULAI AUDIT -->
     <div id="view-audit" class="view">
-        <h2>Mulai Audit</h2>
-        <p>Pilih jenis perangkat yang akan diaudit.</p>
-        
-        <!-- Pilihan Perangkat -->
-        <div class="cards" id="deviceCards">
-            <div class="card" onclick="selectDevice('Laptop', this)">
-                <div class="card-icon">💻</div>
-                <div>Laptop</div>
-            </div>
-            <div class="card" onclick="selectDevice('iMac', this)">
-                <div class="card-icon">🖥️</div>
-                <div>iMac / PC</div>
-            </div>
-            <div class="card" onclick="selectDevice('Tablet', this)">
-                <div class="card-icon">💊</div>
-                <div>Tablet</div>
-            </div>
-            <div class="card" onclick="selectDevice('Smartphone', this)">
-                <div class="card-icon">📱</div>
-                <div>Smartphone</div>
-            </div>
+        <h2>Pilih Perangkat</h2>
+        <div class="cards">
+            <div class="card" onclick="selectDevice('Laptop', this)"><div class="card-icon">💻</div><div>Laptop</div></div>
+            <div class="card" onclick="selectDevice('iMac', this)"><div class="card-icon">🖥️</div><div>iMac / PC</div></div>
+            <div class="card" onclick="selectDevice('Tablet', this)"><div class="card-icon">💊</div><div>Tablet</div></div>
+            <div class="card" onclick="selectDevice('Smartphone', this)"><div class="card-icon">📱</div><div>Smartphone</div></div>
         </div>
 
-        <!-- Form Input (Disembunyikan sampai perangkat dipilih) -->
-        <form id="auditForm" style="display: none; margin-top: 30px;" onsubmit="submitForm(event)">
-            <h3 id="formTitle">Form Audit Perangkat</h3>
+        <form id="auditForm" style="display: none; margin-top: 25px;" onsubmit="submitForm(event)">
+            <h3 id="formTitle">Form Audit</h3>
             <input type="hidden" id="jenisPerangkat" required>
 
             <div class="form-group">
@@ -111,49 +111,94 @@
                 <input type="text" id="merekTipe" placeholder="Contoh: Lenovo ThinkPad T14" required>
             </div>
             <div class="form-group">
-                <label>Spesifikasi (CPU / RAM / Storage)</label>
-                <textarea id="spesifikasi" rows="3" placeholder="Contoh: Core i5 / 16GB RAM / 512GB SSD" required></textarea>
+                <label>Spesifikasi Utama</label>
+                <input type="text" id="spesifikasi" placeholder="Contoh: Core i5 / 16GB / 512GB" required>
             </div>
+
+            <!-- Area Checklist SOP Dinamis -->
+            <div class="sop-section" id="checklistArea"></div>
+
             <div class="form-group">
-                <label>Kondisi Fisik</label>
-                <select id="kondisi" required>
-                    <option value="">-- Pilih Kondisi --</option>
-                    <option value="Baik">Baik</option>
-                    <option value="Rusak Ringan">Rusak Ringan</option>
-                    <option value="Rusak Berat">Rusak Berat</option>
-                    <option value="Hilang">Hilang</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Catatan Tambahan (Opsional)</label>
-                <textarea id="catatan" rows="2" placeholder="Contoh: Terdapat goresan di layar"></textarea>
+                <label>Catatan Tambahan (Wajib diisi jika ada yang Bermasalah)</label>
+                <textarea id="catatan" rows="3" placeholder="Tuliskan detail masalah di sini..."></textarea>
             </div>
             
-            <button type="submit" class="btn" id="submitBtn">Simpan Data Audit</button>
+            <button type="submit" class="btn" id="submitBtn">Simpan Hasil Audit</button>
         </form>
+    </div>
+
+    <!-- 3. RIWAYAT AUDIT -->
+    <div id="view-history" class="view">
+        <h2>Riwayat Audit</h2>
+        <button onclick="loadData()" style="padding: 8px 15px; margin-bottom:15px; cursor:pointer; background:#fff; border:1px solid #ccc; border-radius:5px;">🔄 Refresh Data Tabel</button>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tgl Audit</th>
+                        <th>No Inventori</th>
+                        <th>Perangkat</th>
+                        <th>Merek/Tipe</th>
+                        <th>Skor</th>
+                        <th>Kondisi Final</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr><td colspan="6" style="text-align: center;">Memuat data...</td></tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <script>
     // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwtbkhyHNcxXNHmDAPXE_n3Ms-StCnEbfABJ0clC_lAZrYB38as8hC_U6Ka2_Kc5z4pHA/exec";
+    const APPS_SCRIPT_URL = "URL_APPS_SCRIPT_ANDA_DISINI";
 
-    // Fungsi pindah halaman (Dashboard vs Form)
+    // Konfigurasi Bobot SOP (Total 100%)
+    const SOP_CONFIG = {
+        'Laptop': [
+            { id: 'sop1', label: 'Layar & Komponen Input (Vital)', weight: 40 },
+            { id: 'sop2', label: 'Sistem & Lisensi Windows/Office (Vital)', weight: 30 },
+            { id: 'sop3', label: 'Fisik, Engsel & Casing (Minor)', weight: 15 },
+            { id: 'sop4', label: 'Port, Audio & Indikator (Minor)', weight: 15 }
+        ],
+        'iMac': [
+            { id: 'sop1', label: 'Layar Retina & Aksesori Input (Vital)', weight: 40 },
+            { id: 'sop2', label: 'Sistem macOS & Keamanan Akun (Vital)', weight: 30 },
+            { id: 'sop3', label: 'Fisik & Stand Penyangga (Minor)', weight: 15 },
+            { id: 'sop4', label: 'Port I/O & Kamera/Audio (Minor)', weight: 15 }
+        ],
+        'Tablet': [
+            { id: 'sop1', label: 'Fisik & Responsivitas Layar Sentuh (Vital)', weight: 40 },
+            { id: 'sop2', label: 'Keamanan Akun (FRP/iCloud) & OS (Vital)', weight: 30 },
+            { id: 'sop3', label: 'Fungsi Tombol & Stylus (Minor)', weight: 15 },
+            { id: 'sop4', label: 'Konektivitas, Kamera & Media (Minor)', weight: 15 }
+        ],
+        'Smartphone': [
+            { id: 'sop1', label: 'Kondisi Layar & Sensor Biometrik (Vital)', weight: 40 },
+            { id: 'sop2', label: 'Legalitas IMEI & Keamanan Akun (Vital)', weight: 30 },
+            { id: 'sop3', label: 'Fisik & Casing (Minor)', weight: 15 },
+            { id: 'sop4', label: 'Kamera, Port Charger & Audio (Minor)', weight: 15 }
+        ]
+    };
+
     function switchView(viewName) {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav button').forEach(el => el.classList.remove('active'));
-        
         document.getElementById('view-' + viewName).classList.add('active');
         
         if(viewName === 'dashboard') {
             document.getElementById('btnDashboard').classList.add('active');
-            loadData(); // Otomatis refresh data saat buka dashboard
-        } else {
+            loadData();
+        } else if (viewName === 'audit') {
             document.getElementById('btnAudit').classList.add('active');
+        } else if (viewName === 'history') {
+            document.getElementById('btnHistory').classList.add('active');
+            loadData();
         }
     }
 
-    // Fungsi memilih perangkat (Animasi Kartu)
     function selectDevice(device, cardElement) {
         document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
         cardElement.classList.add('selected');
@@ -161,77 +206,158 @@
         document.getElementById('jenisPerangkat').value = device;
         document.getElementById('formTitle').innerText = "Form Audit: " + device;
         document.getElementById('auditForm').style.display = 'block';
+
+        // Render Checklist Dinamis
+        const area = document.getElementById('checklistArea');
+        let html = `<h4 style="margin-top:0; border-bottom:1px solid #ccc; padding-bottom:5px;">Checklist Pemeriksaan (${device})</h4>`;
+        
+        SOP_CONFIG[device].forEach(item => {
+            html += `
+                <div class="form-group">
+                    <label>${item.label} <span style="color:#666; font-size:12px;">(Bobot: ${item.weight}%)</span></label>
+                    <select class="sop-select" data-weight="${item.weight}" required>
+                        <option value="Normal">✔️ Normal (Lolos)</option>
+                        <option value="Bermasalah">❌ Bermasalah</option>
+                    </select>
+                </div>
+            `;
+        });
+
+        // Tambahan khusus HP untuk Health Baterai
+        if(device === 'Smartphone') {
+            html += `
+                <div class="form-group">
+                    <label>Kesehatan Baterai (Battery Health %)</label>
+                    <input type="number" id="batteryHealth" min="1" max="100" placeholder="Contoh: 85" required>
+                </div>
+            `;
+        }
+        area.innerHTML = html;
     }
 
-    // Fungsi kirim data ke Google Sheets
     function submitForm(e) {
         e.preventDefault();
-        const submitBtn = document.getElementById('submitBtn');
-        submitBtn.innerText = "Menyimpan...";
-        submitBtn.disabled = true;
+        
+        // Hitung Skor
+        let totalScore = 100;
+        document.querySelectorAll('.sop-select').forEach(select => {
+            if (select.value === "Bermasalah") {
+                totalScore -= parseInt(select.getAttribute('data-weight'));
+            }
+        });
+
+        // Tentukan Kondisi Kategori
+        let finalCondition = "";
+        if (totalScore === 100) finalCondition = "Baik";
+        else if (totalScore >= 70) finalCondition = "Rusak Ringan";
+        else finalCondition = "Rusak Berat";
+
+        // Susun Catatan (termasuk Battery Health jika ada)
+        let note = document.getElementById('catatan').value;
+        const bat = document.getElementById('batteryHealth');
+        if (bat) note = `Battery Health: ${bat.value}%. ` + note;
 
         const data = {
             noInventori: document.getElementById('noInventori').value,
             jenisPerangkat: document.getElementById('jenisPerangkat').value,
             merekTipe: document.getElementById('merekTipe').value,
             spesifikasi: document.getElementById('spesifikasi').value,
-            kondisi: document.getElementById('kondisi').value,
-            catatan: document.getElementById('catatan').value
+            skor: totalScore,
+            kondisi: finalCondition,
+            catatan: note
         };
 
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.innerText = "Menyimpan Data...";
+        submitBtn.disabled = true;
+
         fetch(APPS_SCRIPT_URL, {
+            redirect: "follow",
             method: 'POST',
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
             body: JSON.stringify(data)
         })
         .then(response => response.json())
         .then(result => {
             if(result.status === "success") {
-                alert("Data audit berhasil disimpan!");
+                alert(`Tersimpan! Perangkat dilabeli: ${finalCondition} (Skor: ${totalScore}%)`);
                 document.getElementById('auditForm').reset();
                 document.getElementById('auditForm').style.display = 'none';
                 document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
-                switchView('dashboard'); // Kembali ke dashboard
+                switchView('history');
+            } else {
+                alert("Gagal: " + result.message);
             }
         })
-        .catch(error => alert("Terjadi kesalahan!"))
+        .catch(error => {
+            console.error(error);
+            alert("Terjadi kesalahan jaringan.");
+        })
         .finally(() => {
-            submitBtn.innerText = "Simpan Data Audit";
+            submitBtn.innerText = "Simpan Hasil Audit";
             submitBtn.disabled = false;
         });
     }
 
-    // Fungsi ambil data dari Google Sheets
+    function getBadge(kondisi) {
+        if(kondisi === 'Baik') return '<span class="badge-baik">Baik</span>';
+        if(kondisi === 'Rusak Ringan') return '<span class="badge-ringan">Rusak Ringan</span>';
+        if(kondisi === 'Rusak Berat') return '<span class="badge-berat">Rusak Berat</span>';
+        return kondisi;
+    }
+
     function loadData() {
         const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Memuat data...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Memuat data...</td></tr>';
 
-        fetch(APPS_SCRIPT_URL)
+        fetch(APPS_SCRIPT_URL, { redirect: "follow", method: 'GET' })
         .then(response => response.json())
         .then(data => {
             tbody.innerHTML = '';
+            
+            // Variabel Hitungan Dashboard
+            let counts = { 'Laptop': 0, 'iMac': 0, 'Tablet': 0, 'Smartphone': 0 };
+            let conds = { 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 };
+
             if(data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Belum ada data audit.</td></tr>';
-                return;
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Belum ada riwayat audit.</td></tr>';
+            } else {
+                data.reverse().forEach(row => {
+                    // Update counter dashboard
+                    if(counts[row['Jenis Perangkat']] !== undefined) counts[row['Jenis Perangkat']]++;
+                    if(conds[row['Kondisi']] !== undefined) conds[row['Kondisi']]++;
+
+                    // Render baris tabel
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row['Tanggal']}</td>
+                        <td>${row['No Inventori']}</td>
+                        <td>${row['Jenis Perangkat']}</td>
+                        <td>${row['Merek & Tipe']}</td>
+                        <td><strong>${row['Skor']}</strong></td>
+                        <td>${getBadge(row['Kondisi'])}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
             }
-            // Balik urutan data agar yang terbaru ada di atas
-            data.reverse().forEach(row => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${row['Tanggal']}</td>
-                    <td>${row['No Inventori']}</td>
-                    <td>${row['Jenis Perangkat']}</td>
-                    <td>${row['Merek & Tipe']}</td>
-                    <td>${row['Kondisi']}</td>
-                `;
-                tbody.appendChild(tr);
-            });
+
+            // Render Angka ke UI Dashboard
+            document.getElementById('statTotal').innerText = data.length;
+            document.getElementById('statLaptop').innerText = counts['Laptop'];
+            document.getElementById('statImac').innerText = counts['iMac'];
+            document.getElementById('statTablet').innerText = counts['Tablet'];
+            document.getElementById('statPhone').innerText = counts['Smartphone'];
+            
+            document.getElementById('statBaik').innerText = conds['Baik'];
+            document.getElementById('statRingan').innerText = conds['Rusak Ringan'];
+            document.getElementById('statBerat').innerText = conds['Rusak Berat'];
         })
         .catch(error => {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color:red;">Gagal memuat data.</td></tr>';
+            console.error(error);
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:red;">Gagal memuat data.</td></tr>';
         });
     }
 
-    // Load data otomatis saat web pertama kali dibuka
     window.onload = loadData;
 </script>
 
