@@ -59,14 +59,12 @@
         .btn:hover { background: #1b5e20; }
         .btn:disabled { background: #9e9e9e; cursor: not-allowed; }
         
-        /* Area Filter & Search */
         .filter-container { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
         .filter-container input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 15px; box-sizing: border-box; font-size: 14px;}
         .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
         .filter-grid label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 5px; }
         .filter-grid select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box;}
         
-        /* Area Custom Date Picker */
         .custom-date-container { display: none; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; background: #fdfdfd; padding: 15px; border-radius: 5px; border: 1px dashed #ccc;}
         .custom-date-container input[type="date"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; box-sizing: border-box;}
         
@@ -80,7 +78,13 @@
         .badge-berat { background: #ffcdd2; color: #c62828; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
         .table-responsive { overflow-x: auto; }
         
-        /* Modal */
+        /* CSS Untuk Tombol Aksi Baru */
+        .btn-aksi { border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; color: white; font-weight:600;}
+        .btn-detail { background: #0d6efd; } .btn-detail:hover { background: #0b5ed7; }
+        .btn-edit { background: #ffc107; color: #000; } .btn-edit:hover { background: #ffca2c; }
+        .btn-delete { background: #dc3545; } .btn-delete:hover { background: #c82333; }
+        .aksi-container { display: flex; gap: 5px; }
+
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
         .modal-content { background-color: #fff; margin: 5% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 700px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto;}
         .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
@@ -91,8 +95,6 @@
         
         .score-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;}
         .score-box h1 { margin: 0; font-size: 35px; }
-        .btn-detail { background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
-        .btn-detail:hover { background: #0056b3; }
 
         .result-group { margin-bottom: 20px; }
         .result-group h5 { margin: 0 0 10px 0; padding-bottom: 5px; border-bottom: 2px solid #ddd; font-size: 15px;}
@@ -100,10 +102,7 @@
         .result-item-title { font-weight: bold; font-size: 14px;}
         .result-item-note { color: #555; font-size: 13px; margin-top: 3px; font-style: italic;}
         
-        .text-ok { color: #198754; }
-        .text-minor { color: #fd7e14; }
-        .text-fatal { color: #dc3545; }
-        .text-na { color: #6c757d; }
+        .text-ok { color: #198754; } .text-minor { color: #fd7e14; } .text-fatal { color: #dc3545; } .text-na { color: #6c757d; }
     </style>
 </head>
 <body>
@@ -111,7 +110,7 @@
 <div class="container">
     <div class="nav">
         <button id="btnDashboard" class="active" onclick="switchView('dashboard')">📊 Dashboard</button>
-        <button id="btnAudit" onclick="switchView('audit')">📝 Mulai Audit</button>
+        <button id="btnAudit" onclick="switchView('audit', true)">📝 Mulai Audit Baru</button>
         <button id="btnHistory" onclick="switchView('history')">🕒 Riwayat Audit</button>
     </div>
 
@@ -133,10 +132,10 @@
         </div>
     </div>
 
-    <!-- 2. MULAI AUDIT -->
+    <!-- 2. MULAI AUDIT (FORM) -->
     <div id="view-audit" class="view">
-        <h2>Pilih Perangkat</h2>
-        <div class="cards">
+        <h2 id="viewTitleAudit">Pilih Perangkat Baru</h2>
+        <div class="cards" id="deviceCards">
             <div class="card" onclick="selectDevice('Laptop', this)"><div class="card-icon">💻</div><div>Laptop</div></div>
             <div class="card" onclick="selectDevice('iMac', this)"><div class="card-icon">🖥️</div><div>iMac / PC</div></div>
             <div class="card" onclick="selectDevice('Tablet', this)"><div class="card-icon">💊</div><div>Tablet</div></div>
@@ -144,7 +143,7 @@
         </div>
 
         <form id="auditForm" style="display: none; margin-top: 25px;" onsubmit="submitForm(event)">
-            <h3 id="formTitle">Form Audit</h3>
+            <h3 id="formTitle" style="border-bottom: 2px solid #2e7d32; display: inline-block; padding-bottom: 5px;">Form Audit</h3>
             <input type="hidden" id="jenisPerangkat" required>
 
             <div class="form-group">
@@ -158,33 +157,19 @@
 
             <h4 style="margin-bottom: 5px;">Spesifikasi</h4>
             <div class="specs-grid">
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Processor</label>
-                    <input type="text" id="processor" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>RAM</label>
-                    <input type="text" id="ram" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Storage</label>
-                    <input type="text" id="storage" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Operating System</label>
-                    <input type="text" id="os" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>GPU (Opsional)</label>
-                    <input type="text" id="gpu">
-                </div>
+                <div class="form-group" style="margin-bottom: 0;"><label>Processor</label><input type="text" id="processor" required></div>
+                <div class="form-group" style="margin-bottom: 0;"><label>RAM</label><input type="text" id="ram" required></div>
+                <div class="form-group" style="margin-bottom: 0;"><label>Storage</label><input type="text" id="storage" required></div>
+                <div class="form-group" style="margin-bottom: 0;"><label>Operating System</label><input type="text" id="os" required></div>
+                <div class="form-group" style="margin-bottom: 0;"><label>GPU (Opsional)</label><input type="text" id="gpu"></div>
             </div>
 
             <h4 style="margin-bottom: 5px; margin-top:25px;">Cek Fisik & Fungsi</h4>
-            <p style="font-size:12px; color:#666; margin-top:0;">*Pilih "Tidak OK" untuk menentukan tingkat keparahan (Minor/Fatal)</p>
+            <p style="font-size:12px; color:#666; margin-top:0;">*Pilih "Tidak OK" untuk menentukan tingkat keparahan</p>
             <div class="sop-section" id="checklistArea"></div>
             
             <button type="submit" class="btn" id="submitBtn">Simpan Hasil Audit</button>
+            <button type="button" class="btn" style="background:#6c757d; margin-top:10px; display:none;" id="cancelEditBtn" onclick="resetFormToNew()">Batal Edit</button>
         </form>
     </div>
 
@@ -197,7 +182,6 @@
 
         <div class="filter-container">
             <input type="text" id="searchInput" placeholder="🔍 Cari No Inventori / Merek Tipe..." oninput="applyFilters()">
-            
             <div class="filter-grid">
                 <div>
                     <label>Device Type</label>
@@ -239,16 +223,9 @@
                 </div>
             </div>
 
-            <!-- Panel Tanggal Custom (Tersembunyi secara default) -->
             <div id="customDateContainer" class="custom-date-container">
-                <div>
-                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px;">Dari tanggal</label>
-                    <input type="date" id="startDate" onchange="applyFilters()">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px;">Sampai tanggal</label>
-                    <input type="date" id="endDate" onchange="applyFilters()">
-                </div>
+                <div><label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px;">Dari tanggal</label><input type="date" id="startDate" onchange="applyFilters()"></div>
+                <div><label style="display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px;">Sampai tanggal</label><input type="date" id="endDate" onchange="applyFilters()"></div>
             </div>
             
             <div class="filter-info" id="filterInfo">Menampilkan 0 data audit</div>
@@ -263,7 +240,7 @@
                         <th>Perangkat</th>
                         <th>Skor</th>
                         <th>Kondisi</th>
-                        <th>Aksi</th>
+                        <th style="min-width: 160px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -274,23 +251,15 @@
     </div>
 </div>
 
-<!-- MODAL DETAIL AUDIT -->
+<!-- MODAL DETAIL AUDIT (Sama seperti sebelumnya) -->
 <div id="detailModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
         <h3 style="margin-top:0; color:#555;">Detail Audit</h3>
-        
         <div class="score-box">
-            <div>
-                <p style="margin:0; font-size:12px; font-weight:bold; color:#777;">NILAI AUDIT</p>
-                <h1 id="detSkor">0%</h1>
-            </div>
-            <div style="text-align: right;">
-                <p style="margin:0; font-size:12px; font-weight:bold; color:#777;">KONDISI</p>
-                <h3 id="detKondisi" style="margin:5px 0 0 0;">-</h3>
-            </div>
+            <div><p style="margin:0; font-size:12px; font-weight:bold; color:#777;">NILAI AUDIT</p><h1 id="detSkor">0%</h1></div>
+            <div style="text-align: right;"><p style="margin:0; font-size:12px; font-weight:bold; color:#777;">KONDISI</p><h3 id="detKondisi" style="margin:5px 0 0 0;">-</h3></div>
         </div>
-
         <div id="uiDataBaru">
             <h4 style="background:#f4f6f9; padding:8px; border-radius:4px;">Summary Detail</h4>
             <div class="detail-row"><span>Total Checklist</span><span id="detTotalChk">0</span></div>
@@ -311,41 +280,26 @@
             <div class="detail-row"><span>GPU</span><span id="detGPU"></span></div>
 
             <h4 style="background:#f4f6f9; padding:8px; border-radius:4px; margin-top:20px;">Hasil Checklist</h4>
-            
-            <div class="result-group" id="resFatalArea" style="display:none;">
-                <h5 class="text-fatal">🚨 Item Rusak Total (Fatal)</h5>
-                <div id="listFatal"></div>
-            </div>
-
-            <div class="result-group" id="resMinorArea" style="display:none;">
-                <h5 class="text-minor">⚠️ Item Minus (Minor)</h5>
-                <div id="listMinor"></div>
-            </div>
-            
-            <div class="result-group" id="resOkArea" style="display:none;">
-                <h5 class="text-ok">✔️ Item OK</h5>
-                <div id="listOk"></div>
-            </div>
-
-            <div class="result-group" id="resNaArea" style="display:none;">
-                <h5 class="text-na">➖ Item N/A</h5>
-                <div id="listNa"></div>
-            </div>
+            <div class="result-group" id="resFatalArea" style="display:none;"><h5 class="text-fatal">🚨 Item Rusak Total (Fatal)</h5><div id="listFatal"></div></div>
+            <div class="result-group" id="resMinorArea" style="display:none;"><h5 class="text-minor">⚠️ Item Minus (Minor)</h5><div id="listMinor"></div></div>
+            <div class="result-group" id="resOkArea" style="display:none;"><h5 class="text-ok">✔️ Item OK</h5><div id="listOk"></div></div>
+            <div class="result-group" id="resNaArea" style="display:none;"><h5 class="text-na">➖ Item N/A</h5><div id="listNa"></div></div>
         </div>
-
         <div id="uiDataLama" style="display:none;">
             <h4 style="background:#f4f6f9; padding:8px; border-radius:4px; margin-top:20px;">Catatan (Versi Lama)</h4>
-            <div style="background:#fff3e0; padding:15px; border-radius:5px; border:1px solid #ffe0b2;">
-                <p id="detLegacyText" style="margin:0; white-space: pre-wrap; line-height: 1.6;"></p>
-            </div>
+            <div style="background:#fff3e0; padding:15px; border-radius:5px; border:1px solid #ffe0b2;"><p id="detLegacyText" style="margin:0; white-space: pre-wrap; line-height: 1.6;"></p></div>
         </div>
     </div>
 </div>
 
 <script>
     // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaXPy_CK8zyfTrVweLnC5cLYs8LEa8mMoWaLLHFcfTXxGn5ywScG2TCVLZUef5pQD3Tg/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxhnr9q7kxSTco4bp15VkSJDUxNfoNORIjlz6_s3YOoIUj0yVt78zQYmr17W1673bg1pw/exec";
+    
     let globalData = []; 
+    // State untuk fitur Edit
+    let editModeRowNumber = null;
+    let editModeTanggal = null;
 
     const CHECKLIST_ITEMS = {
         'Laptop': ['Body/Casing', 'Layar', 'Keyboard', 'Touchpad', 'Port USB', 'Port LAN', 'Port HDMI', 'Wi-Fi & Bluetooth', 'Kamera', 'Speaker', 'Microphone', 'Baterai', 'Charger', 'Windows Ori', 'Office Ori'],
@@ -354,24 +308,41 @@
         'Smartphone': ['Body & Casing', 'Layar (Burn-in/Shadow)', 'Layar Sentuh', 'Sensor Biometrik', 'Tombol Fisik', 'Port Charger', 'Kamera Utama', 'Kamera Depan', 'Speaker & Earpiece', 'Microphone', 'Wi-Fi & Bluetooth', 'Sinyal & IMEI (Terdaftar)', 'Akun/iCloud (Kosong)']
     };
 
-    function switchView(viewName) {
+    function switchView(viewName, isNewAudit = false) {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav button').forEach(el => el.classList.remove('active'));
         document.getElementById('view-' + viewName).classList.add('active');
+        
         if(viewName === 'dashboard' || viewName === 'history') {
             document.getElementById(viewName === 'dashboard' ? 'btnDashboard' : 'btnHistory').classList.add('active');
             loadData();
         } else {
             document.getElementById('btnAudit').classList.add('active');
+            if(isNewAudit) resetFormToNew(); // Pastikan form bersih saat klik Mulai Audit Baru
         }
+    }
+
+    // Fungsi untuk mereset Form agar kembali menjadi "Insert Baru"
+    function resetFormToNew() {
+        editModeRowNumber = null;
+        editModeTanggal = null;
+        document.getElementById('auditForm').reset();
+        document.getElementById('auditForm').style.display = 'none';
+        document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
+        
+        document.getElementById('viewTitleAudit').innerText = "Pilih Perangkat Baru";
+        document.getElementById('deviceCards').style.display = "flex";
+        document.getElementById('formTitle').innerText = "Form Audit Baru";
+        document.getElementById('submitBtn').innerText = "Simpan Hasil Audit";
+        document.getElementById('cancelEditBtn').style.display = "none";
     }
 
     function selectDevice(device, cardElement) {
         document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
-        cardElement.classList.add('selected');
+        if(cardElement) cardElement.classList.add('selected');
         
         document.getElementById('jenisPerangkat').value = device;
-        document.getElementById('formTitle').innerText = "Form Audit: " + device;
+        document.getElementById('formTitle').innerText = (editModeRowNumber ? "Edit Audit: " : "Form Audit: ") + device;
         document.getElementById('auditForm').style.display = 'block';
 
         const area = document.getElementById('checklistArea');
@@ -413,8 +384,8 @@
         if(status === 'NA') btnElement.classList.add('selected-na');
 
         document.getElementById(itemId + '_val').value = status;
-
         const panel = document.getElementById(itemId + '_notok_panel');
+        
         if(status === 'Tidak OK') {
             panel.classList.add('active'); 
         } else {
@@ -431,25 +402,19 @@
 
         if(severity === 'Minor') btnElement.classList.add('selected-minor');
         if(severity === 'Rusak Total') btnElement.classList.add('selected-rusak');
-
         document.getElementById(itemId + '_severity').value = severity;
     }
 
     function submitForm(e) {
         e.preventDefault();
         
-        let isValid = true;
-        let errorMessage = "";
-
+        let isValid = true; let errorMessage = "";
         document.querySelectorAll('.chk-value').forEach(input => {
             if(input.value === "") { isValid = false; errorMessage = "Pilih OK/Tidak OK/NA untuk semua item checklist!"; }
             if(input.value === "Tidak OK") {
                 let itemId = input.id.replace('_val', '');
-                let sev = document.getElementById(itemId + '_severity').value;
-                let note = document.getElementById(itemId + '_note').value.trim();
-                
-                if(sev === "") { isValid = false; errorMessage = "Pilih Tingkat Keparahan (Minor/Rusak Total) untuk item yang Tidak OK."; }
-                if(note === "") { isValid = false; errorMessage = "Catatan kerusakan wajib diisi untuk item yang Tidak OK."; }
+                if(document.getElementById(itemId + '_severity').value === "") { isValid = false; errorMessage = "Pilih Tingkat Keparahan (Minor/Rusak Total) untuk item yang Tidak OK."; }
+                if(document.getElementById(itemId + '_note').value.trim() === "") { isValid = false; errorMessage = "Catatan kerusakan wajib diisi untuk item yang Tidak OK."; }
             }
         });
         
@@ -463,19 +428,13 @@
             let label = input.getAttribute('data-label');
             let itemId = input.id.replace('_val', '');
             
-            if(status === 'NA') {
-                naItems++; jsonPayload.na.push(label);
-            } else if(status === 'OK') {
-                okItems++; jsonPayload.ok.push(label);
-            } else if(status === 'Tidak OK') {
+            if(status === 'NA') { naItems++; jsonPayload.na.push(label); } 
+            else if(status === 'OK') { okItems++; jsonPayload.ok.push(label); } 
+            else if(status === 'Tidak OK') {
                 let sev = document.getElementById(itemId + '_severity').value;
                 let note = document.getElementById(itemId + '_note').value;
-                
-                if(sev === 'Minor') {
-                    minorItems++; jsonPayload.minor.push({ label: label, note: note });
-                } else if(sev === 'Rusak Total') {
-                    fatalItems++; jsonPayload.fatal.push({ label: label, note: note });
-                }
+                if(sev === 'Minor') { minorItems++; jsonPayload.minor.push({ label: label, note: note }); } 
+                else if(sev === 'Rusak Total') { fatalItems++; jsonPayload.fatal.push({ label: label, note: note }); }
             }
         });
 
@@ -483,12 +442,12 @@
         let scoreValue = (okItems * 1) + (minorItems * 0.5);
         let scorePercent = itemDinilai === 0 ? 100 : Math.round((scoreValue / itemDinilai) * 10000) / 100;
         
-        let finalCondition = "";
-        if(scorePercent === 100) finalCondition = "Baik";
-        else if (fatalItems > 0) finalCondition = "Rusak Berat"; 
-        else finalCondition = "Rusak Ringan"; 
+        let finalCondition = scorePercent === 100 ? "Baik" : (fatalItems > 0 ? "Rusak Berat" : "Rusak Ringan");
 
         const data = {
+            action: editModeRowNumber ? 'update' : 'insert',
+            rowNumber: editModeRowNumber,
+            tanggal: editModeTanggal,
             noInventori: document.getElementById('noInventori').value,
             jenisPerangkat: document.getElementById('jenisPerangkat').value,
             merekTipe: document.getElementById('merekTipe').value,
@@ -503,7 +462,7 @@
         };
 
         const submitBtn = document.getElementById('submitBtn');
-        submitBtn.innerText = "Menyimpan Data...";
+        submitBtn.innerText = editModeRowNumber ? "Menyimpan Perubahan..." : "Menyimpan Data...";
         submitBtn.disabled = true;
 
         fetch(APPS_SCRIPT_URL, { redirect: "follow", method: 'POST', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) })
@@ -511,14 +470,105 @@
         .then(result => {
             if(result.status === "success") {
                 alert(`Tersimpan! Kondisi: ${finalCondition} (${scorePercent}%)`);
-                document.getElementById('auditForm').reset();
-                document.getElementById('auditForm').style.display = 'none';
-                document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
+                resetFormToNew();
                 switchView('history');
             } else alert("Gagal: " + result.message);
         })
         .catch(() => alert("Terjadi kesalahan jaringan."))
         .finally(() => { submitBtn.innerText = "Simpan Hasil Audit"; submitBtn.disabled = false; });
+    }
+
+    // FUNGSI BARU: Edit Audit
+    function editAudit(originalIndex) {
+        const row = globalData[originalIndex];
+        
+        // Simpan state edit
+        editModeRowNumber = row.rowNumber;
+        editModeTanggal = row['Tanggal'];
+
+        switchView('audit'); // Pindah ke tab form
+
+        // Sembunyikan pemilihan kartu perangkat (karena perangkat tidak boleh diganti saat edit)
+        document.getElementById('viewTitleAudit').innerText = "Mengedit Audit: " + row['No Inventori'];
+        document.getElementById('deviceCards').style.display = "none";
+        
+        // Generate checklist area
+        let perngktLengkap = row['Jenis Perangkat'];
+        if(perngktLengkap.includes('iMac') || perngktLengkap.includes('PC')) perngktLengkap = 'iMac';
+        selectDevice(perngktLengkap, null);
+
+        // Isi form spesifikasi
+        document.getElementById('noInventori').value = row['No Inventori'] !== "-" ? row['No Inventori'] : "";
+        document.getElementById('merekTipe').value = row['Merek & Tipe'] !== "-" ? row['Merek & Tipe'] : "";
+        document.getElementById('processor').value = row['Processor'] !== "-" ? row['Processor'] : "";
+        document.getElementById('ram').value = row['RAM'] !== "-" ? row['RAM'] : "";
+        document.getElementById('storage').value = row['Storage'] !== "-" ? row['Storage'] : "";
+        document.getElementById('os').value = row['Operating System'] !== "-" ? row['Operating System'] : "";
+        document.getElementById('gpu').value = row['GPU'] !== "-" ? row['GPU'] : "";
+
+        // Isi otomatis form checklist dari JSON
+        try {
+            let chkData = JSON.parse(row['Catatan']);
+            if(chkData && chkData.ok) {
+                document.querySelectorAll('.chk-value').forEach(input => {
+                    let label = input.getAttribute('data-label');
+                    let itemId = input.id.replace('_val', '');
+                    let btnGroup = input.previousElementSibling;
+
+                    if(chkData.ok.includes(label)) {
+                        setCheck(itemId, 'OK', btnGroup.querySelector('.btn-check:nth-child(1)'));
+                    } else if(chkData.na && chkData.na.includes(label)) {
+                        setCheck(itemId, 'NA', btnGroup.querySelector('.btn-check:nth-child(3)'));
+                    } else {
+                        let minorItem = (chkData.minor || []).find(i => i.label === label);
+                        let fatalItem = (chkData.fatal || chkData.notOk || []).find(i => i.label === label);
+                        
+                        if(minorItem) {
+                            setCheck(itemId, 'Tidak OK', btnGroup.querySelector('.btn-check:nth-child(2)'));
+                            let sevGroup = document.getElementById(itemId + '_severity').previousElementSibling;
+                            setSeverity(itemId, 'Minor', sevGroup.querySelector('.btn-minor'));
+                            document.getElementById(itemId + '_note').value = minorItem.note;
+                        } else if(fatalItem) {
+                            setCheck(itemId, 'Tidak OK', btnGroup.querySelector('.btn-check:nth-child(2)'));
+                            let sevGroup = document.getElementById(itemId + '_severity').previousElementSibling;
+                            setSeverity(itemId, 'Rusak Total', sevGroup.querySelector('.btn-rusak'));
+                            document.getElementById(itemId + '_note').value = fatalItem.note;
+                        }
+                    }
+                });
+            }
+        } catch(e) { console.log("Data lama, checklist tidak terisi otomatis."); }
+
+        // Ubah UI Form
+        document.getElementById('submitBtn').innerText = "Update Hasil Audit";
+        document.getElementById('cancelEditBtn').style.display = "block";
+        window.scrollTo(0,0);
+    }
+
+    // FUNGSI BARU: Hapus Audit
+    function deleteAudit(originalIndex) {
+        const row = globalData[originalIndex];
+        if(confirm(`Yakin HAPUS data audit untuk Inventori: ${row['No Inventori']}?\n\n(Tindakan ini tidak dapat dibatalkan)`)) {
+            
+            const btn = event.target;
+            const originalText = btn.innerText;
+            btn.innerText = "Mengahpus...";
+            btn.disabled = true;
+
+            fetch(APPS_SCRIPT_URL, { 
+                redirect: "follow", method: 'POST', 
+                headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+                body: JSON.stringify({ action: 'delete', rowNumber: row.rowNumber }) 
+            })
+            .then(res => res.json())
+            .then(result => {
+                if(result.status === "success") {
+                    alert('Data berhasil dihapus!');
+                    loadData(); // Segarkan tabel
+                } else alert("Gagal: " + result.message);
+            })
+            .catch(() => { alert("Terjadi kesalahan jaringan."); btn.innerText = originalText; btn.disabled = false; });
+        }
     }
 
     function getBadge(kondisi) {
@@ -527,7 +577,6 @@
         return '<span class="badge-berat">Rusak Berat</span>';
     }
 
-    // Fungsi Utama Memuat Data
     function loadData() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Memuat data...</td></tr>';
@@ -545,7 +594,6 @@
                 return item;
             });
 
-            // Update Angka Dashboard
             let counts = { 'Laptop': 0, 'iMac': 0, 'Tablet': 0, 'Smartphone': 0 };
             let conds = { 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 };
             
@@ -563,13 +611,11 @@
             document.getElementById('statRingan').innerText = conds['Rusak Ringan'];
             document.getElementById('statBerat').innerText = conds['Rusak Berat'];
 
-            // Eksekusi filter
             applyFilters();
         })
         .catch(() => { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:red;">Gagal memuat data.</td></tr>'; });
     }
 
-    // TAMPILKAN/SEMBUNYIKAN KOLOM CUSTOM DATE
     function toggleCustomDate() {
         const filter = document.getElementById('filterTanggal').value;
         const customContainer = document.getElementById('customDateContainer');
@@ -583,7 +629,6 @@
         }
     }
 
-    // FUNGSI LOGIKA FILTER, SEARCH, SORT
     function applyFilters() {
         const searchTxt = document.getElementById('searchInput').value.toLowerCase();
         const deviceFltr = document.getElementById('filterDevice').value;
@@ -594,56 +639,40 @@
         const endVal = document.getElementById('endDate').value;
 
         let filteredData = globalData.filter(row => {
-            // Pencarian ID & Merek
             let inv = (row['No Inventori'] || "").toLowerCase();
             let merek = (row['Merek & Tipe'] || "").toLowerCase();
             let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt);
             
-            // Dropdown Kategori
             let matchDevice = deviceFltr === "Semua" || row['Jenis Perangkat'] === deviceFltr;
             let matchKondisi = kondisiFltr === "Semua" || row['Kondisi'] === kondisiFltr;
 
-            // Logika Tanggal
             let matchTanggal = true;
             if(tanggalFltr !== 'Semua' && row['Tanggal']) {
-                // Membaca format "12/10/2026, 00.50.53"
                 let parts = row['Tanggal'].split(',')[0].trim().split('/');
                 if(parts.length === 3) {
                     let rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
                     rowDate.setHours(0,0,0,0);
-                    
-                    let today = new Date();
-                    today.setHours(0,0,0,0);
+                    let today = new Date(); today.setHours(0,0,0,0);
 
-                    if(tanggalFltr === 'Hari ini') {
-                        matchTanggal = (rowDate.getTime() === today.getTime());
-                    } else if(tanggalFltr === 'Kemarin') {
-                        let yesterday = new Date(today);
-                        yesterday.setDate(yesterday.getDate() - 1);
+                    if(tanggalFltr === 'Hari ini') { matchTanggal = (rowDate.getTime() === today.getTime()); } 
+                    else if(tanggalFltr === 'Kemarin') {
+                        let yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1);
                         matchTanggal = (rowDate.getTime() === yesterday.getTime());
-                    } else if(tanggalFltr === 'Minggu ini') {
-                        let startOfWeek = new Date(today);
-                        let day = startOfWeek.getDay() || 7; 
-                        startOfWeek.setDate(startOfWeek.getDate() - (day - 1)); // Set Senin sbg awal minggu
+                    } 
+                    else if(tanggalFltr === 'Minggu ini') {
+                        let startOfWeek = new Date(today); let day = startOfWeek.getDay() || 7; 
+                        startOfWeek.setDate(startOfWeek.getDate() - (day - 1));
                         matchTanggal = (rowDate >= startOfWeek && rowDate <= today);
-                    } else if(tanggalFltr === 'Custom') {
-                        if(startVal) {
-                            let sd = new Date(startVal);
-                            sd.setHours(0,0,0,0);
-                            if(rowDate < sd) matchTanggal = false;
-                        }
-                        if(endVal) {
-                            let ed = new Date(endVal);
-                            ed.setHours(0,0,0,0);
-                            if(rowDate > ed) matchTanggal = false;
-                        }
+                    } 
+                    else if(tanggalFltr === 'Custom') {
+                        if(startVal) { let sd = new Date(startVal); sd.setHours(0,0,0,0); if(rowDate < sd) matchTanggal = false; }
+                        if(endVal) { let ed = new Date(endVal); ed.setHours(0,0,0,0); if(rowDate > ed) matchTanggal = false; }
                     }
                 }
             }
             return matchSearch && matchDevice && matchKondisi && matchTanggal;
         });
 
-        // Mengurutkan Data
         filteredData.sort((a, b) => {
             if(sortMode === 'Terbaru') return b.originalIndex - a.originalIndex;
             if(sortMode === 'Terlama') return a.originalIndex - b.originalIndex;
@@ -658,11 +687,9 @@
         renderTable(filteredData);
     }
 
-    // FUNGSI RENDER TABEL HASIL FILTER
     function renderTable(dataArray) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
-        
         document.getElementById('filterInfo').innerText = `Menampilkan ${dataArray.length} dari ${globalData.length} total riwayat audit.`;
 
         if(dataArray.length === 0) {
@@ -678,7 +705,13 @@
                 <td>${row['Jenis Perangkat']}</td>
                 <td><strong>${row['Skor']}</strong></td>
                 <td>${getBadge(row['Kondisi'])}</td>
-                <td><button class="btn-detail" onclick="openModal(${row.originalIndex})">Detail</button></td>
+                <td>
+                    <div class="aksi-container">
+                        <button class="btn-aksi btn-detail" onclick="openModal(${row.originalIndex})">Detail</button>
+                        <button class="btn-aksi btn-edit" onclick="editAudit(${row.originalIndex})">Edit</button>
+                        <button class="btn-aksi btn-delete" onclick="deleteAudit(${row.originalIndex})">Hapus</button>
+                    </div>
+                </td>
             `;
             tbody.appendChild(tr);
         });
