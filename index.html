@@ -8,7 +8,6 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f6f9; margin: 0; padding: 20px; color: #333; }
         .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
         
-        /* Navigasi 3 Menu */
         .nav { display: flex; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 10px; overflow-x: auto;}
         .nav button { background: none; border: none; font-size: 16px; cursor: pointer; padding: 10px 15px; border-radius: 5px; transition: 0.2s; white-space: nowrap; }
         .nav button.active { background: #e8f5e9; color: #2e7d32; font-weight: bold; }
@@ -17,24 +16,26 @@
         .view { display: none; }
         .view.active { display: block; }
 
-        /* Grid Statistik Dashboard */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 15px; margin-bottom: 30px; }
         .stat-card { background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0; text-align: center; }
         .stat-card h3 { margin: 0; font-size: 28px; color: #2e7d32; }
         .stat-card.alert h3 { color: #d32f2f; }
         .stat-card p { margin: 5px 0 0; font-size: 14px; color: #555; font-weight: 500; }
 
-        /* Kartu Perangkat */
         .cards { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
         .card { flex: 1; min-width: 130px; border: 1px solid #ddd; border-radius: 8px; padding: 20px 10px; text-align: center; cursor: pointer; transition: 0.3s; }
         .card:hover, .card.selected { border-color: #2e7d32; background: #f1f8f1; }
         .card.selected { border-width: 2px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
         .card-icon { font-size: 35px; margin-bottom: 10px; }
 
-        /* Form */
+        /* Grid Input Spesifikasi */
+        .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #fdfdfd; padding: 15px; border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 15px;}
+        @media (max-width: 600px) { .specs-grid { grid-template-columns: 1fr; } }
+        
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        
         .sop-section { background: #fcfcfc; border: 1px solid #e0e0e0; padding: 15px; border-radius: 5px; margin-bottom: 15px; }
         .btn { background: #2e7d32; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; font-weight: bold;}
         .btn:hover { background: #1b5e20; }
@@ -47,6 +48,19 @@
         .badge-ringan { background: #fff9c4; color: #f57f17; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
         .badge-berat { background: #ffcdd2; color: #c62828; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
         .table-responsive { overflow-x: auto; }
+
+        /* Modal Detail */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+        .modal-content { background-color: #fff; margin: 5% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 700px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto;}
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-btn:hover { color: black; }
+        .detail-row { display: flex; border-bottom: 1px solid #eee; padding: 10px 0; }
+        .detail-row span:first-child { width: 150px; font-weight: 500; color: #555; }
+        .detail-row span:last-child { font-weight: bold; flex: 1; }
+        .score-box { background: #fdfdfd; border: 2px solid #eee; padding: 20px; text-align: center; border-radius: 8px; margin-bottom: 20px;}
+        .score-box h1 { margin: 0; font-size: 45px; }
+        .btn-detail { background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .btn-detail:hover { background: #0056b3; }
     </style>
 </head>
 <body>
@@ -61,23 +75,11 @@
     <!-- 1. DASHBOARD -->
     <div id="view-dashboard" class="view active">
         <h2>Dashboard Statistik</h2>
-        
-        <h4 style="margin-bottom: 10px;">Ringkasan Kondisi (Status Fungsional)</h4>
         <div class="stats-grid">
-            <div class="stat-card">
-                <h3 id="statBaik">0</h3>
-                <p>Baik (Siap Pakai)</p>
-            </div>
-            <div class="stat-card">
-                <h3 id="statRingan">0</h3>
-                <p>Rusak Ringan</p>
-            </div>
-            <div class="stat-card alert">
-                <h3 id="statBerat">0</h3>
-                <p>Rusak Berat (Butuh Servis)</p>
-            </div>
+            <div class="stat-card"><h3 id="statBaik">0</h3><p>Baik (Siap Pakai)</p></div>
+            <div class="stat-card"><h3 id="statRingan">0</h3><p>Rusak Ringan</p></div>
+            <div class="stat-card alert"><h3 id="statBerat">0</h3><p>Rusak Berat</p></div>
         </div>
-
         <h4 style="margin-bottom: 10px;">Total Perangkat Diaudit</h4>
         <div class="stats-grid">
             <div class="stat-card"><h3 id="statTotal">0</h3><p>Total Keseluruhan</p></div>
@@ -104,23 +106,43 @@
 
             <div class="form-group">
                 <label>No Inventori</label>
-                <input type="text" id="noInventori" placeholder="Contoh: INV-LTP-001" required>
+                <input type="text" id="noInventori" required>
             </div>
             <div class="form-group">
                 <label>Merek & Tipe</label>
-                <input type="text" id="merekTipe" placeholder="Contoh: Lenovo ThinkPad T14" required>
-            </div>
-            <div class="form-group">
-                <label>Spesifikasi Utama</label>
-                <input type="text" id="spesifikasi" placeholder="Contoh: Core i5 / 16GB / 512GB" required>
+                <input type="text" id="merekTipe" required>
             </div>
 
-            <!-- Area Checklist SOP Dinamis -->
+            <!-- Bagian Spesifikasi yang Dipecah -->
+            <h4 style="margin-bottom: 5px;">Spesifikasi</h4>
+            <div class="specs-grid">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Processor</label>
+                    <input type="text" id="processor" placeholder="Contoh: Intel Core i5 / Apple M1" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>RAM</label>
+                    <input type="text" id="ram" placeholder="Contoh: 16GB" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Storage</label>
+                    <input type="text" id="storage" placeholder="Contoh: 512GB SSD" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Operating System</label>
+                    <input type="text" id="os" placeholder="Contoh: Windows 11 Pro" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>GPU (Opsional)</label>
+                    <input type="text" id="gpu" placeholder="Contoh: Intel Iris Xe / RTX 3050">
+                </div>
+            </div>
+
             <div class="sop-section" id="checklistArea"></div>
 
             <div class="form-group">
-                <label>Catatan Tambahan (Wajib diisi jika ada yang Bermasalah)</label>
-                <textarea id="catatan" rows="3" placeholder="Tuliskan detail masalah di sini..."></textarea>
+                <label>Catatan Tambahan</label>
+                <textarea id="catatan" rows="3" placeholder="Tuliskan detail masalah di sini jika ada..."></textarea>
             </div>
             
             <button type="submit" class="btn" id="submitBtn">Simpan Hasil Audit</button>
@@ -130,7 +152,7 @@
     <!-- 3. RIWAYAT AUDIT -->
     <div id="view-history" class="view">
         <h2>Riwayat Audit</h2>
-        <button onclick="loadData()" style="padding: 8px 15px; margin-bottom:15px; cursor:pointer; background:#fff; border:1px solid #ccc; border-radius:5px;">🔄 Refresh Data Tabel</button>
+        <button onclick="loadData()" style="padding: 8px 15px; margin-bottom:15px; cursor:pointer; background:#fff; border:1px solid #ccc; border-radius:5px;">🔄 Refresh Data</button>
         <div class="table-responsive">
             <table>
                 <thead>
@@ -138,9 +160,9 @@
                         <th>Tgl Audit</th>
                         <th>No Inventori</th>
                         <th>Perangkat</th>
-                        <th>Merek/Tipe</th>
                         <th>Skor</th>
-                        <th>Kondisi Final</th>
+                        <th>Kondisi</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="tableBody">
@@ -151,11 +173,43 @@
     </div>
 </div>
 
+<!-- MODAL DETAIL AUDIT -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <h2 style="margin-top:0;">Detail Audit</h2>
+        
+        <div class="score-box">
+            <p style="margin:0; font-weight:bold; color:#777;">NILAI AUDIT</p>
+            <h1 id="detSkor">0%</h1>
+            <h3 id="detKondisi" style="margin:5px 0 0 0;">-</h3>
+        </div>
+
+        <h4>Informasi Perangkat</h4>
+        <div class="detail-row"><span>Tgl Audit:</span><span id="detTgl"></span></div>
+        <div class="detail-row"><span>No Inventori:</span><span id="detInv"></span></div>
+        <div class="detail-row"><span>Jenis Perangkat:</span><span id="detJenis"></span></div>
+        <div class="detail-row"><span>Merek & Tipe:</span><span id="detMerek"></span></div>
+
+        <h4 style="margin-top:20px;">Spesifikasi</h4>
+        <div class="detail-row"><span>Processor:</span><span id="detProc"></span></div>
+        <div class="detail-row"><span>RAM:</span><span id="detRam"></span></div>
+        <div class="detail-row"><span>Storage:</span><span id="detStorage"></span></div>
+        <div class="detail-row"><span>OS:</span><span id="detOS"></span></div>
+        <div class="detail-row"><span>GPU:</span><span id="detGPU"></span></div>
+
+        <h4 style="margin-top:20px;">Catatan Penilaian</h4>
+        <div style="background:#fff3e0; padding:15px; border-radius:5px; border:1px solid #ffe0b2;">
+            <p id="detCatatan" style="margin:0;"></p>
+        </div>
+    </div>
+</div>
+
 <script>
     // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw8FjPWIkfoKfeDl8CCkRHx_eEn7xpmSToA6qP7EiKhs-Bdbs_ifSdUaj5E6thXHKrwZQ/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaXPy_CK8zyfTrVweLnC5cLYs8LEa8mMoWaLLHFcfTXxGn5ywScG2TCVLZUef5pQD3Tg/exec";
+    let globalData = []; // Menyimpan data sementara untuk popup detail
 
-    // Konfigurasi Bobot SOP (Total 100%)
     const SOP_CONFIG = {
         'Laptop': [
             { id: 'sop1', label: 'Layar & Komponen Input (Vital)', weight: 40 },
@@ -188,14 +242,11 @@
         document.querySelectorAll('.nav button').forEach(el => el.classList.remove('active'));
         document.getElementById('view-' + viewName).classList.add('active');
         
-        if(viewName === 'dashboard') {
-            document.getElementById('btnDashboard').classList.add('active');
+        if(viewName === 'dashboard' || viewName === 'history') {
+            document.getElementById(viewName === 'dashboard' ? 'btnDashboard' : 'btnHistory').classList.add('active');
             loadData();
-        } else if (viewName === 'audit') {
+        } else {
             document.getElementById('btnAudit').classList.add('active');
-        } else if (viewName === 'history') {
-            document.getElementById('btnHistory').classList.add('active');
-            loadData();
         }
     }
 
@@ -207,7 +258,6 @@
         document.getElementById('formTitle').innerText = "Form Audit: " + device;
         document.getElementById('auditForm').style.display = 'block';
 
-        // Render Checklist Dinamis
         const area = document.getElementById('checklistArea');
         let html = `<h4 style="margin-top:0; border-bottom:1px solid #ccc; padding-bottom:5px;">Checklist Pemeriksaan (${device})</h4>`;
         
@@ -223,14 +273,8 @@
             `;
         });
 
-        // Tambahan khusus HP untuk Health Baterai
-        if(device === 'Smartphone') {
-            html += `
-                <div class="form-group">
-                    <label>Kesehatan Baterai (Battery Health %)</label>
-                    <input type="number" id="batteryHealth" min="1" max="100" placeholder="Contoh: 85" required>
-                </div>
-            `;
+        if(device === 'Smartphone' || device === 'Tablet') {
+            html += `<div class="form-group"><label>Battery Health (%)</label><input type="number" id="batteryHealth" min="1" max="100" placeholder="Contoh: 85"></div>`;
         }
         area.innerHTML = html;
     }
@@ -238,72 +282,54 @@
     function submitForm(e) {
         e.preventDefault();
         
-        // Hitung Skor
         let totalScore = 100;
         document.querySelectorAll('.sop-select').forEach(select => {
-            if (select.value === "Bermasalah") {
-                totalScore -= parseInt(select.getAttribute('data-weight'));
-            }
+            if (select.value === "Bermasalah") totalScore -= parseInt(select.getAttribute('data-weight'));
         });
 
-        // Tentukan Kondisi Kategori
-        let finalCondition = "";
-        if (totalScore === 100) finalCondition = "Baik";
-        else if (totalScore >= 70) finalCondition = "Rusak Ringan";
-        else finalCondition = "Rusak Berat";
+        let finalCondition = totalScore === 100 ? "Baik" : (totalScore >= 70 ? "Rusak Ringan" : "Rusak Berat");
 
-        // Susun Catatan (termasuk Battery Health jika ada)
         let note = document.getElementById('catatan').value;
         const bat = document.getElementById('batteryHealth');
-        if (bat) note = `Battery Health: ${bat.value}%. ` + note;
+        if (bat && bat.value) note = `Battery Health: ${bat.value}%. ` + note;
 
         const data = {
             noInventori: document.getElementById('noInventori').value,
             jenisPerangkat: document.getElementById('jenisPerangkat').value,
             merekTipe: document.getElementById('merekTipe').value,
-            spesifikasi: document.getElementById('spesifikasi').value,
+            processor: document.getElementById('processor').value,
+            ram: document.getElementById('ram').value,
+            storage: document.getElementById('storage').value,
+            os: document.getElementById('os').value,
+            gpu: document.getElementById('gpu').value || "-",
             skor: totalScore,
             kondisi: finalCondition,
-            catatan: note
+            catatan: note || "Tidak ada catatan."
         };
 
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.innerText = "Menyimpan Data...";
         submitBtn.disabled = true;
 
-        fetch(APPS_SCRIPT_URL, {
-            redirect: "follow",
-            method: 'POST',
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
+        fetch(APPS_SCRIPT_URL, { redirect: "follow", method: 'POST', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) })
+        .then(res => res.json())
         .then(result => {
             if(result.status === "success") {
-                alert(`Tersimpan! Perangkat dilabeli: ${finalCondition} (Skor: ${totalScore}%)`);
+                alert(`Tersimpan! Kondisi: ${finalCondition} (${totalScore}%)`);
                 document.getElementById('auditForm').reset();
                 document.getElementById('auditForm').style.display = 'none';
                 document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
                 switchView('history');
-            } else {
-                alert("Gagal: " + result.message);
-            }
+            } else alert("Gagal: " + result.message);
         })
-        .catch(error => {
-            console.error(error);
-            alert("Terjadi kesalahan jaringan.");
-        })
-        .finally(() => {
-            submitBtn.innerText = "Simpan Hasil Audit";
-            submitBtn.disabled = false;
-        });
+        .catch(() => alert("Terjadi kesalahan jaringan."))
+        .finally(() => { submitBtn.innerText = "Simpan Hasil Audit"; submitBtn.disabled = false; });
     }
 
     function getBadge(kondisi) {
         if(kondisi === 'Baik') return '<span class="badge-baik">Baik</span>';
         if(kondisi === 'Rusak Ringan') return '<span class="badge-ringan">Rusak Ringan</span>';
-        if(kondisi === 'Rusak Berat') return '<span class="badge-berat">Rusak Berat</span>';
-        return kondisi;
+        return '<span class="badge-berat">Rusak Berat</span>';
     }
 
     function loadData() {
@@ -311,51 +337,72 @@
         tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Memuat data...</td></tr>';
 
         fetch(APPS_SCRIPT_URL, { redirect: "follow", method: 'GET' })
-        .then(response => response.json())
+        .then(res => res.json())
         .then(data => {
             tbody.innerHTML = '';
-            
-            // Variabel Hitungan Dashboard
             let counts = { 'Laptop': 0, 'iMac': 0, 'Tablet': 0, 'Smartphone': 0 };
             let conds = { 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 };
 
             if(data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Belum ada riwayat audit.</td></tr>';
             } else {
-                data.reverse().forEach(row => {
-                    // Update counter dashboard
+                globalData = data.reverse(); // Simpan ke global untuk popup
+                globalData.forEach((row, index) => {
                     if(counts[row['Jenis Perangkat']] !== undefined) counts[row['Jenis Perangkat']]++;
                     if(conds[row['Kondisi']] !== undefined) conds[row['Kondisi']]++;
 
-                    // Render baris tabel
                     const tr = document.createElement('tr');
                     tr.innerHTML = `
                         <td>${row['Tanggal']}</td>
                         <td>${row['No Inventori']}</td>
                         <td>${row['Jenis Perangkat']}</td>
-                        <td>${row['Merek & Tipe']}</td>
                         <td><strong>${row['Skor']}</strong></td>
                         <td>${getBadge(row['Kondisi'])}</td>
+                        <td><button class="btn-detail" onclick="openModal(${index})">Detail</button></td>
                     `;
                     tbody.appendChild(tr);
                 });
             }
 
-            // Render Angka ke UI Dashboard
             document.getElementById('statTotal').innerText = data.length;
             document.getElementById('statLaptop').innerText = counts['Laptop'];
             document.getElementById('statImac').innerText = counts['iMac'];
             document.getElementById('statTablet').innerText = counts['Tablet'];
             document.getElementById('statPhone').innerText = counts['Smartphone'];
-            
             document.getElementById('statBaik').innerText = conds['Baik'];
             document.getElementById('statRingan').innerText = conds['Rusak Ringan'];
             document.getElementById('statBerat').innerText = conds['Rusak Berat'];
         })
-        .catch(error => {
-            console.error(error);
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:red;">Gagal memuat data.</td></tr>';
-        });
+        .catch(() => { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:red;">Gagal memuat data.</td></tr>'; });
+    }
+
+    // Fungsi Popup Modal
+    function openModal(index) {
+        const row = globalData[index];
+        document.getElementById('detSkor').innerText = row['Skor'];
+        document.getElementById('detKondisi').innerHTML = getBadge(row['Kondisi']);
+        document.getElementById('detTgl').innerText = row['Tanggal'];
+        document.getElementById('detInv').innerText = row['No Inventori'];
+        document.getElementById('detJenis').innerText = row['Jenis Perangkat'];
+        document.getElementById('detMerek').innerText = row['Merek & Tipe'];
+        
+        document.getElementById('detProc').innerText = row['Processor'];
+        document.getElementById('detRam').innerText = row['RAM'];
+        document.getElementById('detStorage').innerText = row['Storage'];
+        document.getElementById('detOS').innerText = row['Operating System'];
+        document.getElementById('detGPU').innerText = row['GPU'] || "-";
+        
+        document.getElementById('detCatatan').innerText = row['Catatan'] || "Tidak ada catatan.";
+        
+        document.getElementById('detailModal').style.display = "block";
+    }
+
+    function closeModal() {
+        document.getElementById('detailModal').style.display = "none";
+    }
+
+    window.onclick = function(event) {
+        if (event.target == document.getElementById('detailModal')) closeModal();
     }
 
     window.onload = loadData;
