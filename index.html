@@ -35,7 +35,6 @@
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         
-        /* Desain Baru Checklist OK / TIDAK OK / NA */
         .sop-section { background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         .checklist-item { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
         .checklist-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -45,7 +44,6 @@
         .btn-check { flex: 1; background: #fff; border: none; padding: 10px; font-size: 14px; cursor: pointer; border-right: 1px solid #ccc; transition: 0.2s; font-weight: 500;}
         .btn-check:last-child { border-right: none; }
         
-        /* Warna Tombol Terpilih */
         .btn-check.selected-ok { background: #198754; color: white; }
         .btn-check.selected-not-ok { background: #dc3545; color: white; }
         .btn-check.selected-na { background: #6c757d; color: white; }
@@ -58,7 +56,6 @@
         .btn:hover { background: #1b5e20; }
         .btn:disabled { background: #9e9e9e; cursor: not-allowed; }
         
-        /* Tabel & Modal */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #f8f9fa; }
@@ -66,17 +63,31 @@
         .badge-ringan { background: #fff9c4; color: #f57f17; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
         .badge-berat { background: #ffcdd2; color: #c62828; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
         .table-responsive { overflow-x: auto; }
+        
+        /* Modal Detail Re-design */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
         .modal-content { background-color: #fff; margin: 5% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 700px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto;}
         .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
         .close-btn:hover { color: black; }
-        .detail-row { display: flex; border-bottom: 1px solid #eee; padding: 10px 0; }
-        .detail-row span:first-child { width: 150px; font-weight: 500; color: #555; }
-        .detail-row span:last-child { font-weight: bold; flex: 1; }
-        .score-box { background: #fdfdfd; border: 2px solid #eee; padding: 20px; text-align: center; border-radius: 8px; margin-bottom: 20px;}
-        .score-box h1 { margin: 0; font-size: 45px; }
+        .detail-row { display: flex; border-bottom: 1px solid #eee; padding: 10px 0; justify-content: space-between;}
+        .detail-row span:first-child { font-weight: 500; color: #555; }
+        .detail-row span:last-child { font-weight: bold; text-align: right;}
+        
+        .score-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 20px;}
+        .score-box h1 { margin: 0; font-size: 35px; }
         .btn-detail { background: #007bff; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 13px; }
         .btn-detail:hover { background: #0056b3; }
+
+        /* Style untuk list hasil checklist di modal */
+        .result-group { margin-bottom: 20px; }
+        .result-group h5 { margin: 0 0 10px 0; padding-bottom: 5px; border-bottom: 2px solid #ddd; font-size: 15px;}
+        .result-item { padding: 8px 0; border-bottom: 1px solid #f0f0f0; display: flex; flex-direction: column;}
+        .result-item-title { font-weight: bold; font-size: 14px;}
+        .result-item-note { color: #dc3545; font-size: 13px; margin-top: 3px; font-style: italic;}
+        
+        .text-ok { color: #198754; }
+        .text-notok { color: #dc3545; }
+        .text-na { color: #6c757d; }
     </style>
 </head>
 <body>
@@ -184,35 +195,58 @@
     </div>
 </div>
 
-<!-- MODAL DETAIL AUDIT -->
+<!-- MODAL DETAIL AUDIT BARU (Sesuai Gambar 16) -->
 <div id="detailModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
-        <h2 style="margin-top:0;">Detail Audit</h2>
+        <h3 style="margin-top:0; color:#555;">Detail Audit</h3>
         
         <div class="score-box">
-            <p style="margin:0; font-weight:bold; color:#777;">NILAI AUDIT</p>
-            <h1 id="detSkor">0%</h1>
-            <h3 id="detKondisi" style="margin:5px 0 0 0;">-</h3>
+            <div>
+                <p style="margin:0; font-size:12px; font-weight:bold; color:#777;">NILAI AUDIT</p>
+                <h1 id="detSkor">0%</h1>
+            </div>
+            <div style="text-align: right;">
+                <p style="margin:0; font-size:12px; font-weight:bold; color:#777;">KONDISI</p>
+                <h3 id="detKondisi" style="margin:5px 0 0 0;">-</h3>
+            </div>
         </div>
 
-        <h4>Informasi Perangkat</h4>
-        <div class="detail-row"><span>Tgl Audit:</span><span id="detTgl"></span></div>
-        <div class="detail-row"><span>No Inventori:</span><span id="detInv"></span></div>
-        <div class="detail-row"><span>Jenis Perangkat:</span><span id="detJenis"></span></div>
-        <div class="detail-row"><span>Merek & Tipe:</span><span id="detMerek"></span></div>
+        <h4 style="background:#f4f6f9; padding:8px; border-radius:4px;">Summary Detail</h4>
+        <div class="detail-row"><span>Total Checklist</span><span id="detTotalChk">0</span></div>
+        <div class="detail-row"><span>OK</span><span id="detTotalOk">0</span></div>
+        <div class="detail-row"><span>Tidak OK</span><span id="detTotalNotOk">0</span></div>
+        <div class="detail-row"><span>N/A</span><span id="detTotalNa">0</span></div>
+        <div class="detail-row"><span>Item Dinilai (Pembagi)</span><span id="detTotalDinilai">0</span></div>
 
-        <h4 style="margin-top:20px;">Spesifikasi</h4>
-        <div class="detail-row"><span>Processor:</span><span id="detProc"></span></div>
-        <div class="detail-row"><span>RAM:</span><span id="detRam"></span></div>
-        <div class="detail-row"><span>Storage:</span><span id="detStorage"></span></div>
-        <div class="detail-row"><span>OS:</span><span id="detOS"></span></div>
-        <div class="detail-row"><span>GPU:</span><span id="detGPU"></span></div>
+        <h4 style="background:#f4f6f9; padding:8px; border-radius:4px; margin-top:20px;">Informasi Aset</h4>
+        <div class="detail-row"><span>Tanggal Audit</span><span id="detTgl"></span></div>
+        <div class="detail-row"><span>No Inventori</span><span id="detInv"></span></div>
+        <div class="detail-row"><span>Merek & Tipe</span><span id="detMerek"></span></div>
+        <div class="detail-row"><span>Processor</span><span id="detProc"></span></div>
+        <div class="detail-row"><span>RAM</span><span id="detRam"></span></div>
+        <div class="detail-row"><span>Storage</span><span id="detStorage"></span></div>
+        <div class="detail-row"><span>OS</span><span id="detOS"></span></div>
+        <div class="detail-row"><span>GPU</span><span id="detGPU"></span></div>
 
-        <h4 style="margin-top:20px;">Hasil Checklist (Catatan)</h4>
-        <div style="background:#fff3e0; padding:15px; border-radius:5px; border:1px solid #ffe0b2;">
-            <p id="detCatatan" style="margin:0; white-space: pre-wrap; line-height: 1.6;"></p>
+        <h4 style="background:#f4f6f9; padding:8px; border-radius:4px; margin-top:20px;">Hasil Checklist</h4>
+        
+        <!-- Area Hasil Checklist Dinamis -->
+        <div class="result-group" id="resNotOkArea" style="display:none;">
+            <h5 class="text-notok">Item Tidak OK</h5>
+            <div id="listNotOk"></div>
         </div>
+        
+        <div class="result-group" id="resOkArea" style="display:none;">
+            <h5 class="text-ok">Item OK</h5>
+            <div id="listOk"></div>
+        </div>
+
+        <div class="result-group" id="resNaArea" style="display:none;">
+            <h5 class="text-na">Item N/A</h5>
+            <div id="listNa"></div>
+        </div>
+
     </div>
 </div>
 
@@ -221,7 +255,6 @@
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaXPy_CK8zyfTrVweLnC5cLYs8LEa8mMoWaLLHFcfTXxGn5ywScG2TCVLZUef5pQD3Tg/exec";
     let globalData = [];
 
-    // Konfigurasi Item Detail per Perangkat
     const CHECKLIST_ITEMS = {
         'Laptop': ['Body/Casing', 'Layar', 'Keyboard', 'Touchpad', 'Port USB', 'Port LAN', 'Port HDMI', 'Wi-Fi & Bluetooth', 'Kamera', 'Speaker', 'Microphone', 'Baterai', 'Charger', 'Windows Ori', 'Office Ori'],
         'iMac': ['Body & Stand', 'Layar', 'Magic Keyboard', 'Magic Mouse/Trackpad', 'Port Thunderbolt/USB', 'Port LAN', 'Wi-Fi & Bluetooth', 'Kamera FaceTime', 'Speaker', 'Microphone', 'macOS Ori', 'iCloud (Kosong)'],
@@ -250,7 +283,6 @@
         document.getElementById('formTitle').innerText = "Form Audit: " + device;
         document.getElementById('auditForm').style.display = 'block';
 
-        // Merender Checklist Dinamis
         const area = document.getElementById('checklistArea');
         let html = '';
         
@@ -275,23 +307,18 @@
         area.innerHTML = html;
     }
 
-    // Fungsi interaktif tombol checklist
     function setCheck(itemId, status, btnElement) {
-        // Hapus warna dari semua tombol di baris ini
         const group = btnElement.parentElement;
         group.querySelectorAll('.btn-check').forEach(btn => {
             btn.classList.remove('selected-ok', 'selected-not-ok', 'selected-na');
         });
 
-        // Beri warna pada tombol yang diklik
         if(status === 'OK') btnElement.classList.add('selected-ok');
         if(status === 'Tidak OK') btnElement.classList.add('selected-not-ok');
         if(status === 'NA') btnElement.classList.add('selected-na');
 
-        // Simpan value
         document.getElementById(itemId + '_val').value = status;
 
-        // Munculkan/Sembunyikan kolom catatan
         const noteArea = document.getElementById(itemId + '_note_area');
         const noteInput = document.getElementById(itemId + '_note');
         if(status === 'Tidak OK') {
@@ -300,14 +327,13 @@
         } else {
             noteArea.classList.remove('active');
             noteInput.removeAttribute('required');
-            noteInput.value = ''; // Reset isi jika diubah kembali ke OK/NA
+            noteInput.value = ''; 
         }
     }
 
     function submitForm(e) {
         e.preventDefault();
         
-        // Validasi: Pastikan semua item checklist sudah ditekan
         let allChecked = true;
         document.querySelectorAll('.chk-value').forEach(input => {
             if(input.value === "") allChecked = false;
@@ -318,41 +344,43 @@
             return;
         }
 
-        // Kalkulasi Skor
-        let totalItems = 0;
+        let totalChecklist = 0;
         let okItems = 0;
         let notOkItems = 0;
         let naItems = 0;
-        let finalNotes = "";
+        
+        // Membuat Object JSON untuk disimpan ke Google Sheets
+        let jsonPayload = {
+            ok: [],
+            notOk: [],
+            na: []
+        };
 
         document.querySelectorAll('.chk-value').forEach(input => {
+            totalChecklist++;
             let status = input.value;
             let label = input.getAttribute('data-label');
             let itemId = input.id.replace('_val', '');
             
             if(status === 'NA') {
                 naItems++;
-            } else {
-                totalItems++; // Hanya yang OK dan Tidak OK yang dihitung pembagi
-                if(status === 'OK') {
-                    okItems++;
-                } else if(status === 'Tidak OK') {
-                    notOkItems++;
-                    let noteText = document.getElementById(itemId + '_note').value;
-                    finalNotes += `[${label}]: ${noteText}\n`;
-                }
+                jsonPayload.na.push(label);
+            } else if(status === 'OK') {
+                okItems++;
+                jsonPayload.ok.push(label);
+            } else if(status === 'Tidak OK') {
+                notOkItems++;
+                let noteText = document.getElementById(itemId + '_note').value;
+                jsonPayload.notOk.push({ label: label, note: noteText });
             }
         });
 
-        // Rumus Persentase Rata
-        let scorePercent = totalItems === 0 ? 100 : Math.round((okItems / totalItems) * 10000) / 100;
-        
-        // Penentuan Kondisi
+        let itemDinilai = okItems + notOkItems;
+        let scorePercent = itemDinilai === 0 ? 100 : Math.round((okItems / itemDinilai) * 10000) / 100;
         let finalCondition = scorePercent === 100 ? "Baik" : (scorePercent >= 70 ? "Rusak Ringan" : "Rusak Berat");
         
-        // Tambahan info statistik di catatan
-        if(finalNotes === "") finalNotes = "Semua komponen berfungsi Normal.";
-        finalNotes = `Statistik: OK (${okItems}), Tidak OK (${notOkItems}), N/A (${naItems})\n\nRincian Masalah:\n${finalNotes}`;
+        // Ubah JSON Object ke String untuk dikirim ke kolom "Catatan"
+        let stringifiedJSON = JSON.stringify(jsonPayload);
 
         const data = {
             noInventori: document.getElementById('noInventori').value,
@@ -363,9 +391,9 @@
             storage: document.getElementById('storage').value,
             os: document.getElementById('os').value,
             gpu: document.getElementById('gpu').value || "-",
-            skor: scorePercent, // Apps script akan merubah jadi persen
+            skor: scorePercent,
             kondisi: finalCondition,
-            catatan: finalNotes
+            catatan: stringifiedJSON // Data mentah JSON dikirim ke sheet
         };
 
         const submitBtn = document.getElementById('submitBtn');
@@ -441,9 +469,9 @@
         const row = globalData[index];
         document.getElementById('detSkor').innerText = row['Skor'];
         document.getElementById('detKondisi').innerHTML = getBadge(row['Kondisi']);
+        
         document.getElementById('detTgl').innerText = row['Tanggal'];
         document.getElementById('detInv').innerText = row['No Inventori'];
-        document.getElementById('detJenis').innerText = row['Jenis Perangkat'];
         document.getElementById('detMerek').innerText = row['Merek & Tipe'];
         
         document.getElementById('detProc').innerText = row['Processor'];
@@ -452,8 +480,63 @@
         document.getElementById('detOS').innerText = row['Operating System'];
         document.getElementById('detGPU').innerText = row['GPU'] || "-";
         
-        document.getElementById('detCatatan').innerText = row['Catatan'] || "Tidak ada catatan.";
-        
+        // Memparsing JSON dari kolom Catatan
+        let chkData;
+        try {
+            chkData = JSON.parse(row['Catatan']);
+        } catch(e) {
+            // Jika data lama bukan JSON, buat dummy kosong agar tidak error
+            chkData = { ok: [], notOk: [], na: [] };
+        }
+
+        let totalOk = chkData.ok ? chkData.ok.length : 0;
+        let totalNotOk = chkData.notOk ? chkData.notOk.length : 0;
+        let totalNa = chkData.na ? chkData.na.length : 0;
+        let itemDinilai = totalOk + totalNotOk;
+
+        // Render Summary
+        document.getElementById('detTotalChk').innerText = totalOk + totalNotOk + totalNa;
+        document.getElementById('detTotalOk').innerText = totalOk;
+        document.getElementById('detTotalNotOk').innerText = totalNotOk;
+        document.getElementById('detTotalNa').innerText = totalNa;
+        document.getElementById('detTotalDinilai').innerText = itemDinilai;
+
+        // Render List Tidak OK
+        const areaNotOk = document.getElementById('resNotOkArea');
+        const listNotOk = document.getElementById('listNotOk');
+        if(totalNotOk > 0) {
+            areaNotOk.style.display = "block";
+            let html = "";
+            chkData.notOk.forEach(item => {
+                html += `<div class="result-item"><span class="result-item-title text-notok">❌ ${item.label}</span><span class="result-item-note">Catatan: ${item.note}</span></div>`;
+            });
+            listNotOk.innerHTML = html;
+        } else { areaNotOk.style.display = "none"; }
+
+        // Render List OK
+        const areaOk = document.getElementById('resOkArea');
+        const listOk = document.getElementById('listOk');
+        if(totalOk > 0) {
+            areaOk.style.display = "block";
+            let html = "";
+            chkData.ok.forEach(item => {
+                html += `<div class="result-item"><span class="result-item-title text-ok">✔️ ${item}</span></div>`;
+            });
+            listOk.innerHTML = html;
+        } else { areaOk.style.display = "none"; }
+
+        // Render List N/A
+        const areaNa = document.getElementById('resNaArea');
+        const listNa = document.getElementById('listNa');
+        if(totalNa > 0) {
+            areaNa.style.display = "block";
+            let html = "";
+            chkData.na.forEach(item => {
+                html += `<div class="result-item"><span class="result-item-title text-na">➖ ${item}</span></div>`;
+            });
+            listNa.innerHTML = html;
+        } else { areaNa.style.display = "none"; }
+
         document.getElementById('detailModal').style.display = "block";
     }
 
