@@ -195,7 +195,7 @@
     </div>
 </div>
 
-<!-- MODAL DETAIL AUDIT BARU (Sesuai Gambar 16) -->
+<!-- MODAL DETAIL AUDIT BARU -->
 <div id="detailModal" class="modal">
     <div class="modal-content">
         <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -212,14 +212,7 @@
             </div>
         </div>
 
-        <h4 style="background:#f4f6f9; padding:8px; border-radius:4px;">Summary Detail</h4>
-        <div class="detail-row"><span>Total Checklist</span><span id="detTotalChk">0</span></div>
-        <div class="detail-row"><span>OK</span><span id="detTotalOk">0</span></div>
-        <div class="detail-row"><span>Tidak OK</span><span id="detTotalNotOk">0</span></div>
-        <div class="detail-row"><span>N/A</span><span id="detTotalNa">0</span></div>
-        <div class="detail-row"><span>Item Dinilai (Pembagi)</span><span id="detTotalDinilai">0</span></div>
-
-        <h4 style="background:#f4f6f9; padding:8px; border-radius:4px; margin-top:20px;">Informasi Aset</h4>
+        <h4 style="background:#f4f6f9; padding:8px; border-radius:4px;">Informasi Aset</h4>
         <div class="detail-row"><span>Tanggal Audit</span><span id="detTgl"></span></div>
         <div class="detail-row"><span>No Inventori</span><span id="detInv"></span></div>
         <div class="detail-row"><span>Merek & Tipe</span><span id="detMerek"></span></div>
@@ -229,22 +222,36 @@
         <div class="detail-row"><span>OS</span><span id="detOS"></span></div>
         <div class="detail-row"><span>GPU</span><span id="detGPU"></span></div>
 
-        <h4 style="background:#f4f6f9; padding:8px; border-radius:4px; margin-top:20px;">Hasil Checklist</h4>
-        
-        <!-- Area Hasil Checklist Dinamis -->
-        <div class="result-group" id="resNotOkArea" style="display:none;">
-            <h5 class="text-notok">Item Tidak OK</h5>
-            <div id="listNotOk"></div>
-        </div>
-        
-        <div class="result-group" id="resOkArea" style="display:none;">
-            <h5 class="text-ok">Item OK</h5>
-            <div id="listOk"></div>
+        <!-- BUNGKUSAN UI UNTUK DATA BARU (JSON) -->
+        <div id="uiDataBaru">
+            <h4 style="background:#f4f6f9; padding:8px; border-radius:4px; margin-top:20px;">Summary Detail</h4>
+            <div class="detail-row"><span>Total Checklist</span><span id="detTotalChk">0</span></div>
+            <div class="detail-row"><span>OK</span><span id="detTotalOk">0</span></div>
+            <div class="detail-row"><span>Tidak OK</span><span id="detTotalNotOk">0</span></div>
+            <div class="detail-row"><span>N/A</span><span id="detTotalNa">0</span></div>
+            <div class="detail-row"><span>Item Dinilai (Pembagi)</span><span id="detTotalDinilai">0</span></div>
+
+            <h4 style="background:#f4f6f9; padding:8px; border-radius:4px; margin-top:20px;">Hasil Checklist</h4>
+            <div class="result-group" id="resNotOkArea" style="display:none;">
+                <h5 class="text-notok">Item Tidak OK</h5>
+                <div id="listNotOk"></div>
+            </div>
+            <div class="result-group" id="resOkArea" style="display:none;">
+                <h5 class="text-ok">Item OK</h5>
+                <div id="listOk"></div>
+            </div>
+            <div class="result-group" id="resNaArea" style="display:none;">
+                <h5 class="text-na">Item N/A</h5>
+                <div id="listNa"></div>
+            </div>
         </div>
 
-        <div class="result-group" id="resNaArea" style="display:none;">
-            <h5 class="text-na">Item N/A</h5>
-            <div id="listNa"></div>
+        <!-- BUNGKUSAN UI UNTUK DATA LAMA (TEKS) -->
+        <div id="uiDataLama" style="display:none;">
+            <h4 style="background:#f4f6f9; padding:8px; border-radius:4px; margin-top:20px;">Catatan Hasil Checklist (Versi Lama)</h4>
+            <div style="background:#fff3e0; padding:15px; border-radius:5px; border:1px solid #ffe0b2;">
+                <p id="detLegacyText" style="margin:0; white-space: pre-wrap; line-height: 1.6;"></p>
+            </div>
         </div>
 
     </div>
@@ -252,7 +259,7 @@
 
 <script>
     // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaXPy_CK8zyfTrVweLnC5cLYs8LEa8mMoWaLLHFcfTXxGn5ywScG2TCVLZUef5pQD3Tg/exec";
+    const APPS_SCRIPT_URL = "URL_APPS_SCRIPT_ANDA_DISINI";
     let globalData = [];
 
     const CHECKLIST_ITEMS = {
@@ -349,12 +356,7 @@
         let notOkItems = 0;
         let naItems = 0;
         
-        // Membuat Object JSON untuk disimpan ke Google Sheets
-        let jsonPayload = {
-            ok: [],
-            notOk: [],
-            na: []
-        };
+        let jsonPayload = { ok: [], notOk: [], na: [] };
 
         document.querySelectorAll('.chk-value').forEach(input => {
             totalChecklist++;
@@ -379,7 +381,6 @@
         let scorePercent = itemDinilai === 0 ? 100 : Math.round((okItems / itemDinilai) * 10000) / 100;
         let finalCondition = scorePercent === 100 ? "Baik" : (scorePercent >= 70 ? "Rusak Ringan" : "Rusak Berat");
         
-        // Ubah JSON Object ke String untuk dikirim ke kolom "Catatan"
         let stringifiedJSON = JSON.stringify(jsonPayload);
 
         const data = {
@@ -393,7 +394,7 @@
             gpu: document.getElementById('gpu').value || "-",
             skor: scorePercent,
             kondisi: finalCondition,
-            catatan: stringifiedJSON // Data mentah JSON dikirim ke sheet
+            catatan: stringifiedJSON
         };
 
         const submitBtn = document.getElementById('submitBtn');
@@ -480,62 +481,77 @@
         document.getElementById('detOS').innerText = row['Operating System'];
         document.getElementById('detGPU').innerText = row['GPU'] || "-";
         
-        // Memparsing JSON dari kolom Catatan
-        let chkData;
+        let rawCatatan = row['Catatan'] || "";
+        let isLegacy = false;
+        let chkData = null;
+
+        // Cek apakah data di sheet berbentuk JSON atau Teks Lama
         try {
-            chkData = JSON.parse(row['Catatan']);
+            chkData = JSON.parse(rawCatatan);
+            if(!chkData || typeof chkData !== 'object' || !chkData.ok) {
+                isLegacy = true; // Format JSON tapi bukan struktur checklist
+            }
         } catch(e) {
-            // Jika data lama bukan JSON, buat dummy kosong agar tidak error
-            chkData = { ok: [], notOk: [], na: [] };
+            isLegacy = true; // Error saat parse, berarti Teks biasa
         }
 
-        let totalOk = chkData.ok ? chkData.ok.length : 0;
-        let totalNotOk = chkData.notOk ? chkData.notOk.length : 0;
-        let totalNa = chkData.na ? chkData.na.length : 0;
-        let itemDinilai = totalOk + totalNotOk;
+        const uiBaru = document.getElementById('uiDataBaru');
+        const uiLama = document.getElementById('uiDataLama');
 
-        // Render Summary
-        document.getElementById('detTotalChk').innerText = totalOk + totalNotOk + totalNa;
-        document.getElementById('detTotalOk').innerText = totalOk;
-        document.getElementById('detTotalNotOk').innerText = totalNotOk;
-        document.getElementById('detTotalNa').innerText = totalNa;
-        document.getElementById('detTotalDinilai').innerText = itemDinilai;
+        if(isLegacy) {
+            // Jika data lama, sembunyikan summary angka dan tampilkan teks aslinya
+            uiBaru.style.display = "none";
+            uiLama.style.display = "block";
+            document.getElementById('detLegacyText').innerText = rawCatatan || "Tidak ada catatan.";
+        } else {
+            // Jika data baru, render summary UI yang rapi
+            uiLama.style.display = "none";
+            uiBaru.style.display = "block";
 
-        // Render List Tidak OK
-        const areaNotOk = document.getElementById('resNotOkArea');
-        const listNotOk = document.getElementById('listNotOk');
-        if(totalNotOk > 0) {
-            areaNotOk.style.display = "block";
-            let html = "";
-            chkData.notOk.forEach(item => {
-                html += `<div class="result-item"><span class="result-item-title text-notok">❌ ${item.label}</span><span class="result-item-note">Catatan: ${item.note}</span></div>`;
-            });
-            listNotOk.innerHTML = html;
-        } else { areaNotOk.style.display = "none"; }
+            let totalOk = chkData.ok ? chkData.ok.length : 0;
+            let totalNotOk = chkData.notOk ? chkData.notOk.length : 0;
+            let totalNa = chkData.na ? chkData.na.length : 0;
+            let itemDinilai = totalOk + totalNotOk;
 
-        // Render List OK
-        const areaOk = document.getElementById('resOkArea');
-        const listOk = document.getElementById('listOk');
-        if(totalOk > 0) {
-            areaOk.style.display = "block";
-            let html = "";
-            chkData.ok.forEach(item => {
-                html += `<div class="result-item"><span class="result-item-title text-ok">✔️ ${item}</span></div>`;
-            });
-            listOk.innerHTML = html;
-        } else { areaOk.style.display = "none"; }
+            document.getElementById('detTotalChk').innerText = totalOk + totalNotOk + totalNa;
+            document.getElementById('detTotalOk').innerText = totalOk;
+            document.getElementById('detTotalNotOk').innerText = totalNotOk;
+            document.getElementById('detTotalNa').innerText = totalNa;
+            document.getElementById('detTotalDinilai').innerText = itemDinilai;
 
-        // Render List N/A
-        const areaNa = document.getElementById('resNaArea');
-        const listNa = document.getElementById('listNa');
-        if(totalNa > 0) {
-            areaNa.style.display = "block";
-            let html = "";
-            chkData.na.forEach(item => {
-                html += `<div class="result-item"><span class="result-item-title text-na">➖ ${item}</span></div>`;
-            });
-            listNa.innerHTML = html;
-        } else { areaNa.style.display = "none"; }
+            const areaNotOk = document.getElementById('resNotOkArea');
+            const listNotOk = document.getElementById('listNotOk');
+            if(totalNotOk > 0) {
+                areaNotOk.style.display = "block";
+                let html = "";
+                chkData.notOk.forEach(item => {
+                    html += `<div class="result-item"><span class="result-item-title text-notok">❌ ${item.label}</span><span class="result-item-note">Catatan: ${item.note}</span></div>`;
+                });
+                listNotOk.innerHTML = html;
+            } else { areaNotOk.style.display = "none"; }
+
+            const areaOk = document.getElementById('resOkArea');
+            const listOk = document.getElementById('listOk');
+            if(totalOk > 0) {
+                areaOk.style.display = "block";
+                let html = "";
+                chkData.ok.forEach(item => {
+                    html += `<div class="result-item"><span class="result-item-title text-ok">✔️ ${item}</span></div>`;
+                });
+                listOk.innerHTML = html;
+            } else { areaOk.style.display = "none"; }
+
+            const areaNa = document.getElementById('resNaArea');
+            const listNa = document.getElementById('listNa');
+            if(totalNa > 0) {
+                areaNa.style.display = "block";
+                let html = "";
+                chkData.na.forEach(item => {
+                    html += `<div class="result-item"><span class="result-item-title text-na">➖ ${item}</span></div>`;
+                });
+                listNa.innerHTML = html;
+            } else { areaNa.style.display = "none"; }
+        }
 
         document.getElementById('detailModal').style.display = "block";
     }
