@@ -28,19 +28,37 @@
         .card.selected { border-width: 2px; font-weight: bold; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
         .card-icon { font-size: 35px; margin-bottom: 10px; }
 
-        /* Grid Input Spesifikasi */
         .specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #fdfdfd; padding: 15px; border: 1px solid #e0e0e0; border-radius: 5px; margin-bottom: 15px;}
         @media (max-width: 600px) { .specs-grid { grid-template-columns: 1fr; } }
         
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         
-        .sop-section { background: #fcfcfc; border: 1px solid #e0e0e0; padding: 15px; border-radius: 5px; margin-bottom: 15px; }
+        /* Desain Baru Checklist OK / TIDAK OK / NA */
+        .sop-section { background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .checklist-item { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
+        .checklist-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .checklist-label { font-weight: 600; margin-bottom: 8px; font-size: 14px; }
+        
+        .btn-group { display: flex; width: 100%; border: 1px solid #ccc; border-radius: 5px; overflow: hidden; }
+        .btn-check { flex: 1; background: #fff; border: none; padding: 10px; font-size: 14px; cursor: pointer; border-right: 1px solid #ccc; transition: 0.2s; font-weight: 500;}
+        .btn-check:last-child { border-right: none; }
+        
+        /* Warna Tombol Terpilih */
+        .btn-check.selected-ok { background: #198754; color: white; }
+        .btn-check.selected-not-ok { background: #dc3545; color: white; }
+        .btn-check.selected-na { background: #6c757d; color: white; }
+
+        .note-input { display: none; margin-top: 10px; }
+        .note-input.active { display: block; }
+        .note-input input { background: #fff3f3; border-color: #dc3545; }
+
         .btn { background: #2e7d32; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; font-weight: bold;}
         .btn:hover { background: #1b5e20; }
         .btn:disabled { background: #9e9e9e; cursor: not-allowed; }
         
+        /* Tabel & Modal */
         table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #f8f9fa; }
@@ -48,8 +66,6 @@
         .badge-ringan { background: #fff9c4; color: #f57f17; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
         .badge-berat { background: #ffcdd2; color: #c62828; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
         .table-responsive { overflow-x: auto; }
-
-        /* Modal Detail */
         .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
         .modal-content { background-color: #fff; margin: 5% auto; padding: 25px; border-radius: 8px; width: 90%; max-width: 700px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); max-height: 85vh; overflow-y: auto;}
         .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
@@ -113,37 +129,32 @@
                 <input type="text" id="merekTipe" required>
             </div>
 
-            <!-- Bagian Spesifikasi yang Dipecah -->
             <h4 style="margin-bottom: 5px;">Spesifikasi</h4>
             <div class="specs-grid">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Processor</label>
-                    <input type="text" id="processor" placeholder="Contoh: Intel Core i5 / Apple M1" required>
+                    <input type="text" id="processor" required>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>RAM</label>
-                    <input type="text" id="ram" placeholder="Contoh: 16GB" required>
+                    <input type="text" id="ram" required>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Storage</label>
-                    <input type="text" id="storage" placeholder="Contoh: 512GB SSD" required>
+                    <input type="text" id="storage" required>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Operating System</label>
-                    <input type="text" id="os" placeholder="Contoh: Windows 11 Pro" required>
+                    <input type="text" id="os" required>
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>GPU (Opsional)</label>
-                    <input type="text" id="gpu" placeholder="Contoh: Intel Iris Xe / RTX 3050">
+                    <input type="text" id="gpu">
                 </div>
             </div>
 
+            <h4 style="margin-bottom: 5px; margin-top:25px;">Cek Fisik & Fungsi (Wajib Pilih)</h4>
             <div class="sop-section" id="checklistArea"></div>
-
-            <div class="form-group">
-                <label>Catatan Tambahan</label>
-                <textarea id="catatan" rows="3" placeholder="Tuliskan detail masalah di sini jika ada..."></textarea>
-            </div>
             
             <button type="submit" class="btn" id="submitBtn">Simpan Hasil Audit</button>
         </form>
@@ -198,9 +209,9 @@
         <div class="detail-row"><span>OS:</span><span id="detOS"></span></div>
         <div class="detail-row"><span>GPU:</span><span id="detGPU"></span></div>
 
-        <h4 style="margin-top:20px;">Catatan Penilaian</h4>
+        <h4 style="margin-top:20px;">Hasil Checklist (Catatan)</h4>
         <div style="background:#fff3e0; padding:15px; border-radius:5px; border:1px solid #ffe0b2;">
-            <p id="detCatatan" style="margin:0;"></p>
+            <p id="detCatatan" style="margin:0; white-space: pre-wrap; line-height: 1.6;"></p>
         </div>
     </div>
 </div>
@@ -208,33 +219,14 @@
 <script>
     // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaXPy_CK8zyfTrVweLnC5cLYs8LEa8mMoWaLLHFcfTXxGn5ywScG2TCVLZUef5pQD3Tg/exec";
-    let globalData = []; // Menyimpan data sementara untuk popup detail
+    let globalData = [];
 
-    const SOP_CONFIG = {
-        'Laptop': [
-            { id: 'sop1', label: 'Layar & Komponen Input (Vital)', weight: 40 },
-            { id: 'sop2', label: 'Sistem & Lisensi Windows/Office (Vital)', weight: 30 },
-            { id: 'sop3', label: 'Fisik, Engsel & Casing (Minor)', weight: 15 },
-            { id: 'sop4', label: 'Port, Audio & Indikator (Minor)', weight: 15 }
-        ],
-        'iMac': [
-            { id: 'sop1', label: 'Layar Retina & Aksesori Input (Vital)', weight: 40 },
-            { id: 'sop2', label: 'Sistem macOS & Keamanan Akun (Vital)', weight: 30 },
-            { id: 'sop3', label: 'Fisik & Stand Penyangga (Minor)', weight: 15 },
-            { id: 'sop4', label: 'Port I/O & Kamera/Audio (Minor)', weight: 15 }
-        ],
-        'Tablet': [
-            { id: 'sop1', label: 'Fisik & Responsivitas Layar Sentuh (Vital)', weight: 40 },
-            { id: 'sop2', label: 'Keamanan Akun (FRP/iCloud) & OS (Vital)', weight: 30 },
-            { id: 'sop3', label: 'Fungsi Tombol & Stylus (Minor)', weight: 15 },
-            { id: 'sop4', label: 'Konektivitas, Kamera & Media (Minor)', weight: 15 }
-        ],
-        'Smartphone': [
-            { id: 'sop1', label: 'Kondisi Layar & Sensor Biometrik (Vital)', weight: 40 },
-            { id: 'sop2', label: 'Legalitas IMEI & Keamanan Akun (Vital)', weight: 30 },
-            { id: 'sop3', label: 'Fisik & Casing (Minor)', weight: 15 },
-            { id: 'sop4', label: 'Kamera, Port Charger & Audio (Minor)', weight: 15 }
-        ]
+    // Konfigurasi Item Detail per Perangkat
+    const CHECKLIST_ITEMS = {
+        'Laptop': ['Body/Casing', 'Layar', 'Keyboard', 'Touchpad', 'Port USB', 'Port LAN', 'Port HDMI', 'Wi-Fi & Bluetooth', 'Kamera', 'Speaker', 'Microphone', 'Baterai', 'Charger', 'Windows Ori', 'Office Ori'],
+        'iMac': ['Body & Stand', 'Layar', 'Magic Keyboard', 'Magic Mouse/Trackpad', 'Port Thunderbolt/USB', 'Port LAN', 'Wi-Fi & Bluetooth', 'Kamera FaceTime', 'Speaker', 'Microphone', 'macOS Ori', 'iCloud (Kosong)'],
+        'Tablet': ['Body & Bezel', 'Layar Sentuh', 'Tombol Fisik (Power/Vol)', 'Stylus (Jika ada)', 'Port Charger', 'Wi-Fi & Bluetooth', 'Seluler/Sinyal', 'Kamera', 'Speaker', 'Microphone', 'Akun/iCloud (Kosong)'],
+        'Smartphone': ['Body & Casing', 'Layar (Burn-in/Shadow)', 'Layar Sentuh', 'Sensor Biometrik', 'Tombol Fisik', 'Port Charger', 'Kamera Utama', 'Kamera Depan', 'Speaker & Earpiece', 'Microphone', 'Wi-Fi & Bluetooth', 'Sinyal & IMEI (Terdaftar)', 'Akun/iCloud (Kosong)']
     };
 
     function switchView(viewName) {
@@ -258,40 +250,109 @@
         document.getElementById('formTitle').innerText = "Form Audit: " + device;
         document.getElementById('auditForm').style.display = 'block';
 
+        // Merender Checklist Dinamis
         const area = document.getElementById('checklistArea');
-        let html = `<h4 style="margin-top:0; border-bottom:1px solid #ccc; padding-bottom:5px;">Checklist Pemeriksaan (${device})</h4>`;
+        let html = '';
         
-        SOP_CONFIG[device].forEach(item => {
+        CHECKLIST_ITEMS[device].forEach((item, index) => {
+            let itemId = 'chk_' + index;
             html += `
-                <div class="form-group">
-                    <label>${item.label} <span style="color:#666; font-size:12px;">(Bobot: ${item.weight}%)</span></label>
-                    <select class="sop-select" data-weight="${item.weight}" required>
-                        <option value="Normal">✔️ Normal (Lolos)</option>
-                        <option value="Bermasalah">❌ Bermasalah</option>
-                    </select>
+                <div class="checklist-item">
+                    <div class="checklist-label">${item}</div>
+                    <div class="btn-group">
+                        <button type="button" class="btn-check" onclick="setCheck('${itemId}', 'OK', this)">OK</button>
+                        <button type="button" class="btn-check" onclick="setCheck('${itemId}', 'Tidak OK', this)">Tidak OK</button>
+                        <button type="button" class="btn-check" onclick="setCheck('${itemId}', 'NA', this)">N/A</button>
+                    </div>
+                    <input type="hidden" id="${itemId}_val" class="chk-value" data-label="${item}" value="">
+                    
+                    <div class="note-input" id="${itemId}_note_area">
+                        <input type="text" id="${itemId}_note" placeholder="Tuliskan catatan kerusakan untuk ${item}...">
+                    </div>
                 </div>
             `;
         });
-
-        if(device === 'Smartphone' || device === 'Tablet') {
-            html += `<div class="form-group"><label>Battery Health (%)</label><input type="number" id="batteryHealth" min="1" max="100" placeholder="Contoh: 85"></div>`;
-        }
         area.innerHTML = html;
+    }
+
+    // Fungsi interaktif tombol checklist
+    function setCheck(itemId, status, btnElement) {
+        // Hapus warna dari semua tombol di baris ini
+        const group = btnElement.parentElement;
+        group.querySelectorAll('.btn-check').forEach(btn => {
+            btn.classList.remove('selected-ok', 'selected-not-ok', 'selected-na');
+        });
+
+        // Beri warna pada tombol yang diklik
+        if(status === 'OK') btnElement.classList.add('selected-ok');
+        if(status === 'Tidak OK') btnElement.classList.add('selected-not-ok');
+        if(status === 'NA') btnElement.classList.add('selected-na');
+
+        // Simpan value
+        document.getElementById(itemId + '_val').value = status;
+
+        // Munculkan/Sembunyikan kolom catatan
+        const noteArea = document.getElementById(itemId + '_note_area');
+        const noteInput = document.getElementById(itemId + '_note');
+        if(status === 'Tidak OK') {
+            noteArea.classList.add('active');
+            noteInput.setAttribute('required', 'true');
+        } else {
+            noteArea.classList.remove('active');
+            noteInput.removeAttribute('required');
+            noteInput.value = ''; // Reset isi jika diubah kembali ke OK/NA
+        }
     }
 
     function submitForm(e) {
         e.preventDefault();
         
-        let totalScore = 100;
-        document.querySelectorAll('.sop-select').forEach(select => {
-            if (select.value === "Bermasalah") totalScore -= parseInt(select.getAttribute('data-weight'));
+        // Validasi: Pastikan semua item checklist sudah ditekan
+        let allChecked = true;
+        document.querySelectorAll('.chk-value').forEach(input => {
+            if(input.value === "") allChecked = false;
+        });
+        
+        if(!allChecked) {
+            alert("Harap lengkapi semua pilihan checklist (OK / Tidak OK / N/A) sebelum menyimpan.");
+            return;
+        }
+
+        // Kalkulasi Skor
+        let totalItems = 0;
+        let okItems = 0;
+        let notOkItems = 0;
+        let naItems = 0;
+        let finalNotes = "";
+
+        document.querySelectorAll('.chk-value').forEach(input => {
+            let status = input.value;
+            let label = input.getAttribute('data-label');
+            let itemId = input.id.replace('_val', '');
+            
+            if(status === 'NA') {
+                naItems++;
+            } else {
+                totalItems++; // Hanya yang OK dan Tidak OK yang dihitung pembagi
+                if(status === 'OK') {
+                    okItems++;
+                } else if(status === 'Tidak OK') {
+                    notOkItems++;
+                    let noteText = document.getElementById(itemId + '_note').value;
+                    finalNotes += `[${label}]: ${noteText}\n`;
+                }
+            }
         });
 
-        let finalCondition = totalScore === 100 ? "Baik" : (totalScore >= 70 ? "Rusak Ringan" : "Rusak Berat");
-
-        let note = document.getElementById('catatan').value;
-        const bat = document.getElementById('batteryHealth');
-        if (bat && bat.value) note = `Battery Health: ${bat.value}%. ` + note;
+        // Rumus Persentase Rata
+        let scorePercent = totalItems === 0 ? 100 : Math.round((okItems / totalItems) * 10000) / 100;
+        
+        // Penentuan Kondisi
+        let finalCondition = scorePercent === 100 ? "Baik" : (scorePercent >= 70 ? "Rusak Ringan" : "Rusak Berat");
+        
+        // Tambahan info statistik di catatan
+        if(finalNotes === "") finalNotes = "Semua komponen berfungsi Normal.";
+        finalNotes = `Statistik: OK (${okItems}), Tidak OK (${notOkItems}), N/A (${naItems})\n\nRincian Masalah:\n${finalNotes}`;
 
         const data = {
             noInventori: document.getElementById('noInventori').value,
@@ -302,9 +363,9 @@
             storage: document.getElementById('storage').value,
             os: document.getElementById('os').value,
             gpu: document.getElementById('gpu').value || "-",
-            skor: totalScore,
+            skor: scorePercent, // Apps script akan merubah jadi persen
             kondisi: finalCondition,
-            catatan: note || "Tidak ada catatan."
+            catatan: finalNotes
         };
 
         const submitBtn = document.getElementById('submitBtn');
@@ -315,7 +376,7 @@
         .then(res => res.json())
         .then(result => {
             if(result.status === "success") {
-                alert(`Tersimpan! Kondisi: ${finalCondition} (${totalScore}%)`);
+                alert(`Tersimpan! Kondisi: ${finalCondition} (${scorePercent}%)`);
                 document.getElementById('auditForm').reset();
                 document.getElementById('auditForm').style.display = 'none';
                 document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
@@ -346,7 +407,7 @@
             if(data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Belum ada riwayat audit.</td></tr>';
             } else {
-                globalData = data.reverse(); // Simpan ke global untuk popup
+                globalData = data.reverse();
                 globalData.forEach((row, index) => {
                     if(counts[row['Jenis Perangkat']] !== undefined) counts[row['Jenis Perangkat']]++;
                     if(conds[row['Kondisi']] !== undefined) conds[row['Kondisi']]++;
@@ -376,7 +437,6 @@
         .catch(() => { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:red;">Gagal memuat data.</td></tr>'; });
     }
 
-    // Fungsi Popup Modal
     function openModal(index) {
         const row = globalData[index];
         document.getElementById('detSkor').innerText = row['Skor'];
@@ -397,14 +457,8 @@
         document.getElementById('detailModal').style.display = "block";
     }
 
-    function closeModal() {
-        document.getElementById('detailModal').style.display = "none";
-    }
-
-    window.onclick = function(event) {
-        if (event.target == document.getElementById('detailModal')) closeModal();
-    }
-
+    function closeModal() { document.getElementById('detailModal').style.display = "none"; }
+    window.onclick = function(event) { if (event.target == document.getElementById('detailModal')) closeModal(); }
     window.onload = loadData;
 </script>
 
