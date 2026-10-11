@@ -35,7 +35,6 @@
         .form-group label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 14px; }
         .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
         
-        /* Desain UI Checklist Baru */
         .sop-section { background: #fff; border: 1px solid #e0e0e0; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         .checklist-item { margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 15px; }
         .checklist-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
@@ -44,26 +43,31 @@
         .btn-group { display: flex; width: 100%; border: 1px solid #ccc; border-radius: 5px; overflow: hidden; }
         .btn-check { flex: 1; background: #fdfdfd; border: none; padding: 10px; font-size: 14px; cursor: pointer; border-right: 1px solid #ccc; transition: 0.2s; font-weight: 500;}
         .btn-check:last-child { border-right: none; }
-        
         .btn-check.selected-ok { background: #198754; color: white; }
         .btn-check.selected-not-ok { background: #dc3545; color: white; }
         .btn-check.selected-na { background: #6c757d; color: white; }
 
-        /* Panel Sub-opsi Minor/Rusak Total */
         .not-ok-panel { display: none; margin-top: 10px; padding: 12px; background: #fff5f5; border-radius: 6px; border: 1px dashed #ffcdd2; }
         .not-ok-panel.active { display: block; }
         .not-ok-panel label { font-size: 13px; font-weight: 600; color: #d32f2f; margin-bottom: 6px; }
-        
         .btn-sev { flex: 1; background: #fff; border: none; padding: 8px; font-size: 13px; cursor: pointer; border-right: 1px solid #ccc; transition: 0.2s; font-weight: 500;}
         .btn-sev:last-child { border-right: none; }
-        .btn-sev.selected-minor { background: #fd7e14; color: white; } /* Warna Oranye untuk Minor */
-        .btn-sev.selected-rusak { background: #dc3545; color: white; } /* Warna Merah untuk Fatal */
+        .btn-sev.selected-minor { background: #fd7e14; color: white; }
+        .btn-sev.selected-rusak { background: #dc3545; color: white; }
 
         .btn { background: #2e7d32; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%; font-weight: bold;}
         .btn:hover { background: #1b5e20; }
         .btn:disabled { background: #9e9e9e; cursor: not-allowed; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        /* Filter & Search Bar Styles */
+        .filter-container { background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px; }
+        .filter-container input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 15px; box-sizing: border-box; font-size: 14px;}
+        .filter-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; }
+        .filter-grid label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 5px; }
+        .filter-grid select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;}
+        .filter-info { margin-top: 15px; font-size: 13px; color: #666; font-weight: 500; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
         th { background-color: #f8f9fa; }
         .badge-baik { background: #c8e6c9; color: #2e7d32; padding: 3px 8px; border-radius: 4px; font-weight: bold; }
@@ -180,8 +184,49 @@
 
     <!-- 3. RIWAYAT AUDIT -->
     <div id="view-history" class="view">
-        <h2>Riwayat Audit</h2>
-        <button onclick="loadData()" style="padding: 8px 15px; margin-bottom:15px; cursor:pointer; background:#fff; border:1px solid #ccc; border-radius:5px;">🔄 Refresh Data</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom:15px;">
+            <h2 style="margin: 0;">Riwayat Audit</h2>
+            <button onclick="loadData()" style="padding: 8px 15px; cursor:pointer; background:#fff; border:1px solid #ccc; border-radius:5px;">🔄 Refresh Data</button>
+        </div>
+
+        <!-- Filter & Search Bar Baru -->
+        <div class="filter-container">
+            <input type="text" id="searchInput" placeholder="🔍 Cari No Inventori / Merek Tipe..." oninput="applyFilters()">
+            
+            <div class="filter-grid">
+                <div>
+                    <label>Device Type</label>
+                    <select id="filterDevice" onchange="applyFilters()">
+                        <option value="Semua">Semua</option>
+                        <option value="Laptop">Laptop</option>
+                        <option value="iMac">iMac / PC</option>
+                        <option value="Tablet">Tablet</option>
+                        <option value="Smartphone">Smartphone</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Kondisi</label>
+                    <select id="filterKondisi" onchange="applyFilters()">
+                        <option value="Semua">Semua</option>
+                        <option value="Baik">Baik</option>
+                        <option value="Rusak Ringan">Rusak Ringan</option>
+                        <option value="Rusak Berat">Rusak Berat</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Urutkan</label>
+                    <select id="sortData" onchange="applyFilters()">
+                        <option value="Terbaru">Tanggal Terbaru</option>
+                        <option value="Terlama">Tanggal Terlama</option>
+                        <option value="SkorTinggi">Nilai Tertinggi</option>
+                        <option value="SkorRendah">Nilai Terendah</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="filter-info" id="filterInfo">Menampilkan 0 data audit</div>
+        </div>
+
         <div class="table-responsive">
             <table>
                 <thead>
@@ -273,7 +318,7 @@
 <script>
     // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxaXPy_CK8zyfTrVweLnC5cLYs8LEa8mMoWaLLHFcfTXxGn5ywScG2TCVLZUef5pQD3Tg/exec";
-    let globalData = [];
+    let globalData = []; // Menyimpan semua data asli dari server
 
     const CHECKLIST_ITEMS = {
         'Laptop': ['Body/Casing', 'Layar', 'Keyboard', 'Touchpad', 'Port USB', 'Port LAN', 'Port HDMI', 'Wi-Fi & Bluetooth', 'Kamera', 'Speaker', 'Microphone', 'Baterai', 'Charger', 'Windows Ori', 'Office Ori'],
@@ -317,7 +362,6 @@
                     </div>
                     <input type="hidden" id="${itemId}_val" class="chk-value" data-label="${item}" value="">
                     
-                    <!-- Panel Percabangan jika TIDAK OK -->
                     <div class="not-ok-panel" id="${itemId}_notok_panel">
                         <label>Tingkat Keparahan Kerusakan:</label>
                         <div class="btn-group" style="margin-bottom: 8px;">
@@ -333,7 +377,6 @@
         area.innerHTML = html;
     }
 
-    // Fungsi Utama OK/Tidak OK
     function setCheck(itemId, status, btnElement) {
         const group = btnElement.parentElement;
         group.querySelectorAll('.btn-check').forEach(btn => btn.classList.remove('selected-ok', 'selected-not-ok', 'selected-na'));
@@ -346,16 +389,15 @@
 
         const panel = document.getElementById(itemId + '_notok_panel');
         if(status === 'Tidak OK') {
-            panel.classList.add('active'); // Munculkan opsi lanjutan
+            panel.classList.add('active'); 
         } else {
-            panel.classList.remove('active'); // Sembunyikan dan reset isi
+            panel.classList.remove('active'); 
             document.getElementById(itemId + '_severity').value = '';
             document.getElementById(itemId + '_note').value = '';
             panel.querySelectorAll('.btn-sev').forEach(b => b.classList.remove('selected-minor', 'selected-rusak'));
         }
     }
 
-    // Fungsi Cabang Keparahan
     function setSeverity(itemId, severity, btnElement) {
         const group = btnElement.parentElement;
         group.querySelectorAll('.btn-sev').forEach(btn => btn.classList.remove('selected-minor', 'selected-rusak'));
@@ -372,7 +414,6 @@
         let isValid = true;
         let errorMessage = "";
 
-        // Validasi Cerdas
         document.querySelectorAll('.chk-value').forEach(input => {
             if(input.value === "") { isValid = false; errorMessage = "Pilih OK/Tidak OK/NA untuk semua item checklist!"; }
             if(input.value === "Tidak OK") {
@@ -404,29 +445,21 @@
                 let note = document.getElementById(itemId + '_note').value;
                 
                 if(sev === 'Minor') {
-                    minorItems++;
-                    jsonPayload.minor.push({ label: label, note: note });
+                    minorItems++; jsonPayload.minor.push({ label: label, note: note });
                 } else if(sev === 'Rusak Total') {
-                    fatalItems++;
-                    jsonPayload.fatal.push({ label: label, note: note });
+                    fatalItems++; jsonPayload.fatal.push({ label: label, note: note });
                 }
             }
         });
 
-        // Hitung Skor (OK = 1, Minor = 0.5, Fatal = 0)
         let itemDinilai = okItems + minorItems + fatalItems;
         let scoreValue = (okItems * 1) + (minorItems * 0.5);
         let scorePercent = itemDinilai === 0 ? 100 : Math.round((scoreValue / itemDinilai) * 10000) / 100;
         
-        // Logika Status Otomatis
         let finalCondition = "";
-        if(scorePercent === 100) {
-            finalCondition = "Baik";
-        } else if (fatalItems > 0) {
-            finalCondition = "Rusak Berat"; // Ada fatal = Langsung Rusak Berat
-        } else {
-            finalCondition = "Rusak Ringan"; // Skor turun tapi isinya cuma minor
-        }
+        if(scorePercent === 100) finalCondition = "Baik";
+        else if (fatalItems > 0) finalCondition = "Rusak Berat"; 
+        else finalCondition = "Rusak Ringan"; 
 
         const data = {
             noInventori: document.getElementById('noInventori').value,
@@ -467,6 +500,7 @@
         return '<span class="badge-berat">Rusak Berat</span>';
     }
 
+    // Fungsi Utama Memuat Data
     function loadData() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Memuat data...</td></tr>';
@@ -474,32 +508,27 @@
         fetch(APPS_SCRIPT_URL, { redirect: "follow", method: 'GET' })
         .then(res => res.json())
         .then(data => {
-            tbody.innerHTML = '';
-            let counts = { 'Laptop': 0, 'iMac': 0, 'Tablet': 0, 'Smartphone': 0 };
-            let conds = { 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 };
-
             if(data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Belum ada riwayat audit.</td></tr>';
-            } else {
-                globalData = data.reverse();
-                globalData.forEach((row, index) => {
-                    if(counts[row['Jenis Perangkat']] !== undefined) counts[row['Jenis Perangkat']]++;
-                    if(conds[row['Kondisi']] !== undefined) conds[row['Kondisi']]++;
+                return;
+            } 
+            
+            // Simpan data mentah dengan originalIndex agar Modal tetap bisa memanggil data yang benar meski tabel difilter
+            globalData = data.map((item, index) => {
+                item.originalIndex = index;
+                return item;
+            });
 
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${row['Tanggal']}</td>
-                        <td>${row['No Inventori']}</td>
-                        <td>${row['Jenis Perangkat']}</td>
-                        <td><strong>${row['Skor']}</strong></td>
-                        <td>${getBadge(row['Kondisi'])}</td>
-                        <td><button class="btn-detail" onclick="openModal(${index})">Detail</button></td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
+            // Update Angka Dashboard (Berdasarkan Total Data, bukan Filter)
+            let counts = { 'Laptop': 0, 'iMac': 0, 'Tablet': 0, 'Smartphone': 0 };
+            let conds = { 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 };
+            
+            globalData.forEach(row => {
+                if(counts[row['Jenis Perangkat']] !== undefined) counts[row['Jenis Perangkat']]++;
+                if(conds[row['Kondisi']] !== undefined) conds[row['Kondisi']]++;
+            });
 
-            document.getElementById('statTotal').innerText = data.length;
+            document.getElementById('statTotal').innerText = globalData.length;
             document.getElementById('statLaptop').innerText = counts['Laptop'];
             document.getElementById('statImac').innerText = counts['iMac'];
             document.getElementById('statTablet').innerText = counts['Tablet'];
@@ -507,12 +536,80 @@
             document.getElementById('statBaik').innerText = conds['Baik'];
             document.getElementById('statRingan').innerText = conds['Rusak Ringan'];
             document.getElementById('statBerat').innerText = conds['Rusak Berat'];
+
+            // Panggil filter (Secara default akan merender semua karena form filter masih 'Semua')
+            applyFilters();
         })
         .catch(() => { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; color:red;">Gagal memuat data.</td></tr>'; });
     }
 
-    function openModal(index) {
-        const row = globalData[index];
+    // FUNGSI BARU: Logika Search, Filter, dan Sort
+    function applyFilters() {
+        const searchTxt = document.getElementById('searchInput').value.toLowerCase();
+        const deviceFltr = document.getElementById('filterDevice').value;
+        const kondisiFltr = document.getElementById('filterKondisi').value;
+        const sortMode = document.getElementById('sortData').value;
+
+        // 1. Lakukan Filtering
+        let filteredData = globalData.filter(row => {
+            let inv = (row['No Inventori'] || "").toLowerCase();
+            let merek = (row['Merek & Tipe'] || "").toLowerCase();
+            let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt);
+            
+            let matchDevice = deviceFltr === "Semua" || row['Jenis Perangkat'] === deviceFltr;
+            let matchKondisi = kondisiFltr === "Semua" || row['Kondisi'] === kondisiFltr;
+
+            return matchSearch && matchDevice && matchKondisi;
+        });
+
+        // 2. Lakukan Sorting (Pengurutan)
+        filteredData.sort((a, b) => {
+            if(sortMode === 'Terbaru') return b.originalIndex - a.originalIndex; // Index terbesar = Data terbawah di Sheet = Terbaru
+            if(sortMode === 'Terlama') return a.originalIndex - b.originalIndex;
+            
+            let scoreA = parseFloat(a['Skor']) || 0;
+            let scoreB = parseFloat(b['Skor']) || 0;
+            if(sortMode === 'SkorTinggi') return scoreB - scoreA;
+            if(sortMode === 'SkorRendah') return scoreA - scoreB;
+            
+            return 0;
+        });
+
+        // 3. Render Ulang Tabel
+        renderTable(filteredData);
+    }
+
+    // FUNGSI BARU: Render Tabel Khusus
+    function renderTable(dataArray) {
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = '';
+        
+        // Update Info Text
+        document.getElementById('filterInfo').innerText = `Menampilkan ${dataArray.length} dari ${globalData.length} total riwayat audit.`;
+
+        if(dataArray.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Tidak ada data yang cocok dengan pencarian.</td></tr>';
+            return;
+        }
+
+        dataArray.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row['Tanggal']}</td>
+                <td>${row['No Inventori']}</td>
+                <td>${row['Jenis Perangkat']}</td>
+                <td><strong>${row['Skor']}</strong></td>
+                <td>${getBadge(row['Kondisi'])}</td>
+                <td><button class="btn-detail" onclick="openModal(${row.originalIndex})">Detail</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function openModal(originalIndex) {
+        // Ambil data berdasarkan originalIndex agar tidak salah ambil saat tabel difilter
+        const row = globalData[originalIndex];
+        
         document.getElementById('detSkor').innerText = row['Skor'];
         document.getElementById('detKondisi').innerHTML = getBadge(row['Kondisi']);
         document.getElementById('detTgl').innerText = row['Tanggal'];
@@ -541,7 +638,6 @@
             document.getElementById('uiDataBaru').style.display = "block";
 
             let totalOk = chkData.ok ? chkData.ok.length : 0;
-            // Backwards compatibility untuk JSON sebelumnya yang punya 'notOk'
             let arrMinor = chkData.minor || [];
             let arrFatal = chkData.fatal || (chkData.notOk || []); 
             let totalNa = chkData.na ? chkData.na.length : 0;
