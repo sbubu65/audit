@@ -144,13 +144,20 @@
 
         /* === SETTING CSS UNTUK PRINT === */
         @media print {
-            body { background: white; }
-            /* Sembunyikan bagian website lain agar tidak ikut terprint */
+            @page { size: A4 portrait; margin: 1cm; }
+            body { 
+                background: white !important; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important;
+                color: #000 !important;
+            }
+            
+            /* Sembunyikan navbar dan background website utama */
             .top-navbar, .main-container { display: none !important; }
             
-            /* Munculkan modal sepenuh kertas */
+            /* Keluarkan modal dari mode popup dan jadikan halaman penuh */
             .modal {
-                position: relative !important;
+                position: static !important;
                 display: block !important;
                 background: transparent !important;
                 backdrop-filter: none !important;
@@ -167,8 +174,22 @@
                 overflow: visible !important;
                 max-height: none !important;
             }
-            /* Sembunyikan tombol 'X' dan tombol Print saat dicetak */
+
+            /* Sembunyikan tombol yang tidak perlu di kertas */
             .close-btn, #btnPrintModal { display: none !important; }
+
+            /* PERKECIL UKURAN HURUF & PADDING AGAR MUAT 1 LEMBAR A4 */
+            h3 { font-size: 18px !important; margin-bottom: 10px !important; }
+            .score-box { padding-bottom: 10px !important; margin-bottom: 15px !important; border-bottom: 2px solid #000 !important;}
+            .score-box h1 { font-size: 26px !important; }
+            .detail-group-title { font-size: 13px !important; margin: 15px 0 8px 0 !important; border-bottom: 1px solid #ccc !important;}
+            .detail-row { padding: 4px 0 !important; font-size: 11px !important; border-bottom: 1px solid #eee !important;}
+            
+            .result-group { margin-bottom: 8px !important; border: 1px solid #ccc !important; page-break-inside: avoid;}
+            .result-group h5 { padding: 6px 10px !important; font-size: 12px !important; border-bottom: 1px solid #ccc !important;}
+            .result-item { padding: 6px 10px !important; border-bottom: 1px solid #eee !important;}
+            .result-item-title { font-size: 11px !important; }
+            .result-item-note { font-size: 10px !important; margin-top: 2px !important; }
         }
 
         @media (max-width: 768px) {
