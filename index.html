@@ -461,11 +461,11 @@
     let editModeRowNumber = null;
     let editModeTanggal = null;
 
-    const CHECKLIST_ITEMS = {
-        'Laptop': ['Casing & Body Fisik', 'Layar (LCD/LED)', 'Keyboard', 'Touchpad / Trackpad', 'Port USB', 'Port LAN (RJ45)', 'Port Display (HDMI/VGA)', 'Konektivitas (Wi-Fi & Bluetooth)', 'Webcam / Kamera', 'Speaker Audio', 'Microphone', 'Kesehatan Baterai', 'Adaptor Charger', 'Lisensi Windows', 'Lisensi MS Office'],
-        'iMac': ['Body Fisik & Stand', 'Layar Retina / Monitor', 'Magic Keyboard / Keyboard External', 'Magic Mouse / Trackpad', 'Port USB / Thunderbolt', 'Port LAN (RJ45)', 'Konektivitas (Wi-Fi & Bluetooth)', 'Kamera FaceTime', 'Speaker Audio', 'Microphone', 'Lisensi macOS', 'Keamanan Akun iCloud'],
-        'Tablet': ['Layar Sentuh (Touchscreen)', 'Kondisi Fisik Bezel/Body', 'Fungsi Tombol Fisik', 'Kondisi Stylus Pen', 'Port Pengisian Daya', 'Konektivitas Wi-Fi & Bluetooth', 'Koneksi Seluler (SIM)', 'Kamera Depan & Belakang', 'Speaker Audio', 'Microphone', 'Keamanan Akun (Kosong dari iCloud/Google)'],
-        'Smartphone': ['Layar Sentuh & Fungsi Display', 'Kondisi Casing & Bezel', 'Sensor Biometrik (Sidik Jari/FaceID)', 'Tombol Fisik', 'Port Pengisian Daya', 'Kamera Utama', 'Kamera Depan', 'Speaker & Earpiece', 'Microphone', 'Konektivitas (Wi-Fi & Bluetooth)', 'Penangkapan Sinyal Seluler & IMEI', 'Keamanan Akun (Kosong dari iCloud/Google)']
+const CHECKLIST_ITEMS = {
+        'Laptop': ['Casing & Body Fisik', 'Layar (LCD/LED)', 'Keyboard', 'Touchpad / Trackpad', 'Port USB', 'Port LAN (RJ45)', 'Port Display (HDMI/VGA)', 'Konektivitas (Wi-Fi & Bluetooth)', 'Webcam / Kamera', 'Speaker Audio', 'Microphone', 'Kesehatan Baterai', 'Adaptor Charger', 'Performa & Responsivitas Sistem', 'Lisensi Windows', 'Lisensi MS Office'],
+        'iMac': ['Body Fisik & Stand', 'Layar Retina / Monitor', 'Magic Keyboard / Keyboard External', 'Magic Mouse / Trackpad', 'Port USB / Thunderbolt', 'Port LAN (RJ45)', 'Konektivitas (Wi-Fi & Bluetooth)', 'Kamera FaceTime', 'Speaker Audio', 'Microphone', 'Performa & Responsivitas Sistem', 'Lisensi macOS', 'Keamanan Akun iCloud'],
+        'Tablet': ['Layar Sentuh (Touchscreen)', 'Kondisi Fisik Bezel/Body', 'Fungsi Tombol Fisik', 'Kondisi Stylus Pen', 'Port Pengisian Daya', 'Konektivitas Wi-Fi & Bluetooth', 'Koneksi Seluler (SIM)', 'Kamera Depan & Belakang', 'Speaker Audio', 'Microphone', 'Performa & Responsivitas Sistem', 'Keamanan Akun (Kosong dari iCloud/Google)'],
+        'Smartphone': ['Layar Sentuh & Fungsi Display', 'Kondisi Casing & Bezel', 'Sensor Biometrik (Sidik Jari/FaceID)', 'Tombol Fisik', 'Port Pengisian Daya', 'Kamera Utama', 'Kamera Depan', 'Speaker & Earpiece', 'Microphone', 'Konektivitas (Wi-Fi & Bluetooth)', 'Penangkapan Sinyal Seluler & IMEI', 'Performa & Responsivitas Sistem', 'Keamanan Akun (Kosong dari iCloud/Google)']
     };
 
     function switchView(viewName, isNewAudit = false) {
