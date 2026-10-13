@@ -57,7 +57,7 @@
         .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-main);}
         .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; transition: 0.2s; background: #fff;}
         .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(32,75,181,0.1); }
-        .specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 25px;}
+        .specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 25px;}
         
         .sop-section { background: #fff; padding: 0; border-radius: 8px; margin-bottom: 25px; }
         .checklist-item { margin-bottom: 15px; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; background: #f9fafb;}
@@ -251,10 +251,15 @@
             <h3 id="formTitle" style="margin-top:0; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; color: var(--primary-blue);">Form Audit</h3>
             <input type="hidden" id="jenisPerangkat" required>
 
+            <!-- INPUT IDENTITAS (DENGAN TAMBAHAN SN) -->
             <div class="specs-grid" style="background: transparent; padding:0; border:none; margin-bottom: 20px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>No Inventori Asset</label>
                     <input type="text" id="noInventori" placeholder="Contoh: INV-001" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Serial Number (SN)</label>
+                    <input type="text" id="serialNumber" placeholder="Contoh: PF3XYZ12">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>Merek & Tipe Lengkap</label>
@@ -297,8 +302,8 @@
 
         <div class="filter-section-clean">
             <div class="form-group-clean">
-                <label>Cari No Inventori / Merek Tipe</label>
-                <input type="text" id="searchInput" placeholder="Cari No Inventori / Merek Tipe" oninput="applyFilters()">
+                <label>Cari No Inventori / Merek Tipe / SN</label>
+                <input type="text" id="searchInput" placeholder="Cari No Inventori / Merek Tipe / SN" oninput="applyFilters()">
             </div>
             
             <div class="filter-grid-clean">
@@ -392,9 +397,11 @@
             <div class="detail-row"><span>Kerusakan Fatal</span><span id="detTotalFatal" class="text-fatal">0</span></div>
             <div class="detail-row"><span>Tidak Tersedia (N/A)</span><span id="detTotalNa" class="text-na">0</span></div>
 
+            <!-- DETAIL IDENTITAS DENGAN SN -->
             <h4 class="detail-group-title">Identitas Aset</h4>
             <div class="detail-row"><span>Tanggal Audit</span><span id="detTgl"></span></div>
             <div class="detail-row"><span>Nomor Inventori</span><span id="detInv"></span></div>
+            <div class="detail-row"><span>Serial Number (SN)</span><span id="detSN"></span></div>
             <div class="detail-row"><span>Merek & Model</span><span id="detMerek"></span></div>
             <div class="detail-row"><span>Processor</span><span id="detProc"></span></div>
             <div class="detail-row"><span>RAM / Memory</span><span id="detRam"></span></div>
@@ -602,6 +609,7 @@
             rowNumber: editModeRowNumber,
             tanggal: editModeTanggal,
             noInventori: document.getElementById('noInventori').value,
+            sn: document.getElementById('serialNumber').value || "-", // === PENAMBAHAN PAYLOAD SN ===
             jenisPerangkat: document.getElementById('jenisPerangkat').value,
             merekTipe: document.getElementById('merekTipe').value,
             processor: document.getElementById('processor').value,
@@ -645,6 +653,7 @@
         selectDevice(perngktLengkap, null);
 
         document.getElementById('noInventori').value = row['No Inventori'] !== "-" ? row['No Inventori'] : "";
+        document.getElementById('serialNumber').value = (row['SN'] && row['SN'] !== "-") ? row['SN'] : ""; // === MENGISI NILAI SN SAAT EDIT ===
         document.getElementById('merekTipe').value = row['Merek & Tipe'] !== "-" ? row['Merek & Tipe'] : "";
         document.getElementById('processor').value = row['Processor'] !== "-" ? row['Processor'] : "";
         document.getElementById('ram').value = row['RAM'] !== "-" ? row['RAM'] : "";
@@ -722,7 +731,6 @@
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Menyinkronkan data dari Spreadsheet...</td></tr>';
 
-        // Update Waktu Tarik Data
         const now = new Date();
         const timeString = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace(':', '.');
         document.getElementById('lastUpdatedText').innerText = `Data dari Spreadsheet · diperbarui ${timeString}`;
@@ -785,7 +793,8 @@
         let filteredData = globalData.filter(row => {
             let inv = (row['No Inventori'] || "").toLowerCase();
             let merek = (row['Merek & Tipe'] || "").toLowerCase();
-            let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt);
+            let sn = (row['SN'] || "").toLowerCase(); // === PERUBAHAN FILTER PENCARIAN ===
+            let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt) || sn.includes(searchTxt);
             
             let matchDevice = true;
             if(deviceFltr !== "Semua") {
@@ -876,6 +885,7 @@
         document.getElementById('detKondisi').innerHTML = getBadge(row['Kondisi']);
         document.getElementById('detTgl').innerText = row['Tanggal'];
         document.getElementById('detInv').innerText = row['No Inventori'];
+        document.getElementById('detSN').innerText = row['SN'] || "-"; // === MENGISI NILAI SN SAAT POPUP DETAIL DIBUKA ===
         document.getElementById('detMerek').innerText = row['Merek & Tipe'];
         document.getElementById('detProc').innerText = row['Processor'];
         document.getElementById('detRam').innerText = row['RAM'];
