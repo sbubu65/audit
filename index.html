@@ -158,7 +158,7 @@
 
         /* === SETTING CSS UNTUK PRINT === */
         @media print {
-            @page { size: A4 portrait; margin: 1cm; }
+            @page { size: A5 portrait; margin: 1cm; }
             body { 
                 background: white !important; 
                 -webkit-print-color-adjust: exact !important; 
@@ -411,14 +411,14 @@
         <div style="margin-top: 35px; border-top: 1px solid #e5e7eb; padding-top: 25px; text-align: right;">
             <button class="btn" id="btnPrintModal" onclick="window.print()" style="width: auto; padding: 12px 24px; display: inline-flex; align-items: center; gap: 8px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                Cetak Laporan
+                Cetak Laporan (A5)
             </button>
         </div>
     </div>
 </div>
 
 <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqgntxnf73gVV0svw6-e721aTO0I2eag8MQ_NHp8LNnG2iOCAj2pyy3dFaYlN_V4e2Kw/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwi5c00aDBa7hoUXiWVXU-pNeBWUr9g-qwospPa0uK46YSUT8iBuUb3qOVn_RvKwO5ZFw/exec";
     
     let globalData = []; 
     let editModeRowNumber = null;
@@ -904,10 +904,7 @@
 
             applyFilters();
         })
-       .catch((error) => { 
-    console.error("Detail Error:", error);
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:var(--danger);">Gagal terhubung ke database. Cek Console!</td></tr>'; 
-});
+        .catch(() => { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:var(--danger);">Gagal terhubung ke database.</td></tr>'; });
     }
 
     function getBadge(kondisi) {
@@ -923,7 +920,7 @@
         else { customContainer.style.display = 'none'; document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; applyFilters(); }
     }
 
-function applyFilters() {
+    function applyFilters() {
         const searchTxt = document.getElementById('searchInput').value.toLowerCase();
         const deviceFltr = document.getElementById('filterDevice').value;
         const kondisiFltr = document.getElementById('filterKondisi').value;
@@ -933,30 +930,16 @@ function applyFilters() {
         const endVal = document.getElementById('endDate').value;
 
         let filteredData = globalData.filter(row => {
-            // Menggunakan pengaman pencarian agar tidak error jika properti null/undefined
-            let inv = "";
-            for (let key in row) {
-                if (key.trim().toLowerCase() === "No Inventori") {
-                    inv = (row[key] || "").toLowerCase();
-                }
-            }
-            let merek = (row['Merek & Tipe'] || row['Merek & Model'] || "").toLowerCase();
-            let sn = (row['SN'] || "").toLowerCase(); 
+            let inv = (row['No Inventori'] || "").toLowerCase(); let merek = (row['Merek & Tipe'] || "").toLowerCase(); let sn = (row['SN'] || "").toLowerCase(); 
             let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt) || sn.includes(searchTxt);
             
             let matchDevice = true;
-            let jenisPerangkat = row['Jenis Perangkat'] || "";
-            if(deviceFltr !== "Semua") {
-                if(deviceFltr === "iMac" && (jenisPerangkat.includes('iMac') || jenisPerangkat.includes('PC'))) matchDevice = true;
-                else matchDevice = jenisPerangkat === deviceFltr;
-            }
+            if(deviceFltr !== "Semua") { if(deviceFltr === "iMac" && (row['Jenis Perangkat'].includes('iMac') || row['Jenis Perangkat'].includes('PC'))) matchDevice = true; else matchDevice = row['Jenis Perangkat'] === deviceFltr; }
 
             let matchKondisi = kondisiFltr === "Semua" || row['Kondisi'] === kondisiFltr;
             let matchTanggal = true;
-            let tglStr = row['Tanggal'] || "";
-            
-            if(tanggalFltr !== 'Semua' && tglStr) {
-                let parts = tglStr.split(',')[0].trim().split('/');
+            if(tanggalFltr !== 'Semua' && row['Tanggal']) {
+                let parts = row['Tanggal'].split(',')[0].trim().split('/');
                 if(parts.length === 3) {
                     let rowDate = new Date(parts[2], parts[1] - 1, parts[0]); rowDate.setHours(0,0,0,0);
                     let today = new Date(); today.setHours(0,0,0,0);
