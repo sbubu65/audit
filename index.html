@@ -156,18 +156,33 @@
         
         .text-ok { color: var(--success); } .text-minor { color: var(--warning); } .text-fatal { color: var(--danger); } .text-na { color: var(--text-muted); }
 
+        /* === SETTING CSS UNTUK PRINT === */
         @media print {
-            @page { size: A4 portrait; margin: 1cm; }
-            body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color: #000 !important;}
+            @page { size: A5 portrait; margin: 1cm; }
+            body { 
+                background: white !important; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important;
+                color: #000 !important;
+                font-size: 12px !important;
+            }
             .top-navbar, .main-container { display: none !important; }
+            
+            /* Sembunyikan Ringkasan Pengecekan */
+            #printHideSummary { display: none !important; }
+            
             .modal { position: static !important; display: block !important; background: transparent !important; backdrop-filter: none !important; padding: 0 !important; margin: 0 !important; }
             .modal-content { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow: visible !important; max-height: none !important; }
             .close-btn, #btnPrintModal { display: none !important; }
-            h3 { font-size: 18px !important; margin-bottom: 10px !important; }
+            
             .score-box { padding-bottom: 10px !important; margin-bottom: 15px !important; border-bottom: 2px solid #000 !important;}
-            .score-box h1 { font-size: 26px !important; }
-            .detail-group-title { font-size: 13px !important; margin: 15px 0 8px 0 !important; border-bottom: 1px solid #ccc !important;}
+            .score-box h1 { font-size: 24px !important; margin: 0 !important; }
+            .score-box p { font-size: 10px !important; margin: 0 !important;}
+            .score-box h3 { font-size: 14px !important; margin: 4px 0 0 0 !important;}
+            
+            .detail-group-title { font-size: 14px !important; margin: 15px 0 8px 0 !important; border-bottom: 1px solid #ccc !important;}
             .detail-row { padding: 4px 0 !important; font-size: 11px !important; border-bottom: 1px solid #eee !important;}
+            
             .result-group { margin-bottom: 8px !important; border: 1px solid #ccc !important; page-break-inside: avoid;}
             .result-group h5 { padding: 6px 10px !important; font-size: 12px !important; border-bottom: 1px solid #ccc !important;}
             .result-item { padding: 6px 10px !important; border-bottom: 1px solid #eee !important;}
@@ -369,11 +384,13 @@
         </div>
 
         <div id="uiDataBaru">
-            <h4 class="detail-group-title">Ringkasan Pengecekan</h4>
-            <div class="detail-row"><span>Total Diperiksa</span><span id="detTotalChk">0</span></div>
-            <div class="detail-row"><span>Fungsi Normal (OK)</span><span id="detTotalOk" class="text-ok">0</span></div>
-            <div class="detail-row"><span>Kerusakan Minor</span><span id="detTotalMinor" class="text-minor">0</span></div>
-            <div class="detail-row"><span>Kerusakan Fatal</span><span id="detTotalFatal" class="text-fatal">0</span></div>
+            <div id="printHideSummary">
+                <h4 class="detail-group-title">Ringkasan Pengecekan</h4>
+                <div class="detail-row"><span>Total Diperiksa</span><span id="detTotalChk">0</span></div>
+                <div class="detail-row"><span>Fungsi Normal (OK)</span><span id="detTotalOk" class="text-ok">0</span></div>
+                <div class="detail-row"><span>Kerusakan Minor</span><span id="detTotalMinor" class="text-minor">0</span></div>
+                <div class="detail-row"><span>Kerusakan Fatal</span><span id="detTotalFatal" class="text-fatal">0</span></div>
+            </div>
 
             <h4 class="detail-group-title">Identitas Aset</h4>
             <div class="detail-row"><span>Nomor Inventori</span><span id="detInv"></span></div>
@@ -394,14 +411,13 @@
         <div style="margin-top: 35px; border-top: 1px solid #e5e7eb; padding-top: 25px; text-align: right;">
             <button class="btn" id="btnPrintModal" onclick="window.print()" style="width: auto; padding: 12px 24px; display: inline-flex; align-items: center; gap: 8px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                Cetak Laporan
+                Cetak Laporan (A5)
             </button>
         </div>
     </div>
 </div>
 
 <script>
-    // URL TELAH DIPERBARUI SESUAI PERMINTAAN ANDA
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbys-9f_NFcyd_kzDPxAaAcOJhjORmzDottFeK94wGtIoHgoBA6gAh6HoLc_YGhV-ycS2Q/exec";
     
     let globalData = []; 
@@ -703,6 +719,11 @@
         else {
             ramListRaw.forEach((capRaw, idx) => {
                 let useVal = (ramUseRaw[idx] || "").replace('%', '').trim();
+                // Format the percentage correctly
+                if (useVal && useVal !== "-" && !isNaN(parseFloat(useVal))) {
+                    useVal = parseFloat(useVal);
+                    if(useVal < 1) useVal = useVal * 100;
+                }
                 addRamRow(capRaw.trim(), useVal === "-" ? "" : useVal);
             });
         }
@@ -714,6 +735,11 @@
         else {
             storageListRaw.forEach((capRaw, idx) => {
                 let healthVal = (ssdHealthRaw[idx] || "").replace('%', '').trim();
+                // Format the percentage correctly
+                if (healthVal && healthVal !== "-" && !isNaN(parseFloat(healthVal))) {
+                     healthVal = parseFloat(healthVal);
+                     if(healthVal <= 1) healthVal = healthVal * 100;
+                }
                 addStorageRow(capRaw.trim(), healthVal === "-" ? "" : healthVal);
             });
         }
@@ -779,9 +805,26 @@
         document.getElementById('detMerek').innerText = row['Merek & Tipe'];
         document.getElementById('detProc').innerText = row['Processor'];
         document.getElementById('detRam').innerText = row['RAM'] || "-";
-        document.getElementById('detRamUsage').innerText = row['RAM Terpakai'] || "-";
+        
+        // Format the percentage correctly for display
+        let ramUsageText = row['RAM Terpakai'] || "-";
+        if (ramUsageText !== "-" && !isNaN(parseFloat(ramUsageText))) {
+            let useVal = parseFloat(ramUsageText);
+            if (useVal < 1) useVal = useVal * 100;
+            ramUsageText = Math.round(useVal) + "%";
+        }
+        document.getElementById('detRamUsage').innerText = ramUsageText;
+        
         document.getElementById('detStorage').innerText = row['Storage'] || "-";
-        document.getElementById('detSSDHealth').innerText = row['SSD Health'] || "-";
+
+        let ssdHealthText = row['SSD Health'] || "-";
+        if(ssdHealthText !== "-" && !isNaN(parseFloat(ssdHealthText))){
+             let healthVal = parseFloat(ssdHealthText);
+             if (healthVal <= 1) healthVal = healthVal * 100;
+             ssdHealthText = Math.round(healthVal) + "%";
+        }
+        document.getElementById('detSSDHealth').innerText = ssdHealthText;
+        
         document.getElementById('detBattery').innerText = row['Battery Health'] || "-";
         document.getElementById('detOS').innerText = row['Operating System'];
         
@@ -838,7 +881,6 @@
             
             globalData = data.map((item, index) => { item.originalIndex = index; return item; });
 
-            // LOGIK UNTUK MENGHITUNG DASHBOARD
             let counts = { 'Laptop': 0, 'iMac': 0, 'Tablet': 0, 'Smartphone': 0 };
             let conds = { 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 };
             
@@ -933,7 +975,6 @@
             return;
         }
 
-        // TOMBOL DETAIL DAN HAPUS SUDAH DIKEMBALIKAN
         dataArray.forEach(row => {
             let displayDate = row['Tanggal'].split(',')[0];
             const tr = document.createElement('tr');
