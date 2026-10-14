@@ -276,6 +276,10 @@
                     <label>Kesehatan SSD (%)</label>
                     <input type="number" id="ssdHealth" min="0" max="100" placeholder="Contoh: 95" required>
                 </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Kesehatan Baterai (%)</label>
+                    <input type="number" id="batteryHealth" min="0" max="100" placeholder="Contoh: 85 (Kosongi jika PC)">
+                </div>
                 <div class="form-group" style="margin-bottom: 0;"><label>Operating System</label><input type="text" id="os" required></div>
                 <div class="form-group" style="margin-bottom: 0;"><label>Graphic Card (GPU)</label><input type="text" id="gpu" placeholder="Isi '-' jika tidak ada"></div>
             </div>
@@ -411,6 +415,7 @@
             <div class="detail-row"><span>RAM Terpakai</span><span id="detRamUsage">-</span></div>
             <div class="detail-row"><span>Kapasitas Storage</span><span id="detStorage"></span></div>
             <div class="detail-row"><span>Kesehatan SSD</span><span id="detSSDHealth">-</span></div>
+            <div class="detail-row"><span>Kesehatan Baterai</span><span id="detBattery">-</span></div>
             <div class="detail-row"><span>Sistem Operasi</span><span id="detOS"></span></div>
             <div class="detail-row"><span>Kartu Grafis</span><span id="detGPU"></span></div>
 
@@ -456,7 +461,7 @@
 
 <script>
     // MASUKKAN URL WEB APP GOOGLE APPS SCRIPT DI SINI
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxdDM9lyHBfigMrM5B1qYECu8VhYB3mrq3bmpz711Yy_dxzT38erXHrCZFhEIYRXHxBVw/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwi5c00aDBa7hoUXiWVXU-pNeBWUr9g-qwospPa0uK46YSUT8iBuUb3qOVn_RvKwO5ZFw/exec";
     
     let globalData = []; 
     let editModeRowNumber = null;
@@ -632,6 +637,21 @@
             }
         }
 
+        // --- LOGIKA KESEHATAN BATERAI ---
+        const batteryVal = parseFloat(document.getElementById('batteryHealth').value);
+        if (!isNaN(batteryVal)) {
+            if (batteryVal < 50) {
+                fatalItems++;
+                jsonPayload.fatal.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Kondisi baterai sangat drop (Fatal/Service). Wajib diganti.' });
+            } else if (batteryVal <= 75) {
+                minorItems++;
+                jsonPayload.minor.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Baterai mulai menurun/bocor (Warning). Pertimbangkan ganti.' });
+            } else {
+                okItems++;
+                jsonPayload.ok.push(`Kesehatan Baterai (${batteryVal}%) - Baik`);
+            }
+        }
+
         let itemDinilai = okItems + minorItems + fatalItems;
         let scoreValue = (okItems * 1) + (minorItems * 0.5);
         let scorePercent = itemDinilai === 0 ? 100 : Math.round((scoreValue / itemDinilai) * 10000) / 100;
@@ -651,6 +671,7 @@
             ramUsage: ramVal ? ramVal + "%" : "-",
             storage: document.getElementById('storage').value,
             ssdHealth: ssdVal ? ssdVal + "%" : "-",
+            batteryHealth: !isNaN(batteryVal) ? batteryVal + "%" : "-",
             os: document.getElementById('os').value,
             gpu: document.getElementById('gpu').value || "-",
             skor: scorePercent,
@@ -696,6 +717,7 @@
         document.getElementById('ramUsage').value = (row['RAM Terpakai'] && row['RAM Terpakai'] !== "-") ? row['RAM Terpakai'].replace('%', '') : "";
         document.getElementById('storage').value = row['Storage'] !== "-" ? row['Storage'] : "";
         document.getElementById('ssdHealth').value = (row['SSD Health'] && row['SSD Health'] !== "-") ? row['SSD Health'].replace('%', '') : "";
+        document.getElementById('batteryHealth').value = (row['Battery Health'] && row['Battery Health'] !== "-") ? row['Battery Health'].replace('%', '') : "";
         document.getElementById('os').value = row['Operating System'] !== "-" ? row['Operating System'] : "";
         document.getElementById('gpu').value = row['GPU'] !== "-" ? row['GPU'] : "";
 
@@ -930,6 +952,7 @@
         document.getElementById('detRamUsage').innerText = row['RAM Terpakai'] || "-";
         document.getElementById('detStorage').innerText = row['Storage'];
         document.getElementById('detSSDHealth').innerText = row['SSD Health'] || "-";
+        document.getElementById('detBattery').innerText = row['Battery Health'] || "-";
         document.getElementById('detOS').innerText = row['Operating System'];
         document.getElementById('detGPU').innerText = row['GPU'] || "-";
         
