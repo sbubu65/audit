@@ -886,36 +886,65 @@
     function closeModal() { document.getElementById('detailModal').style.display = "none"; }
     window.onclick = function(event) { if (event.target == document.getElementById('detailModal')) closeModal(); }
 
-    function loadData() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Menyinkronkan data dari Spreadsheet...</td></tr>';
+function loadData() {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Menyinkronkan data dari Spreadsheet...</td></tr>';
 
-        fetch(APPS_SCRIPT_URL, { redirect: "follow", method: 'GET' })
-        .then(res => res.json())
-        .then(data => {
-            if(data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Belum ada arsip data audit.</td></tr>';
-                document.querySelectorAll('.stat-card h3').forEach(el => el.innerText = "0");
-                return;
-            } 
-            
-            globalData = data.map((item, index) => {
-                // paksa semua nilai jadi string (kecuali rowNumber)
-                Object.keys(item).forEach(k => {
-                    if (k !== 'rowNumber' && item[k] !== null && item[k] !== undefined) {
-                        item[k] = String(item[k]);
-                    }
-                });
-            
-                // Sheets mengubah "64%" jadi 0.64, kembalikan ke format persen
-                let s = parseFloat(item['Skor']);
-                if (!isNaN(s) && !item['Skor'].includes('%')) {
-                    item['Skor'] = (s <= 1 ? Math.round(s * 10000) / 100 : s) + '%';
+    fetch(APPS_SCRIPT_URL, { redirect: "follow", method: 'GET' })
+    .then(res => res.json())
+    .then(data => {
+        if(data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Belum ada arsip data audit.</td></tr>';
+            document.querySelectorAll('.stat-card h3').forEach(el => el.innerText = "0");
+            return;
+        }
+
+        globalData = data.map((item, index) => {
+            // paksa semua nilai jadi string (kecuali rowNumber)
+            Object.keys(item).forEach(k => {
+                if (k !== 'rowNumber' && item[k] !== null && item[k] !== undefined) {
+                    item[k] = String(item[k]);
                 }
-            
-                item.originalIndex = index;
-                return item;
             });
+
+            // Sheets mengubah "64%" jadi 0.64, kembalikan ke format persen
+            let s = parseFloat(item['Skor']);
+            if (!isNaN(s) && !item['Skor'].includes('%')) {
+                item['Skor'] = (s <= 1 ? Math.round(s * 10000) / 100 : s) + '%';
+            }
+
+            item.originalIndex = index;
+            return item;
+        });
+
+        let counts = { 'Laptop': 0, 'iMac': 0, 'Tablet': 0, 'Smartphone': 0 };
+        let conds = { 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 };
+
+        globalData.forEach(row => {
+            let p = row['Jenis Perangkat'];
+            if(p && (p.includes('iMac') || p.includes('PC'))) counts['iMac']++;
+            else if(p && counts[p] !== undefined) counts[p]++;
+
+            let k = row['Kondisi'];
+            if(k && conds[k] !== undefined) conds[k]++;
+        });
+
+        document.getElementById('statTotal').innerText = globalData.length;
+        document.getElementById('statLaptop').innerText = counts['Laptop'];
+        document.getElementById('statImac').innerText = counts['iMac'];
+        document.getElementById('statTablet').innerText = counts['Tablet'];
+        document.getElementById('statPhone').innerText = counts['Smartphone'];
+        document.getElementById('statBaik').innerText = conds['Baik'];
+        document.getElementById('statRingan').innerText = conds['Rusak Ringan'];
+        document.getElementById('statBerat').innerText = conds['Rusak Berat'];
+
+        applyFilters();
+    })
+    .catch(err => {
+        console.error("LOADDATA ERROR:", err);
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--danger);">Error: ' + err.message + '</td></tr>';
+    });
+}
  
             document.getElementById('statTotal').innerText = globalData.length;
             document.getElementById('statLaptop').innerText = counts['Laptop'];
