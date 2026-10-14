@@ -276,10 +276,17 @@
                     <label>Kesehatan SSD (%)</label>
                     <input type="number" id="ssdHealth" min="0" max="100" placeholder="Contoh: 95" required>
                 </div>
+                
+                <!-- KOLOM BATERAI OTOMATIS -->
                 <div class="form-group" style="margin-bottom: 0;">
-                    <label>Kesehatan Baterai (%)</label>
-                    <input type="number" id="batteryHealth" min="0" max="100" placeholder="Contoh: 85 (Kosongi jika PC)">
+                    <label>Design Capacity (mWh) <span style="font-weight:normal; font-size:11px; color:#6b7280; display:block;">*Kosongi jika PC. Tablet/HP isi: 100</span></label>
+                    <input type="number" id="designCapacity" min="0" placeholder="Contoh: 45000">
                 </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Full Charge Capacity (mWh) <span style="font-weight:normal; font-size:11px; color:#6b7280; display:block;">*HP/Tablet isi % Health-nya (Misal: 85)</span></label>
+                    <input type="number" id="fullChargeCapacity" min="0" placeholder="Contoh: 38000">
+                </div>
+
                 <div class="form-group" style="margin-bottom: 0;"><label>Operating System</label><input type="text" id="os" required></div>
                 <div class="form-group" style="margin-bottom: 0;"><label>Graphic Card (GPU)</label><input type="text" id="gpu" placeholder="Isi '-' jika tidak ada"></div>
             </div>
@@ -637,18 +644,30 @@
             }
         }
 
-        // --- LOGIKA KESEHATAN BATERAI ---
-        const batteryVal = parseFloat(document.getElementById('batteryHealth').value);
-        if (!isNaN(batteryVal)) {
+        // --- LOGIKA KESEHATAN BATERAI (Otomatis berdasarkan rasio) ---
+        const dCap = parseFloat(document.getElementById('designCapacity').value);
+        const fCap = parseFloat(document.getElementById('fullChargeCapacity').value);
+        let batteryText = "-";
+
+        if (!isNaN(dCap) && !isNaN(fCap) && dCap > 0) {
+            const batteryVal = Math.round((fCap / dCap) * 100);
+            
+            // Atur format output teks ke database. Jika diisi 100 (buat HP), tampilkan pure persentase.
+            if (dCap === 100) {
+                batteryText = `${batteryVal}%`;
+            } else {
+                batteryText = `${batteryVal}% (${fCap}/${dCap} mWh)`;
+            }
+
             if (batteryVal < 50) {
                 fatalItems++;
-                jsonPayload.fatal.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Kondisi baterai sangat drop (Fatal/Service). Wajib diganti.' });
-            } else if (batteryVal <= 75) {
+                jsonPayload.fatal.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Sangat drop / kritis (<50%). Risiko kembung, wajib diganti.' });
+            } else if (batteryVal < 80) {
                 minorItems++;
-                jsonPayload.minor.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Baterai mulai menurun/bocor (Warning). Pertimbangkan ganti.' });
+                jsonPayload.minor.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Mulai drop / bocor halus (Warning). Tahan 1-2 jam.' });
             } else {
                 okItems++;
-                jsonPayload.ok.push(`Kesehatan Baterai (${batteryVal}%) - Baik`);
+                jsonPayload.ok.push(`Kesehatan Baterai (${batteryVal}%) - Aman`);
             }
         }
 
@@ -671,7 +690,7 @@
             ramUsage: ramVal ? ramVal + "%" : "-",
             storage: document.getElementById('storage').value,
             ssdHealth: ssdVal ? ssdVal + "%" : "-",
-            batteryHealth: !isNaN(batteryVal) ? batteryVal + "%" : "-",
+            batteryHealth: batteryText, // Masukkan variabel string finalnya (e.g. "85% (38000/45000 mWh)")
             os: document.getElementById('os').value,
             gpu: document.getElementById('gpu').value || "-",
             skor: scorePercent,
@@ -717,9 +736,27 @@
         document.getElementById('ramUsage').value = (row['RAM Terpakai'] && row['RAM Terpakai'] !== "-") ? row['RAM Terpakai'].replace('%', '') : "";
         document.getElementById('storage').value = row['Storage'] !== "-" ? row['Storage'] : "";
         document.getElementById('ssdHealth').value = (row['SSD Health'] && row['SSD Health'] !== "-") ? row['SSD Health'].replace('%', '') : "";
-        document.getElementById('batteryHealth').value = (row['Battery Health'] && row['Battery Health'] !== "-") ? row['Battery Health'].replace('%', '') : "";
         document.getElementById('os').value = row['Operating System'] !== "-" ? row['Operating System'] : "";
         document.getElementById('gpu').value = row['GPU'] !== "-" ? row['GPU'] : "";
+
+        // Tarik kembali data Baterai (Pecah format string "85% (38000/45000 mWh)" atau "85%")
+        let batStr = row['Battery Health'] || "";
+        document.getElementById('designCapacity').value = "";
+        document.getElementById('fullChargeCapacity').value = "";
+        
+        if (batStr !== "-" && batStr !== "") {
+            let matchMwh = batStr.match(/\((\d+)\/(\d+)\s*mWh\)/); // Cocokkan format 38000/45000
+            if (matchMwh) {
+                document.getElementById('fullChargeCapacity').value = matchMwh[1];
+                document.getElementById('designCapacity').value = matchMwh[2];
+            } else {
+                let matchPct = batStr.match(/(\d+)%/); // Cocokkan format persentase tok
+                if (matchPct) {
+                    document.getElementById('designCapacity').value = "100";
+                    document.getElementById('fullChargeCapacity').value = matchPct[1];
+                }
+            }
+        }
 
         try {
             let chkData = JSON.parse(row['Catatan']);
