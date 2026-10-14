@@ -53,11 +53,16 @@
         .card-icon { font-size: 40px; margin-bottom: 12px; }
 
         .form-panel { background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 14px; color: var(--text-main);}
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; box-sizing: border-box; font-family: inherit; font-size: 14px; transition: 0.2s; background: #fff;}
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: var(--text-main);}
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px; transition: 0.2s; background: #fff;}
         .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(32,75,181,0.1); }
-        .specs-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 25px;}
+        .form-hint { font-weight:normal; font-size:11px; color:#6b7280; display:block; margin-top:2px; line-height: 1.2;}
+        
+        /* Layout Grid yang Dirapikan */
+        .specs-section-box { background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 25px;}
+        .specs-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 15px;}
+        .specs-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;}
         
         .sop-section { background: #fff; padding: 0; border-radius: 8px; margin-bottom: 25px; }
         .checklist-item { margin-bottom: 15px; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; background: #f9fafb;}
@@ -248,7 +253,7 @@
             <input type="hidden" id="jenisPerangkat" required>
 
             <!-- INPUT IDENTITAS -->
-            <div class="specs-grid" style="background: transparent; padding:0; border:none; margin-bottom: 20px;">
+            <div class="specs-grid-3" style="margin-bottom: 20px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>No Inventori Asset</label>
                     <input type="text" id="noInventori" placeholder="Contoh: INV-001" required>
@@ -263,57 +268,70 @@
                 </div>
             </div>
 
-           <h4 style="font-size: 16px; margin-bottom: 15px; color: #111827;">Spesifikasi Hardware & Software</h4>
-            <div class="specs-grid">
-                <div class="form-group" style="margin-bottom: 0;"><label>Processor</label><input type="text" id="processor" required></div>
+            <h4 style="font-size: 16px; margin-bottom: 15px; color: #111827;">Spesifikasi Hardware & Software</h4>
+            <div class="specs-section-box">
                 
-                <!-- UPDATE LABEL & PLACEHOLDER RAM -->
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Total RAM (Memory)</label>
-                    <input type="text" id="ram" placeholder="Contoh: 16GB (2x 8GB)" required>
-                </div>
-                
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>RAM Terpakai (%)</label>
-                    <input type="number" id="ramUsage" min="0" max="100" placeholder="Contoh: 87" required>
-                </div>
-                
-                <!-- UPDATE LABEL & PLACEHOLDER STORAGE -->
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Storage (Penyimpanan)</label>
-                    <input type="text" id="storage" placeholder="Contoh: 256GB SSD + 1TB HDD" required>
-                </div>
-                
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Kesehatan SSD (%) <span style="font-weight:normal; font-size:11px; color:#6b7280; display:block;">*Jika ada 2, isi persentase SSD Sistem (C:)</span></label>
-                    <input type="number" id="ssdHealth" min="0" max="100" placeholder="Contoh: 95" required>
-                </div>
-                
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Design Capacity (mWh) <span style="font-weight:normal; font-size:11px; color:#6b7280; display:block;">*Kosongi jika PC. Tablet/HP isi: 100</span></label>
-                    <input type="number" id="designCapacity" min="0" placeholder="Contoh: 45000">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Full Charge Capacity (mWh) <span style="font-weight:normal; font-size:11px; color:#6b7280; display:block;">*HP/Tablet isi % Health-nya (Misal: 85)</span></label>
-                    <input type="number" id="fullChargeCapacity" min="0" placeholder="Contoh: 38000">
+                <!-- Baris 1: CPU & OS -->
+                <div class="specs-grid-2">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Processor</label>
+                        <input type="text" id="processor" placeholder="Contoh: Intel Core i5-1135G7" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Operating System</label>
+                        <input type="text" id="os" placeholder="Contoh: Windows 11 Pro" required>
+                    </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 0;"><label>Operating System</label><input type="text" id="os" required></div>
-                <div class="form-group" style="margin-bottom: 0;"><label>Graphic Card (GPU)</label><input type="text" id="gpu" placeholder="Contoh: GTX 1650 (Isi '-' jika onboard)"></div>
-            </div>
-                
-                <!-- KOLOM BATERAI OTOMATIS -->
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Design Capacity (mWh) <span style="font-weight:normal; font-size:11px; color:#6b7280; display:block;">*Kosongi jika PC. Tablet/HP isi: 100</span></label>
-                    <input type="number" id="designCapacity" min="0" placeholder="Contoh: 45000">
-                </div>
-                <div class="form-group" style="margin-bottom: 0;">
-                    <label>Full Charge Capacity (mWh) <span style="font-weight:normal; font-size:11px; color:#6b7280; display:block;">*HP/Tablet isi % Health-nya (Misal: 85)</span></label>
-                    <input type="number" id="fullChargeCapacity" min="0" placeholder="Contoh: 38000">
+                <!-- Baris 2: RAM -->
+                <div class="specs-grid-2">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Total RAM (Memory)</label>
+                        <input type="text" id="ram" placeholder="Contoh: 16GB (2x 8GB)" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>RAM Terpakai (%)</label>
+                        <input type="number" id="ramUsage" min="0" max="100" placeholder="Contoh: 87" required>
+                    </div>
                 </div>
 
-                <div class="form-group" style="margin-bottom: 0;"><label>Operating System</label><input type="text" id="os" required></div>
-                <div class="form-group" style="margin-bottom: 0;"><label>Graphic Card (GPU)</label><input type="text" id="gpu" placeholder="Isi '-' jika tidak ada"></div>
+                <!-- Baris 3: Storage -->
+                <div class="specs-grid-2">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Storage (Penyimpanan Utama & Kedua)</label>
+                        <span class="form-hint">*Bisa tambah jika ada dua (Misal: 256GB SSD + 1TB HDD)</span>
+                        <input type="text" id="storage" placeholder="Contoh: 256GB SSD + 1TB HDD" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Kesehatan SSD (%)</label>
+                        <span class="form-hint">*Jika ada lebih dari 1, isikan kesehatan SSD Utama/Sistem (C:)</span>
+                        <input type="number" id="ssdHealth" min="0" max="100" placeholder="Contoh: 95" required>
+                    </div>
+                </div>
+
+                <!-- Baris 4: Battery -->
+                <div class="specs-grid-2">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Design Capacity Baterai (mWh)</label>
+                        <span class="form-hint">*Kosongi jika PC. Jika Tablet/HP isi: 100</span>
+                        <input type="number" id="designCapacity" min="0" placeholder="Contoh: 45000">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Full Charge Capacity (mWh)</label>
+                        <span class="form-hint">*Jika Tablet/HP isi persentase (Misal: 85)</span>
+                        <input type="number" id="fullChargeCapacity" min="0" placeholder="Contoh: 38000">
+                    </div>
+                </div>
+
+                <!-- Baris 5: GPU -->
+                <div class="specs-grid-2">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Graphic Card (GPU)</label>
+                        <input type="text" id="gpu" placeholder="Contoh: NVIDIA GTX 1650 (Isi '-' jika onboard)">
+                    </div>
+                    <div></div> <!-- Spacing Kosong -->
+                </div>
+
             </div>
 
             <h4 style="font-size: 16px; margin-bottom: 5px; color: #111827;">Inspeksi Fisik & Fungsi Utama</h4>
@@ -715,7 +733,7 @@
             ramUsage: ramVal ? ramVal + "%" : "-",
             storage: document.getElementById('storage').value,
             ssdHealth: ssdVal ? ssdVal + "%" : "-",
-            batteryHealth: batteryText, // Masukkan variabel string finalnya (e.g. "85% (38000/45000 mWh)")
+            batteryHealth: batteryText, 
             os: document.getElementById('os').value,
             gpu: document.getElementById('gpu').value || "-",
             skor: scorePercent,
@@ -764,18 +782,18 @@
         document.getElementById('os').value = row['Operating System'] !== "-" ? row['Operating System'] : "";
         document.getElementById('gpu').value = row['GPU'] !== "-" ? row['GPU'] : "";
 
-        // Tarik kembali data Baterai (Pecah format string "85% (38000/45000 mWh)" atau "85%")
+        // Tarik kembali data Baterai
         let batStr = row['Battery Health'] || "";
         document.getElementById('designCapacity').value = "";
         document.getElementById('fullChargeCapacity').value = "";
         
         if (batStr !== "-" && batStr !== "") {
-            let matchMwh = batStr.match(/\((\d+)\/(\d+)\s*mWh\)/); // Cocokkan format 38000/45000
+            let matchMwh = batStr.match(/\((\d+)\/(\d+)\s*mWh\)/);
             if (matchMwh) {
                 document.getElementById('fullChargeCapacity').value = matchMwh[1];
                 document.getElementById('designCapacity').value = matchMwh[2];
             } else {
-                let matchPct = batStr.match(/(\d+)%/); // Cocokkan format persentase tok
+                let matchPct = batStr.match(/(\d+)%/);
                 if (matchPct) {
                     document.getElementById('designCapacity').value = "100";
                     document.getElementById('fullChargeCapacity').value = matchPct[1];
