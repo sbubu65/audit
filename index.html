@@ -689,7 +689,7 @@
                 alert(`Data Berhasil Disimpan!\nKondisi: ${finalCondition} (${scorePercent}%)`);
                 resetFormToNew(); switchView('history');
             } else alert("Gagal menyimpan data: " + result.message);
-        }).catch(() => alert("Terjadi kesalahan koneksi.")).finally(() => { submitBtn.innerText = "Simpan Hasil Audit"; submitBtn.disabled = false; });
+        }).catch(() => { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:var(--danger);">Gagal terhubung ke database.</td></tr>'; });
     }
 
     function editAudit(originalIndex) {
