@@ -923,7 +923,7 @@
         else { customContainer.style.display = 'none'; document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; applyFilters(); }
     }
 
-    function applyFilters() {
+function applyFilters() {
         const searchTxt = document.getElementById('searchInput').value.toLowerCase();
         const deviceFltr = document.getElementById('filterDevice').value;
         const kondisiFltr = document.getElementById('filterKondisi').value;
@@ -933,16 +933,30 @@
         const endVal = document.getElementById('endDate').value;
 
         let filteredData = globalData.filter(row => {
-            let inv = (row['No Inventori'] || "").toLowerCase(); let merek = (row['Merek & Tipe'] || "").toLowerCase(); let sn = (row['SN'] || "").toLowerCase(); 
+            // Menggunakan pengaman pencarian agar tidak error jika properti null/undefined
+            let inv = "";
+            for (let key in row) {
+                if (key.trim().toLowerCase() === "no inventori") {
+                    inv = (row[key] || "").toLowerCase();
+                }
+            }
+            let merek = (row['Merek & Tipe'] || row['Merek & Model'] || "").toLowerCase();
+            let sn = (row['SN'] || "").toLowerCase(); 
             let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt) || sn.includes(searchTxt);
             
             let matchDevice = true;
-            if(deviceFltr !== "Semua") { if(deviceFltr === "iMac" && (row['Jenis Perangkat'].includes('iMac') || row['Jenis Perangkat'].includes('PC'))) matchDevice = true; else matchDevice = row['Jenis Perangkat'] === deviceFltr; }
+            let jenisPerangkat = row['Jenis Perangkat'] || "";
+            if(deviceFltr !== "Semua") {
+                if(deviceFltr === "iMac" && (jenisPerangkat.includes('iMac') || jenisPerangkat.includes('PC'))) matchDevice = true;
+                else matchDevice = jenisPerangkat === deviceFltr;
+            }
 
             let matchKondisi = kondisiFltr === "Semua" || row['Kondisi'] === kondisiFltr;
             let matchTanggal = true;
-            if(tanggalFltr !== 'Semua' && row['Tanggal']) {
-                let parts = row['Tanggal'].split(',')[0].trim().split('/');
+            let tglStr = row['Tanggal'] || "";
+            
+            if(tanggalFltr !== 'Semua' && tglStr) {
+                let parts = tglStr.split(',')[0].trim().split('/');
                 if(parts.length === 3) {
                     let rowDate = new Date(parts[2], parts[1] - 1, parts[0]); rowDate.setHours(0,0,0,0);
                     let today = new Date(); today.setHours(0,0,0,0);
