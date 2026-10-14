@@ -928,7 +928,10 @@
 
             applyFilters();
         })
-        .catch(() => { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:var(--danger);">Gagal terhubung ke database.</td></tr>'; });
+       .catch(err => {
+    console.error("LOADDATA ERROR:", err);
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--danger);">Error: ' + err.message + '</td></tr>';
+});
     }
 
     function getBadge(kondisi) {
