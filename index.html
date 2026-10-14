@@ -325,7 +325,13 @@
             </div>
 
             <h4 style="font-size: 16px; margin-bottom: 5px; color: #111827;">Inspeksi Fisik & Fungsi Utama</h4>
-            <p style="font-size:13px; color:var(--text-muted); margin-top:0; margin-bottom:20px;">*Pilih "Ada Kendala" untuk membuka kolom catatan kerusakan.</p>
+            <div style="font-size:13px; color:#374151; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:12px 15px; margin-bottom:20px; line-height:1.6;">
+                <div><strong>Fungsi Normal</strong>: berfungsi baik.</div>
+                <div><strong>Ada Kendala</strong>, lalu pilih klasifikasi:</div>
+                <div style="padding-left:15px;">• <strong class="text-minor">Minor</strong>: rusak tapi masih bisa dipakai bekerja (casing baret/bocel, dead pixel &lt; 50% layar)</div>
+                <div style="padding-left:15px;">• <strong class="text-fatal">Fatal</strong>: tidak bisa dipakai dan mengganggu pekerjaan (layar mati, keyboard/trackpad mati)</div>
+                <div><strong>N/A</strong>: fitur memang tidak ada di perangkat ini (tidak dihitung). Jangan dipakai untuk fitur yang belum dicek.</div>
+            </div>
             
             <div class="sop-section" id="checklistArea"></div>
             
@@ -427,7 +433,7 @@
     let storageIdCounter = 0;
 
     const CHECKLIST_ITEMS = {
-        'Laptop': ['Casing, Body Fisik & Engsel', 'Layar (LCD/LED)', 'Keyboard', 'Touchpad / Trackpad', 'Port USB', 'Port LAN (RJ45)', 'Port Display (HDMI/VGA)', 'Konektivitas (Wi-Fi & Bluetooth)', 'Webcam / Kamera', 'Speaker Audio', 'Microphone', 'Kesehatan Baterai', 'Adaptor Charger', 'Performa & Responsivitas Sistem', 'Lisensi Windows', 'Lisensi MS Office'],
+       'Laptop': ['Casing, Body Fisik & Engsel', 'Layar (LCD/LED)', 'Keyboard', 'Touchpad / Trackpad', 'Port USB', 'Port LAN (RJ45)', 'Port Display (HDMI/VGA)', 'Konektivitas (Wi-Fi & Bluetooth)', 'Webcam / Kamera', 'Speaker Audio', 'Microphone', 'Adaptor Charger', 'Performa & Responsivitas Sistem', 'Lisensi Windows', 'Lisensi MS Office'],
         'iMac': ['Body Fisik & Stand', 'Layar Retina / Monitor', 'Magic Keyboard / Keyboard External', 'Magic Mouse / Trackpad', 'Port USB / Thunderbolt', 'Port LAN (RJ45)', 'Konektivitas (Wi-Fi & Bluetooth)', 'Kamera FaceTime', 'Speaker Audio', 'Microphone', 'Performa & Responsivitas Sistem', 'Lisensi macOS', 'Keamanan Akun iCloud'],
         'Tablet': ['Layar Sentuh (Touchscreen)', 'Kondisi Fisik Bezel/Body', 'Fungsi Tombol Fisik', 'Kondisi Stylus Pen', 'Port Pengisian Daya', 'Konektivitas Wi-Fi & Bluetooth', 'Koneksi Seluler (SIM)', 'Kamera Depan & Belakang', 'Speaker Audio', 'Microphone', 'Performa & Responsivitas Sistem', 'Keamanan Akun (Kosong dari iCloud/Google)'],
         'Smartphone': ['Layar Sentuh & Fungsi Display', 'Kondisi Casing & Bezel', 'Sensor Biometrik (Sidik Jari/FaceID)', 'Tombol Fisik', 'Port Pengisian Daya', 'Kamera Utama', 'Kamera Depan', 'Speaker & Earpiece', 'Microphone', 'Konektivitas (Wi-Fi & Bluetooth)', 'Penangkapan Sinyal Seluler & IMEI', 'Performa & Responsivitas Sistem', 'Keamanan Akun (Kosong dari iCloud/Google)']
@@ -653,10 +659,24 @@
             else { okItems++; jsonPayload.ok.push(`Kesehatan Baterai (${batteryVal}%) - Aman`); }
         }
 
-        let itemDinilai = okItems + minorItems + fatalItems;
-        let scorePercent = itemDinilai === 0 ? 100 : Math.round(( ((okItems * 1) + (minorItems * 0.5)) / itemDinilai) * 10000) / 100;
-        let finalCondition = scorePercent === 100 ? "Baik" : (fatalItems > 0 ? "Rusak Berat" : "Rusak Ringan");
-
+            // === SCORING BERBASIS JUMLAH TEMUAN ===
+            const PENALTI_MINOR = 12;
+            const PENALTI_FATAL = 25;
+            
+            // 1. Label ditentukan dari jumlah temuan
+            let finalCondition, batasMin, batasMax;
+            if (fatalItems >= 2 || minorItems >= 5) {
+                finalCondition = "Rusak Berat";  batasMin = 0;  batasMax = 49;
+            } else if (fatalItems === 1 || minorItems >= 2) {
+                finalCondition = "Rusak Ringan"; batasMin = 50; batasMax = 79;
+            } else {
+                finalCondition = "Baik";         batasMin = 80; batasMax = 100;
+            }
+            
+            // 2. Nilai mentah, lalu dikunci ke rentang labelnya
+            let nilaiMentah = 100 - (minorItems * PENALTI_MINOR) - (fatalItems * PENALTI_FATAL);
+            let scorePercent = Math.max(batasMin, Math.min(batasMax, nilaiMentah));
+                    
         const data = {
             action: editModeRowNumber ? 'update' : 'insert',
             rowNumber: editModeRowNumber,
@@ -963,6 +983,19 @@
         renderTable(filteredData);
     }
 
+function temuanText(row) {
+    let f = 0, m = 0;
+    try {
+        const c = JSON.parse(row['Catatan']);
+        f = (c.fatal || []).length;
+        m = (c.minor || []).length;
+    } catch (e) {}
+    const parts = [];
+    if (f) parts.push(`${f} Fatal`);
+    if (m) parts.push(`${m} Minor`);
+    return parts.length ? parts.join(' · ') : 'Tidak ada temuan';
+}
+    
     function renderTable(dataArray) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
@@ -982,7 +1015,7 @@
                 <td style="color:#6b7280;">${displayDate}</td>
                 <td style="font-weight:600; color:var(--primary-blue);">${row['No Inventori']}</td>
                 <td>${row['Jenis Perangkat']}</td>
-                <td><strong>${row['Skor']}</strong></td>
+                <td><strong>${row['Skor']}</strong><br><span style="font-size:12px; color:#6b7280;">${temuanText(row)}</span></td>
                 <td>${getBadge(row['Kondisi'])}</td>
                 <td style="text-align:center;">
                     <div class="aksi-container" style="justify-content:center;">
