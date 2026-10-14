@@ -158,7 +158,7 @@
 
         /* === SETTING CSS UNTUK PRINT === */
         @media print {
-            @page { size: A5 portrait; margin: 1cm; }
+            @page { size: A4 portrait; margin: 1cm; }
             body { 
                 background: white !important; 
                 -webkit-print-color-adjust: exact !important; 
@@ -417,14 +417,14 @@
         <div style="margin-top: 35px; border-top: 1px solid #e5e7eb; padding-top: 25px; text-align: right;">
             <button class="btn" id="btnPrintModal" onclick="window.print()" style="width: auto; padding: 12px 24px; display: inline-flex; align-items: center; gap: 8px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                Cetak Laporan (A5)
+                Cetak Laporan
             </button>
         </div>
     </div>
 </div>
 
 <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqgntxnf73gVV0svw6-e721aTO0I2eag8MQ_NHp8LNnG2iOCAj2pyy3dFaYlN_V4e2Kw/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5XwZa470YMQKwNYLhw3xMe6oQ0aCH241mC0-AknseQNGbp04V49XqBmZtdTzNfKLy/exec";
     
     let globalData = []; 
     let editModeRowNumber = null;
@@ -899,20 +899,24 @@
                 return;
             } 
             
-            globalData = data.map((item, index) => { item.originalIndex = index; return item; });
-
-            let counts = { 'Laptop': 0, 'iMac': 0, 'Tablet': 0, 'Smartphone': 0 };
-            let conds = { 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 };
+            globalData = data.map((item, index) => {
+                // paksa semua nilai jadi string (kecuali rowNumber)
+                Object.keys(item).forEach(k => {
+                    if (k !== 'rowNumber' && item[k] !== null && item[k] !== undefined) {
+                        item[k] = String(item[k]);
+                    }
+                });
             
-            globalData.forEach(row => {
-                let p = row['Jenis Perangkat'];
-                if(p && (p.includes('iMac') || p.includes('PC'))) counts['iMac']++;
-                else if(p && counts[p] !== undefined) counts[p]++;
-                
-                let k = row['Kondisi'];
-                if(k && conds[k] !== undefined) conds[k]++;
+                // Sheets mengubah "64%" jadi 0.64, kembalikan ke format persen
+                let s = parseFloat(item['Skor']);
+                if (!isNaN(s) && !item['Skor'].includes('%')) {
+                    item['Skor'] = (s <= 1 ? Math.round(s * 10000) / 100 : s) + '%';
+                }
+            
+                item.originalIndex = index;
+                return item;
             });
-
+ 
             document.getElementById('statTotal').innerText = globalData.length;
             document.getElementById('statLaptop').innerText = counts['Laptop'];
             document.getElementById('statImac').innerText = counts['iMac'];
