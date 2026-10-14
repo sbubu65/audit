@@ -936,7 +936,7 @@ function applyFilters() {
             // Menggunakan pengaman pencarian agar tidak error jika properti null/undefined
             let inv = "";
             for (let key in row) {
-                if (key.trim().toLowerCase() === "no inventori") {
+                if (key.trim().toLowerCase() === "No Inventori") {
                     inv = (row[key] || "").toLowerCase();
                 }
             }
