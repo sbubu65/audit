@@ -263,19 +263,44 @@
                 </div>
             </div>
 
-            <h4 style="font-size: 16px; margin-bottom: 15px; color: #111827;">Spesifikasi Hardware & Software</h4>
+           <h4 style="font-size: 16px; margin-bottom: 15px; color: #111827;">Spesifikasi Hardware & Software</h4>
             <div class="specs-grid">
                 <div class="form-group" style="margin-bottom: 0;"><label>Processor</label><input type="text" id="processor" required></div>
-                <div class="form-group" style="margin-bottom: 0;"><label>RAM (Memory)</label><input type="text" id="ram" required></div>
+                
+                <!-- UPDATE LABEL & PLACEHOLDER RAM -->
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Total RAM (Memory)</label>
+                    <input type="text" id="ram" placeholder="Contoh: 16GB (2x 8GB)" required>
+                </div>
+                
                 <div class="form-group" style="margin-bottom: 0;">
                     <label>RAM Terpakai (%)</label>
                     <input type="number" id="ramUsage" min="0" max="100" placeholder="Contoh: 87" required>
                 </div>
-                <div class="form-group" style="margin-bottom: 0;"><label>Storage (Penyimpanan)</label><input type="text" id="storage" required></div>
+                
+                <!-- UPDATE LABEL & PLACEHOLDER STORAGE -->
                 <div class="form-group" style="margin-bottom: 0;">
-                    <label>Kesehatan SSD (%)</label>
+                    <label>Storage (Penyimpanan)</label>
+                    <input type="text" id="storage" placeholder="Contoh: 256GB SSD + 1TB HDD" required>
+                </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Kesehatan SSD (%) <span style="font-weight:normal; font-size:11px; color:#6b7280; display:block;">*Jika ada 2, isi persentase SSD Sistem (C:)</span></label>
                     <input type="number" id="ssdHealth" min="0" max="100" placeholder="Contoh: 95" required>
                 </div>
+                
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Design Capacity (mWh) <span style="font-weight:normal; font-size:11px; color:#6b7280; display:block;">*Kosongi jika PC. Tablet/HP isi: 100</span></label>
+                    <input type="number" id="designCapacity" min="0" placeholder="Contoh: 45000">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label>Full Charge Capacity (mWh) <span style="font-weight:normal; font-size:11px; color:#6b7280; display:block;">*HP/Tablet isi % Health-nya (Misal: 85)</span></label>
+                    <input type="number" id="fullChargeCapacity" min="0" placeholder="Contoh: 38000">
+                </div>
+
+                <div class="form-group" style="margin-bottom: 0;"><label>Operating System</label><input type="text" id="os" required></div>
+                <div class="form-group" style="margin-bottom: 0;"><label>Graphic Card (GPU)</label><input type="text" id="gpu" placeholder="Contoh: GTX 1650 (Isi '-' jika onboard)"></div>
+            </div>
                 
                 <!-- KOLOM BATERAI OTOMATIS -->
                 <div class="form-group" style="margin-bottom: 0;">
