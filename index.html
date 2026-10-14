@@ -893,26 +893,23 @@ function loadData() {
     fetch(APPS_SCRIPT_URL, { redirect: "follow", method: 'GET' })
     .then(res => res.json())
     .then(data => {
-        if(data.length === 0) {
+        if (data.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Belum ada arsip data audit.</td></tr>';
             document.querySelectorAll('.stat-card h3').forEach(el => el.innerText = "0");
             return;
         }
 
         globalData = data.map((item, index) => {
-            // paksa semua nilai jadi string (kecuali rowNumber)
             Object.keys(item).forEach(k => {
                 if (k !== 'rowNumber' && item[k] !== null && item[k] !== undefined) {
                     item[k] = String(item[k]);
                 }
             });
-
             // Sheets mengubah "64%" jadi 0.64, kembalikan ke format persen
             let s = parseFloat(item['Skor']);
             if (!isNaN(s) && !item['Skor'].includes('%')) {
                 item['Skor'] = (s <= 1 ? Math.round(s * 10000) / 100 : s) + '%';
             }
-
             item.originalIndex = index;
             return item;
         });
@@ -922,11 +919,10 @@ function loadData() {
 
         globalData.forEach(row => {
             let p = row['Jenis Perangkat'];
-            if(p && (p.includes('iMac') || p.includes('PC'))) counts['iMac']++;
-            else if(p && counts[p] !== undefined) counts[p]++;
-
+            if (p && (p.includes('iMac') || p.includes('PC'))) counts['iMac']++;
+            else if (p && counts[p] !== undefined) counts[p]++;
             let k = row['Kondisi'];
-            if(k && conds[k] !== undefined) conds[k]++;
+            if (k && conds[k] !== undefined) conds[k]++;
         });
 
         document.getElementById('statTotal').innerText = globalData.length;
@@ -945,79 +941,91 @@ function loadData() {
         tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--danger);">Error: ' + err.message + '</td></tr>';
     });
 }
- 
-            document.getElementById('statTotal').innerText = globalData.length;
-            document.getElementById('statLaptop').innerText = counts['Laptop'];
-            document.getElementById('statImac').innerText = counts['iMac'];
-            document.getElementById('statTablet').innerText = counts['Tablet'];
-            document.getElementById('statPhone').innerText = counts['Smartphone'];
-            document.getElementById('statBaik').innerText = conds['Baik'];
-            document.getElementById('statRingan').innerText = conds['Rusak Ringan'];
-            document.getElementById('statBerat').innerText = conds['Rusak Berat'];
 
-            applyFilters();
-        })
-       .catch(err => {
-    console.error("LOADDATA ERROR:", err);
-    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--danger);">Error: ' + err.message + '</td></tr>';
-});
+function getBadge(kondisi) {
+    if (kondisi === 'Baik') return '<span class="badge badge-baik">Baik</span>';
+    if (kondisi === 'Rusak Ringan') return '<span class="badge badge-ringan">Rusak Ringan</span>';
+    return '<span class="badge badge-berat">Rusak Berat</span>';
+}
+
+function toggleCustomDate() {
+    const filter = document.getElementById('filterTanggal').value;
+    const customContainer = document.getElementById('customDateContainer');
+    if (filter === 'Custom') {
+        customContainer.style.display = 'grid';
+    } else {
+        customContainer.style.display = 'none';
+        document.getElementById('startDate').value = '';
+        document.getElementById('endDate').value = '';
+        applyFilters();
     }
+}
 
-    function getBadge(kondisi) {
-        if(kondisi === 'Baik') return '<span class="badge badge-baik">Baik</span>';
-        if(kondisi === 'Rusak Ringan') return '<span class="badge badge-ringan">Rusak Ringan</span>';
-        return '<span class="badge badge-berat">Rusak Berat</span>';
-    }
+function applyFilters() {
+    const searchTxt = document.getElementById('searchInput').value.toLowerCase();
+    const deviceFltr = document.getElementById('filterDevice').value;
+    const kondisiFltr = document.getElementById('filterKondisi').value;
+    const tanggalFltr = document.getElementById('filterTanggal').value;
+    const sortMode = document.getElementById('sortData').value;
+    const startVal = document.getElementById('startDate').value;
+    const endVal = document.getElementById('endDate').value;
 
-    function toggleCustomDate() {
-        const filter = document.getElementById('filterTanggal').value;
-        const customContainer = document.getElementById('customDateContainer');
-        if (filter === 'Custom') { customContainer.style.display = 'grid'; } 
-        else { customContainer.style.display = 'none'; document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; applyFilters(); }
-    }
+    let filteredData = globalData.filter(row => {
+        let inv = String(row['No Inventori'] || "").toLowerCase();
+        let merek = String(row['Merek & Tipe'] || "").toLowerCase();
+        let sn = String(row['SN'] || "").toLowerCase();
+        let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt) || sn.includes(searchTxt);
 
-    function applyFilters() {
-        const searchTxt = document.getElementById('searchInput').value.toLowerCase();
-        const deviceFltr = document.getElementById('filterDevice').value;
-        const kondisiFltr = document.getElementById('filterKondisi').value;
-        const tanggalFltr = document.getElementById('filterTanggal').value;
-        const sortMode = document.getElementById('sortData').value;
-        const startVal = document.getElementById('startDate').value;
-        const endVal = document.getElementById('endDate').value;
+        let jenis = String(row['Jenis Perangkat'] || "");
+        let matchDevice = true;
+        if (deviceFltr !== "Semua") {
+            if (deviceFltr === "iMac") matchDevice = jenis.includes('iMac') || jenis.includes('PC');
+            else matchDevice = jenis === deviceFltr;
+        }
 
-        let filteredData = globalData.filter(row => {
-            let inv = (row['No Inventori'] || "").toLowerCase(); let merek = (row['Merek & Tipe'] || "").toLowerCase(); let sn = (row['SN'] || "").toLowerCase(); 
-            let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt) || sn.includes(searchTxt);
-            
-            let matchDevice = true;
-            if(deviceFltr !== "Semua") { if(deviceFltr === "iMac" && (row['Jenis Perangkat'].includes('iMac') || row['Jenis Perangkat'].includes('PC'))) matchDevice = true; else matchDevice = row['Jenis Perangkat'] === deviceFltr; }
+        let matchKondisi = kondisiFltr === "Semua" || row['Kondisi'] === kondisiFltr;
 
-            let matchKondisi = kondisiFltr === "Semua" || row['Kondisi'] === kondisiFltr;
-            let matchTanggal = true;
-            if(tanggalFltr !== 'Semua' && row['Tanggal']) {
-                let parts = row['Tanggal'].split(',')[0].trim().split('/');
-                if(parts.length === 3) {
-                    let rowDate = new Date(parts[2], parts[1] - 1, parts[0]); rowDate.setHours(0,0,0,0);
-                    let today = new Date(); today.setHours(0,0,0,0);
-                    if(tanggalFltr === 'Hari ini') { matchTanggal = (rowDate.getTime() === today.getTime()); } 
-                    else if(tanggalFltr === 'Kemarin') { let yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1); matchTanggal = (rowDate.getTime() === yesterday.getTime()); } 
-                    else if(tanggalFltr === 'Minggu ini') { let startOfWeek = new Date(today); let day = startOfWeek.getDay() || 7; startOfWeek.setDate(startOfWeek.getDate() - (day - 1)); matchTanggal = (rowDate >= startOfWeek && rowDate <= today); } 
-                    else if(tanggalFltr === 'Custom') { if(startVal) { let sd = new Date(startVal); sd.setHours(0,0,0,0); if(rowDate < sd) matchTanggal = false; } if(endVal) { let ed = new Date(endVal); ed.setHours(0,0,0,0); if(rowDate > ed) matchTanggal = false; } }
+        let matchTanggal = true;
+        if (tanggalFltr !== 'Semua' && row['Tanggal']) {
+            let parts = String(row['Tanggal']).split(',')[0].trim().split('/');
+            if (parts.length === 3) {
+                let rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
+                rowDate.setHours(0, 0, 0, 0);
+                let today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                if (tanggalFltr === 'Hari ini') {
+                    matchTanggal = (rowDate.getTime() === today.getTime());
+                } else if (tanggalFltr === 'Kemarin') {
+                    let yesterday = new Date(today);
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    matchTanggal = (rowDate.getTime() === yesterday.getTime());
+                } else if (tanggalFltr === 'Minggu ini') {
+                    let startOfWeek = new Date(today);
+                    let day = startOfWeek.getDay() || 7;
+                    startOfWeek.setDate(startOfWeek.getDate() - (day - 1));
+                    matchTanggal = (rowDate >= startOfWeek && rowDate <= today);
+                } else if (tanggalFltr === 'Custom') {
+                    if (startVal) { let sd = new Date(startVal); sd.setHours(0, 0, 0, 0); if (rowDate < sd) matchTanggal = false; }
+                    if (endVal) { let ed = new Date(endVal); ed.setHours(0, 0, 0, 0); if (rowDate > ed) matchTanggal = false; }
                 }
             }
-            return matchSearch && matchDevice && matchKondisi && matchTanggal;
-        });
+        }
+        return matchSearch && matchDevice && matchKondisi && matchTanggal;
+    });
 
-        filteredData.sort((a, b) => {
-            if(sortMode === 'Terbaru') return b.originalIndex - a.originalIndex;
-            if(sortMode === 'Terlama') return a.originalIndex - b.originalIndex;
-            let scoreA = parseFloat(a['Skor']) || 0; let scoreB = parseFloat(b['Skor']) || 0;
-            if(sortMode === 'SkorTinggi') return scoreB - scoreA;
-            if(sortMode === 'SkorRendah') return scoreA - scoreB;
-            return 0;
-        });
-        renderTable(filteredData);
-    }
+    filteredData.sort((a, b) => {
+        if (sortMode === 'Terbaru') return b.originalIndex - a.originalIndex;
+        if (sortMode === 'Terlama') return a.originalIndex - b.originalIndex;
+        let scoreA = parseFloat(a['Skor']) || 0;
+        let scoreB = parseFloat(b['Skor']) || 0;
+        if (sortMode === 'SkorTinggi') return scoreB - scoreA;
+        if (sortMode === 'SkorRendah') return scoreA - scoreB;
+        return 0;
+    });
+
+    renderTable(filteredData);
+}
 
 function temuanText(row) {
     let f = 0, m = 0;
@@ -1031,39 +1039,41 @@ function temuanText(row) {
     if (m) parts.push(`${m} Minor`);
     return parts.length ? parts.join(' · ') : 'Tidak ada temuan';
 }
-    
-    function renderTable(dataArray) {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '';
-        
-        let startCount = dataArray.length > 0 ? 1 : 0;
-        document.getElementById('filterInfo').innerText = `Menampilkan ${startCount}–${dataArray.length} dari ${globalData.length} audit`;
 
-        if(dataArray.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Pencarian tidak menemukan hasil.</td></tr>';
-            return;
-        }
+function renderTable(dataArray) {
+    const tbody = document.getElementById('tableBody');
+    tbody.innerHTML = '';
 
-        dataArray.forEach(row => {
-            let displayDate = row['Tanggal'].split(',')[0];
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="color:#6b7280;">${displayDate}</td>
-                <td style="font-weight:600; color:var(--primary-blue);">${row['No Inventori']}</td>
-                <td>${row['Jenis Perangkat']}</td>
-                <td><strong>${row['Skor']}</strong><br><span style="font-size:12px; color:#6b7280;">${temuanText(row)}</span></td>
-                <td>${getBadge(row['Kondisi'])}</td>
-                <td style="text-align:center;">
-                    <div class="aksi-container" style="justify-content:center;">
-                        <button class="btn-aksi btn-detail" onclick="openModal(${row.originalIndex})" title="Info">Detail</button>
-                        <button class="btn-aksi btn-edit" onclick="editAudit(${row.originalIndex})" title="Edit">Edit</button>
-                        <button class="btn-aksi btn-delete" onclick="deleteAudit(${row.originalIndex})" title="Hapus">Hapus</button>
-                    </div>
-                </td>
-            `;
-            tbody.appendChild(tr);
-        });
+    let startCount = dataArray.length > 0 ? 1 : 0;
+    document.getElementById('filterInfo').innerText = `Menampilkan ${startCount}–${dataArray.length} dari ${globalData.length} audit`;
+
+    if (dataArray.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Pencarian tidak menemukan hasil.</td></tr>';
+        return;
     }
+
+    dataArray.forEach(row => {
+        let displayDate = String(row['Tanggal'] || "").split(',')[0];
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td style="color:#6b7280;">${displayDate}</td>
+            <td style="font-weight:600; color:var(--primary-blue);">${row['No Inventori']}</td>
+            <td>${row['Jenis Perangkat']}</td>
+            <td><strong>${row['Skor']}</strong><br><span style="font-size:12px; color:#6b7280;">${temuanText(row)}</span></td>
+            <td>${getBadge(row['Kondisi'])}</td>
+            <td style="text-align:center;">
+                <div class="aksi-container" style="justify-content:center;">
+                    <button class="btn-aksi btn-detail" onclick="openModal(${row.originalIndex})" title="Info">Detail</button>
+                    <button class="btn-aksi btn-edit" onclick="editAudit(${row.originalIndex})" title="Edit">Edit</button>
+                    <button class="btn-aksi btn-delete" onclick="deleteAudit(${row.originalIndex})" title="Hapus">Hapus</button>
+                </div>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+window.onload = loadData;
 
     window.onload = loadData; 
 </script>
