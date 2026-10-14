@@ -689,7 +689,7 @@
                 alert(`Data Berhasil Disimpan!\nKondisi: ${finalCondition} (${scorePercent}%)`);
                 resetFormToNew(); switchView('history');
             } else alert("Gagal menyimpan data: " + result.message);
-        }).catch(() => { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:var(--danger);">Gagal terhubung ke database.</td></tr>'; });
+        }).catch(() => alert("Terjadi kesalahan koneksi.")).finally(() => { submitBtn.innerText = "Simpan Hasil Audit"; submitBtn.disabled = false; });
     }
 
     function editAudit(originalIndex) {
@@ -904,7 +904,10 @@
 
             applyFilters();
         })
-        .catch(() => { tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:var(--danger);">Gagal terhubung ke database.</td></tr>'; });
+       .catch((error) => { 
+    console.error("Detail Error:", error);
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:var(--danger);">Gagal terhubung ke database. Cek Console!</td></tr>'; 
+});
     }
 
     function getBadge(kondisi) {
