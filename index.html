@@ -982,7 +982,7 @@
         else { customContainer.style.display = 'none'; document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; applyFilters(); }
     }
 
-    function applyFilters() {
+function applyFilters() {
         const searchTxt = document.getElementById('searchInput').value.toLowerCase();
         const deviceFltr = document.getElementById('filterDevice').value;
         const kondisiFltr = document.getElementById('filterKondisi').value;
@@ -995,12 +995,14 @@
             let inv = ""; let tglStr = "";
             for (let key in row) {
                 let lowerKey = key.trim().toLowerCase();
-                if (lowerKey === "no inventori") { inv = (row[key] || "").toLowerCase(); }
+                // Pengaman casting String pada no inventori
+                if (lowerKey === "no inventori") { inv = String(row[key] || "").toLowerCase(); }
                 if (lowerKey === "tanggal") { tglStr = row[key]; }
             }
 
-            let merek = (row['Merek & Tipe'] || row['Merek & Model'] || "").toLowerCase(); 
-            let sn = (row['SN'] || "").toLowerCase(); 
+            // Pengaman casting String pada merek dan SN
+            let merek = String(row['Merek & Tipe'] || row['Merek & Model'] || "").toLowerCase(); 
+            let sn = String(row['SN'] || "").toLowerCase(); 
             let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt) || sn.includes(searchTxt);
             
             let matchDevice = true;
@@ -1010,7 +1012,7 @@
             let matchKondisi = kondisiFltr === "Semua" || row['Kondisi'] === kondisiFltr;
             let matchTanggal = true;
             if(tanggalFltr !== 'Semua' && tglStr) {
-                let parts = tglStr.split(',')[0].trim().split('/');
+                let parts = String(tglStr).split(',')[0].trim().split('/');
                 if(parts.length === 3) {
                     let rowDate = new Date(parts[2], parts[1] - 1, parts[0]); rowDate.setHours(0,0,0,0);
                     let today = new Date(); today.setHours(0,0,0,0);
