@@ -302,20 +302,33 @@
                     </div>
                 </div>
 
-                <div class="specs-grid-2">
+                <!-- === BATERAI LAPTOP (mWh) === -->
+                <div class="specs-grid-2" id="batteryContainerLaptop">
                     <div class="form-group" style="margin-bottom: 0;">
                         <label>Design Capacity Baterai (mWh)</label>
-                        <span class="form-hint">*Kosongi jika PC. Jika Tablet/HP isi: 100</span>
+                        <span class="form-hint">*Kosongi jika PC.</span>
                         <input type="number" id="designCapacity" min="0" placeholder="Contoh: 45000">
                     </div>
                     <div class="form-group" style="margin-bottom: 0;">
                         <label>Full Charge Capacity (mWh)</label>
-                        <span class="form-hint">*Jika Tablet/HP isi persentase (Misal: 85)</span>
                         <input type="number" id="fullChargeCapacity" min="0" placeholder="Contoh: 38000">
                     </div>
                 </div>
 
-                <!-- === GPU (Akan disembunyikan untuk HP/Tablet) === -->
+                <!-- === BATERAI MOBILE (Dropdown CPU-Z) === -->
+                <div class="specs-grid-2" id="batteryContainerMobile" style="display: none; margin-bottom: 15px;">
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label>Kesehatan Baterai (CPU-Z / AccuBattery)</label>
+                        <select id="mobileBatteryStatus">
+                            <option value="">-- Pilih Kondisi Baterai --</option>
+                            <option value="Good">Good (Sehat & Normal)</option>
+                            <option value="Fair">Fair (Cukup / Performa Menurun)</option>
+                            <option value="Poor / Bad">Poor / Bad (Sangat Drop / Rusak)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- === GPU === -->
                 <div class="specs-grid-2" style="margin-top: 15px;" id="gpuContainer">
                     <div class="form-group" style="margin-bottom: 0;">
                         <label>Graphic Card (GPU)</label>
@@ -545,20 +558,24 @@
         document.getElementById('btnAddStorage').style.display = isMobile ? 'none' : 'inline-flex';
         document.getElementById('gpuContainer').style.display = isMobile ? 'none' : 'grid';
 
-        // Set default value for GPU if mobile to pass validation smoothly
+        // Logika Switch Baterai (mWh vs Status Teks)
         if (isMobile) {
+            document.getElementById('batteryContainerLaptop').style.display = 'none';
+            document.getElementById('batteryContainerMobile').style.display = 'grid';
+            document.getElementById('designCapacity').value = '';
+            document.getElementById('fullChargeCapacity').value = '';
             document.getElementById('gpu').value = '-';
         } else {
-            if(document.getElementById('gpu').value === '-') {
-                document.getElementById('gpu').value = '';
-            }
+            document.getElementById('batteryContainerLaptop').style.display = 'grid';
+            document.getElementById('batteryContainerMobile').style.display = 'none';
+            document.getElementById('mobileBatteryStatus').value = '';
+            if(document.getElementById('gpu').value === '-') document.getElementById('gpu').value = '';
         }
 
         document.querySelectorAll('.dynamic-row').forEach(row => {
             row.style.gridTemplateColumns = isMobile ? '1fr auto' : '1fr 1fr auto';
         });
         
-        // Hide remove buttons (✖) on mobile
         document.querySelectorAll('.btn-remove').forEach(btn => {
             btn.style.display = isMobile ? 'none' : 'flex';
         });
@@ -668,7 +685,6 @@
             } else { ramUsageArray.push("-"); }
         });
 
-        // Pengecualian penilaian skor RAM jika device adalah Tablet/HP
         if (!isMobile) {
             if (maxRamUsage > 85) { fatalItems++; jsonPayload.fatal.push({ label: `RAM Terpakai Kritis`, note: 'Kapasitas RAM Kritis (Bottleneck). Wajib upgrade.' }); } 
             else if (maxRamUsage > 70) { minorItems++; jsonPayload.minor.push({ label: `RAM Terpakai Menipis`, note: 'Kapasitas RAM menipis (Warning). Pertimbangkan upgrade.' }); } 
@@ -691,7 +707,6 @@
             } else { ssdHealthArray.push("-"); }
         });
 
-        // Pengecualian penilaian skor Storage/SSD jika device adalah Tablet/HP
         if (!isMobile && hasSsd) {
             if (minSsdHealth < 60) { fatalItems++; jsonPayload.fatal.push({ label: `Kesehatan SSD Kritis`, note: 'Kesehatan SSD <60%. Risiko data hilang, wajib ganti.' }); } 
             else if (minSsdHealth <= 84) { minorItems++; jsonPayload.minor.push({ label: `Kesehatan SSD Menurun`, note: 'Kesehatan SSD menurun (Warning).' }); } 
@@ -699,15 +714,33 @@
         }
 
         // --- LOGIKA KESEHATAN BATERAI ---
-        const dCap = parseFloat(document.getElementById('designCapacity').value);
-        const fCap = parseFloat(document.getElementById('fullChargeCapacity').value);
         let batteryText = "-";
-        if (!isNaN(dCap) && !isNaN(fCap) && dCap > 0) {
-            const batteryVal = Math.round((fCap / dCap) * 100);
-            batteryText = (dCap === 100) ? `${batteryVal}%` : `${batteryVal}% (${fCap}/${dCap} mWh)`;
-            if (batteryVal < 50) { fatalItems++; jsonPayload.fatal.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Sangat drop / kritis (<50%). Wajib diganti.' }); } 
-            else if (batteryVal < 80) { minorItems++; jsonPayload.minor.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Mulai drop / bocor halus (Warning).' }); } 
-            else { okItems++; jsonPayload.ok.push(`Kesehatan Baterai (${batteryVal}%) - Aman`); }
+        
+        if (isMobile) {
+            const mobBat = document.getElementById('mobileBatteryStatus').value;
+            if (mobBat !== "") {
+                batteryText = mobBat;
+                if (mobBat === "Good") {
+                    okItems++; 
+                    jsonPayload.ok.push(`Kesehatan Baterai (${mobBat})`);
+                } else if (mobBat === "Fair") {
+                    minorItems++; 
+                    jsonPayload.minor.push({ label: `Kesehatan Baterai (${mobBat})`, note: 'Performa baterai mulai menurun (Fair).' });
+                } else if (mobBat === "Poor / Bad") {
+                    fatalItems++; 
+                    jsonPayload.fatal.push({ label: `Kesehatan Baterai (${mobBat})`, note: 'Baterai drop drastis / rusak (Poor/Bad). Disarankan ganti.' });
+                }
+            }
+        } else {
+            const dCap = parseFloat(document.getElementById('designCapacity').value);
+            const fCap = parseFloat(document.getElementById('fullChargeCapacity').value);
+            if (!isNaN(dCap) && !isNaN(fCap) && dCap > 0) {
+                const batteryVal = Math.round((fCap / dCap) * 100);
+                batteryText = (dCap === 100) ? `${batteryVal}%` : `${batteryVal}% (${fCap}/${dCap} mWh)`;
+                if (batteryVal < 50) { fatalItems++; jsonPayload.fatal.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Sangat drop / kritis (<50%). Wajib diganti.' }); } 
+                else if (batteryVal < 80) { minorItems++; jsonPayload.minor.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Mulai drop / bocor halus (Warning).' }); } 
+                else { okItems++; jsonPayload.ok.push(`Kesehatan Baterai (${batteryVal}%) - Aman`); }
+            }
         }
 
         let itemDinilai = okItems + minorItems + fatalItems;
@@ -800,11 +833,27 @@
         }
 
         let batStr = row['Battery Health'] || "";
-        document.getElementById('designCapacity').value = ""; document.getElementById('fullChargeCapacity').value = "";
+        document.getElementById('designCapacity').value = ""; 
+        document.getElementById('fullChargeCapacity').value = "";
+        document.getElementById('mobileBatteryStatus').value = "";
+
         if (batStr !== "-" && batStr !== "") {
-            let matchMwh = batStr.match(/\((\d+)\/(\d+)\s*mWh\)/);
-            if (matchMwh) { document.getElementById('fullChargeCapacity').value = matchMwh[1]; document.getElementById('designCapacity').value = matchMwh[2]; } 
-            else { let matchPct = batStr.match(/(\d+)%/); if (matchPct) { document.getElementById('designCapacity').value = "100"; document.getElementById('fullChargeCapacity').value = matchPct[1]; } }
+            // Parsing untuk Mobile (Good/Fair/Poor) vs Laptop (mWh)
+            if (batStr.includes("Good") || batStr.includes("Fair") || batStr.includes("Poor") || batStr.includes("Bad")) {
+                if (batStr.includes("Good")) document.getElementById('mobileBatteryStatus').value = "Good";
+                else if (batStr.includes("Fair")) document.getElementById('mobileBatteryStatus').value = "Fair";
+                else if (batStr.includes("Poor") || batStr.includes("Bad")) document.getElementById('mobileBatteryStatus').value = "Poor / Bad";
+            } else {
+                let matchMwh = batStr.match(/\((\d+)\/(\d+)\s*mWh\)/);
+                if (matchMwh) { 
+                    document.getElementById('fullChargeCapacity').value = matchMwh[1]; 
+                    document.getElementById('designCapacity').value = matchMwh[2]; 
+                } 
+                else { 
+                    let matchPct = batStr.match(/(\d+)%/); 
+                    if (matchPct) { document.getElementById('designCapacity').value = "100"; document.getElementById('fullChargeCapacity').value = matchPct[1]; } 
+                }
+            }
         }
 
         try {
@@ -982,7 +1031,7 @@
         else { customContainer.style.display = 'none'; document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; applyFilters(); }
     }
 
-function applyFilters() {
+    function applyFilters() {
         const searchTxt = document.getElementById('searchInput').value.toLowerCase();
         const deviceFltr = document.getElementById('filterDevice').value;
         const kondisiFltr = document.getElementById('filterKondisi').value;
@@ -995,12 +1044,10 @@ function applyFilters() {
             let inv = ""; let tglStr = "";
             for (let key in row) {
                 let lowerKey = key.trim().toLowerCase();
-                // Pengaman casting String pada no inventori
                 if (lowerKey === "no inventori") { inv = String(row[key] || "").toLowerCase(); }
                 if (lowerKey === "tanggal") { tglStr = row[key]; }
             }
 
-            // Pengaman casting String pada merek dan SN
             let merek = String(row['Merek & Tipe'] || row['Merek & Model'] || "").toLowerCase(); 
             let sn = String(row['SN'] || "").toLowerCase(); 
             let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt) || sn.includes(searchTxt);
@@ -1052,7 +1099,7 @@ function applyFilters() {
             let tglTampil = "-"; let invTampil = "-";
             for (let key in row) {
                 let lowerKey = key.trim().toLowerCase();
-                if (lowerKey === "tanggal" && row[key]) { tglTampil = row[key].split(',')[0]; }
+                if (lowerKey === "tanggal" && row[key]) { tglTampil = String(row[key]).split(',')[0]; }
                 if (lowerKey === "no inventori") { invTampil = row[key]; }
             }
 
