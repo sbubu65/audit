@@ -6,10 +6,11 @@
     <title>DBL - Sistem Audit Fisik Aset</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* === RESET & VARIABEL WARNA === */
         :root {
             --primary-blue: #204bb5;
             --primary-dark: #153482;
-            --bg-body: #f3f4f6;
+            --bg-body: #f3f4f6; 
             --text-main: #111827;
             --text-muted: #6b7280;
             --card-bg: #ffffff;
@@ -18,8 +19,10 @@
             --warning: #f59e0b;
             --danger: #ef4444;
         }
+
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; padding: 0; color: var(--text-main); }
 
+        /* === NAVBAR MODERN === */
         .top-navbar { background-color: var(--primary-blue); color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
         .brand-logo { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
         .nav-links { display: flex; gap: 5px; overflow-x: auto; }
@@ -32,6 +35,7 @@
         .view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* === DASHBOARD & FORM === */
         .section-title { font-size: 22px; font-weight: 600; margin-bottom: 20px; color: var(--text-main); border-bottom: 2px solid var(--border-color); padding-bottom: 10px; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
         .stat-card { background: var(--card-bg); padding: 25px 20px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; text-align: center; transition: transform 0.2s; }
@@ -50,62 +54,64 @@
 
         .form-panel { background: var(--card-bg); padding: 30px; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border: 1px solid #e5e7eb; }
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: var(--text-main); }
-        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px; transition: 0.2s; background: #fff; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 14px; color: var(--text-main);}
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px; transition: 0.2s; background: #fff;}
         .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(32,75,181,0.1); }
-        .form-hint { font-weight: normal; font-size: 11px; color: #6b7280; display: block; margin-top: 2px; line-height: 1.2; }
-
-        .specs-section-box { background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 25px; }
-        .specs-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 15px; }
-        .specs-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-
+        .form-hint { font-weight:normal; font-size:11px; color:#6b7280; display:block; margin-top:2px; line-height: 1.2;}
+        
+        .specs-section-box { background: #f9fafb; padding: 20px; border-radius: 8px; border: 1px solid #e5e7eb; margin-bottom: 25px;}
+        .specs-grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-bottom: 15px;}
+        .specs-grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;}
+        
+        /* === STYLE DINAMIS === */
         .dynamic-container { margin-bottom: 20px; background: #ffffff; border: 1px solid #d1d5db; border-radius: 8px; padding: 15px; }
-        .dynamic-container-title { font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .dynamic-container-title { font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;}
         .dynamic-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; align-items: start; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #e5e7eb; }
         .dynamic-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
-        .btn-remove { background: #ef4444; color: white; border: none; border-radius: 6px; width: 36px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-top: 24px; transition: 0.2s; }
+        .btn-remove { background: #ef4444; color: white; border: none; border-radius: 6px; width: 36px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; margin-top: 24px; transition: 0.2s;}
         .btn-remove:hover { background: #dc2626; }
-        .btn-add-item { background: #f59e0b; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px; }
+        .btn-add-item { background: #f59e0b; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; display: inline-flex; align-items: center; gap: 5px;}
         .btn-add-item:hover { background: #d97706; }
 
         .sop-section { background: #fff; padding: 0; border-radius: 8px; margin-bottom: 25px; }
-        .checklist-item { margin-bottom: 15px; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; background: #f9fafb; }
+        .checklist-item { margin-bottom: 15px; border: 1px solid #e5e7eb; padding: 15px; border-radius: 8px; background: #f9fafb;}
         .checklist-label { font-weight: 600; margin-bottom: 10px; font-size: 15px; }
         .btn-group { display: flex; width: 100%; border: 1px solid var(--border-color); border-radius: 6px; overflow: hidden; }
-        .btn-check { flex: 1; background: #fff; border: none; padding: 12px; font-size: 14px; cursor: pointer; border-right: 1px solid var(--border-color); transition: 0.2s; font-weight: 600; }
+        .btn-check { flex: 1; background: #fff; border: none; padding: 12px; font-size: 14px; cursor: pointer; border-right: 1px solid var(--border-color); transition: 0.2s; font-weight: 600;}
         .btn-check:last-child { border-right: none; }
-        .btn-check.selected-ok { background: var(--success); color: white; border-color: var(--success); }
-        .btn-check.selected-not-ok { background: var(--danger); color: white; border-color: var(--danger); }
-        .btn-check.selected-na { background: #6b7280; color: white; border-color: #6b7280; }
-
+        .btn-check.selected-ok { background: var(--success); color: white; border-color: var(--success);}
+        .btn-check.selected-not-ok { background: var(--danger); color: white; border-color: var(--danger);}
+        .btn-check.selected-na { background: #6b7280; color: white; border-color: #6b7280;}
+        
         .not-ok-panel { display: none; margin-top: 12px; padding: 15px; background: #fef2f2; border-radius: 6px; border: 1px dashed #fca5a5; }
         .not-ok-panel.active { display: block; }
         .not-ok-panel label { font-size: 13px; font-weight: 600; color: var(--danger); margin-bottom: 8px; }
-        .btn-sev { flex: 1; background: #fff; border: none; padding: 10px; font-size: 13px; cursor: pointer; border-right: 1px solid var(--border-color); font-weight: 600; }
+        .btn-sev { flex: 1; background: #fff; border: none; padding: 10px; font-size: 13px; cursor: pointer; border-right: 1px solid var(--border-color); font-weight: 600;}
         .btn-sev:last-child { border-right: none; }
-        .btn-sev.selected-minor { background: var(--warning); color: white; border-color: var(--warning); }
-        .btn-sev.selected-rusak { background: var(--danger); color: white; border-color: var(--danger); }
+        .btn-sev.selected-minor { background: var(--warning); color: white; border-color:var(--warning); }
+        .btn-sev.selected-rusak { background: var(--danger); color: white; border-color:var(--danger);}
 
-        .btn { background: var(--primary-blue); color: white; border: none; padding: 14px 20px; border-radius: 8px; cursor: pointer; font-size: 15px; width: 100%; font-weight: 600; font-family: inherit; transition: 0.2s; }
+        .btn { background: var(--primary-blue); color: white; border: none; padding: 14px 20px; border-radius: 8px; cursor: pointer; font-size: 15px; width: 100%; font-weight: 600; font-family: inherit; transition: 0.2s;}
         .btn:hover { background: var(--primary-dark); }
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
 
-        .history-header-area { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        .history-title-group h2 { font-size: 32px; font-weight: 700; color: #111827; margin: 0 0 5px 0; letter-spacing: -0.5px; }
+        /* === UI RIWAYAT AUDIT BARU === */
+        .history-header-area { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;}
+        .history-title-group h2 { font-size: 32px; font-weight: 700; color: #111827; margin: 0 0 5px 0; letter-spacing: -0.5px;}
         .history-title-group p { margin: 0 0 5px 0; font-size: 15px; color: #4b5563; }
         .history-timestamp { font-size: 13px; color: #6b7280; }
-
-        .btn-refresh-outline { background: #ffffff; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); height: fit-content; }
+        
+        .btn-refresh-outline { background: #ffffff; border: 1px solid #d1d5db; border-radius: 8px; padding: 10px 20px; font-size: 14px; font-weight: 600; color: #374151; cursor: pointer; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.05); height: fit-content;}
         .btn-refresh-outline:hover { background: #f9fafb; border-color: #9ca3af; }
 
         .filter-section-clean { margin-bottom: 20px; }
         .form-group-clean { margin-bottom: 15px; }
         .form-group-clean label { display: block; font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 8px; }
-        .form-group-clean input, .form-group-clean select { width: 100%; padding: 12px 15px; border: 1px solid #d1d5db; border-radius: 8px; background: #ffffff; font-family: inherit; font-size: 14px; color: #111827; box-sizing: border-box; outline: none; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.03); }
+        .form-group-clean input, .form-group-clean select { width: 100%; padding: 12px 15px; border: 1px solid #d1d5db; border-radius: 8px; background: #ffffff; font-family: inherit; font-size: 14px; color: #111827; box-sizing: border-box; outline: none; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.03);}
         .form-group-clean input:focus, .form-group-clean select:focus { border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(32,75,181,0.1); }
-
+        
         .filter-grid-clean { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
         .custom-date-container { display: none; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+        
         .filter-info-clean { margin: 25px 0 10px 0; font-size: 14px; color: #6b7280; font-weight: 500; }
 
         .table-container-modern { background: #ffffff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
@@ -115,70 +121,84 @@
         .table-modern td { padding: 16px 20px; border-bottom: 1px solid #e5e7eb; color: #4b5563; }
         .table-modern tr:last-child td { border-bottom: none; }
         .table-modern tr:hover { background-color: #f9fafb; }
-
+        
         .badge { padding: 4px 10px; border-radius: 6px; font-weight: 600; font-size: 12px; }
-        .badge-baik { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
-        .badge-ringan { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-        .badge-berat { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-
-        .btn-aksi { border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; color: white; font-weight: 600; font-family: inherit; transition: 0.2s; }
+        .badge-baik { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0;}
+        .badge-ringan { background: #fef3c7; color: #92400e; border: 1px solid #fde68a;}
+        .badge-berat { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca;}
+        
+        .btn-aksi { border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; color: white; font-weight:600; font-family: inherit; transition: 0.2s;}
         .btn-detail { background: #f3f4f6; color: #374151; border: 1px solid #d1d5db; } .btn-detail:hover { background: #e5e7eb; }
         .btn-edit { background: var(--warning); color: #fff; } .btn-edit:hover { background: #d97706; }
         .btn-delete { background: var(--danger); } .btn-delete:hover { background: #dc2626; }
         .aksi-container { display: flex; gap: 8px; }
 
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); backdrop-filter: blur(4px); }
-        .modal-content { background-color: #fff; margin: 3% auto; padding: 30px; border-radius: 16px; width: 90%; max-width: 750px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); max-height: 88vh; overflow-y: auto; }
-        .close-btn { color: #9ca3af; float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1; }
+        /* === MODAL POPUP === */
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(17, 24, 39, 0.7); backdrop-filter: blur(4px);}
+        .modal-content { background-color: #fff; margin: 3% auto; padding: 30px; border-radius: 16px; width: 90%; max-width: 750px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); max-height: 88vh; overflow-y: auto;}
+        .close-btn { color: #9ca3af; float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 1;}
         .close-btn:hover { color: #111827; }
-
-        .score-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; margin-bottom: 25px; }
-        .score-box h1 { margin: 0; font-size: 40px; color: var(--text-main); }
-
-        .detail-group-title { font-size: 16px; font-weight: 700; color: #111827; margin: 30px 0 15px 0; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
-        .detail-row { display: flex; border-bottom: 1px solid #f3f4f6; padding: 12px 0; justify-content: space-between; font-size: 14px; }
+        
+        .score-box { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e5e7eb; padding-bottom: 20px; margin-bottom: 25px;}
+        .score-box h1 { margin: 0; font-size: 40px; color: var(--text-main);}
+        
+        .detail-group-title { font-size: 16px; font-weight: 700; color: #111827; margin: 30px 0 15px 0; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px;}
+        .detail-row { display: flex; border-bottom: 1px solid #f3f4f6; padding: 12px 0; justify-content: space-between; font-size: 14px;}
         .detail-row span:first-child { font-weight: 500; color: #6b7280; }
-        .detail-row span:last-child { font-weight: 600; text-align: right; color: #111827; white-space: pre-wrap; }
-
-        .result-group { margin-bottom: 15px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden; }
-        .result-group h5 { margin: 0; padding: 12px 15px; font-size: 14px; background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
-        .result-item { padding: 12px 15px; border-bottom: 1px solid #f3f4f6; display: flex; flex-direction: column; }
-        .result-item:last-child { border-bottom: none; }
-        .result-item-title { font-weight: 600; font-size: 14px; }
-        .result-item-note { color: #6b7280; font-size: 13px; margin-top: 5px; }
-
+        .detail-row span:last-child { font-weight: 600; text-align: right; color: #111827; white-space: pre-wrap;}
+        
+        .result-group { margin-bottom: 15px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;}
+        .result-group h5 { margin: 0; padding: 12px 15px; font-size: 14px; background: #f9fafb; border-bottom: 1px solid #e5e7eb;}
+        .result-item { padding: 12px 15px; border-bottom: 1px solid #f3f4f6; display: flex; flex-direction: column;}
+        .result-item:last-child { border-bottom: none;}
+        .result-item-title { font-weight: 600; font-size: 14px;}
+        .result-item-note { color: #6b7280; font-size: 13px; margin-top: 5px;}
+        
         .text-ok { color: var(--success); } .text-minor { color: var(--warning); } .text-fatal { color: var(--danger); } .text-na { color: var(--text-muted); }
 
+        /* === SETTING CSS UNTUK PRINT === */
         @media print {
-            @page { size: A4 portrait; margin: 1cm; }
-            body { background: white !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color: #000 !important; font-size: 12px !important; }
+            @page { size: A5 portrait; margin: 1cm; }
+            body { 
+                background: white !important; 
+                -webkit-print-color-adjust: exact !important; 
+                print-color-adjust: exact !important;
+                color: #000 !important;
+                font-size: 12px !important;
+            }
             .top-navbar, .main-container { display: none !important; }
+            
+            /* Sembunyikan Ringkasan Pengecekan saat diprint */
             #printHideSummary { display: none !important; }
+            
             .modal { position: static !important; display: block !important; background: transparent !important; backdrop-filter: none !important; padding: 0 !important; margin: 0 !important; }
             .modal-content { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; width: 100% !important; max-width: 100% !important; overflow: visible !important; max-height: none !important; }
             .close-btn, #btnPrintModal { display: none !important; }
-            .score-box { padding-bottom: 10px !important; margin-bottom: 15px !important; border-bottom: 2px solid #000 !important; }
+            
+            .score-box { padding-bottom: 10px !important; margin-bottom: 15px !important; border-bottom: 2px solid #000 !important;}
             .score-box h1 { font-size: 24px !important; margin: 0 !important; }
-            .score-box p { font-size: 10px !important; margin: 0 !important; }
-            .score-box h3 { font-size: 14px !important; margin: 4px 0 0 0 !important; }
-            .detail-group-title { font-size: 14px !important; margin: 15px 0 8px 0 !important; border-bottom: 1px solid #ccc !important; }
-            .detail-row { padding: 4px 0 !important; font-size: 11px !important; border-bottom: 1px solid #eee !important; }
-            .result-group { margin-bottom: 8px !important; border: 1px solid #ccc !important; page-break-inside: avoid; }
-            .result-group h5 { padding: 6px 10px !important; font-size: 12px !important; border-bottom: 1px solid #ccc !important; }
-            .result-item { padding: 6px 10px !important; border-bottom: 1px solid #eee !important; }
+            .score-box p { font-size: 10px !important; margin: 0 !important;}
+            .score-box h3 { font-size: 14px !important; margin: 4px 0 0 0 !important;}
+            
+            .detail-group-title { font-size: 14px !important; margin: 15px 0 8px 0 !important; border-bottom: 1px solid #ccc !important;}
+            .detail-row { padding: 4px 0 !important; font-size: 11px !important; border-bottom: 1px solid #eee !important;}
+            
+            .result-group { margin-bottom: 8px !important; border: 1px solid #ccc !important; page-break-inside: avoid;}
+            .result-group h5 { padding: 6px 10px !important; font-size: 12px !important; border-bottom: 1px solid #ccc !important;}
+            .result-item { padding: 6px 10px !important; border-bottom: 1px solid #eee !important;}
             .result-item-title { font-size: 11px !important; }
             .result-item-note { font-size: 10px !important; margin-top: 2px !important; }
         }
 
         @media (max-width: 768px) {
-            .nav-links { width: 100%; justify-content: flex-start; margin-top: 10px; padding-bottom: 5px; }
+            .nav-links { width: 100%; justify-content: flex-start; margin-top: 10px; padding-bottom: 5px;}
             .top-navbar { flex-direction: column; align-items: flex-start; }
             .stats-grid { grid-template-columns: 1fr; }
             .aksi-container { flex-direction: column; }
             .btn-aksi { width: 100%; text-align: center; }
             .history-header-area { flex-direction: column; }
-            .dynamic-row { grid-template-columns: 1fr; gap: 5px; }
-            .btn-remove { margin-top: 0; width: 100%; height: auto; padding: 8px; margin-bottom: 10px; }
+            .dynamic-row { grid-template-columns: 1fr auto !important; gap: 5px;}
+            .btn-remove { margin-top: 0; width: 100%; height: auto; padding: 8px; margin-bottom: 10px;}
         }
     </style>
 </head>
@@ -206,7 +226,7 @@
             <div class="stat-card warning"><h3 id="statRingan">0</h3><p>Rusak Ringan (Minus)</p></div>
             <div class="stat-card alert"><h3 id="statBerat">0</h3><p>Rusak Berat (Fatal)</p></div>
         </div>
-
+        
         <div class="section-title">Distribusi Perangkat</div>
         <div class="stats-grid">
             <div class="stat-card blue"><h3 id="statTotal">0</h3><p>Total Diaudit</p></div>
@@ -217,7 +237,7 @@
         </div>
     </div>
 
-    <!-- 2. FORM AUDIT -->
+    <!-- 2. MULAI AUDIT (FORM) -->
     <div id="view-audit" class="view">
         <div class="section-title" id="viewTitleAudit">Pilih Kategori Perangkat</div>
         <div class="cards" id="deviceCards">
@@ -229,7 +249,7 @@
 
         <form id="auditForm" class="form-panel" style="display: none;" onsubmit="submitForm(event)">
             <h3 id="formTitle" style="margin-top:0; border-bottom: 2px solid var(--border-color); padding-bottom: 10px; color: var(--primary-blue);">Form Audit</h3>
-            <input type="hidden" id="jenisPerangkat">
+            <input type="hidden" id="jenisPerangkat" required>
 
             <div class="specs-grid-3" style="margin-bottom: 20px;">
                 <div class="form-group" style="margin-bottom: 0;">
@@ -248,7 +268,7 @@
 
             <h4 style="font-size: 16px; margin-bottom: 15px; color: #111827;">Spesifikasi Hardware & Software</h4>
             <div class="specs-section-box">
-
+                
                 <div class="specs-grid-2">
                     <div class="form-group" style="margin-bottom: 0;">
                         <label>Processor</label>
@@ -260,20 +280,26 @@
                     </div>
                 </div>
 
+                <!-- === DINAMIS RAM === -->
                 <div class="dynamic-container" style="margin-top: 15px;">
                     <div class="dynamic-container-title">
                         Detail RAM / Memory
                         <button type="button" class="btn-add-item" onclick="addRamRow()">+ Tambah Item</button>
                     </div>
-                    <div id="ramList"></div>
+                    <div id="ramList">
+                        <!-- Baris RAM akan dimunculkan di sini -->
+                    </div>
                 </div>
 
+                <!-- === DINAMIS STORAGE === -->
                 <div class="dynamic-container">
                     <div class="dynamic-container-title">
                         Detail Storage / Penyimpanan
                         <button type="button" class="btn-add-item" onclick="addStorageRow()">+ Tambah Item</button>
                     </div>
-                    <div id="storageList"></div>
+                    <div id="storageList">
+                        <!-- Baris Storage akan dimunculkan di sini -->
+                    </div>
                 </div>
 
                 <div class="specs-grid-2">
@@ -295,34 +321,15 @@
                         <input type="text" id="gpu" placeholder="Contoh: NVIDIA GTX 1650 (Isi '-' jika onboard)">
                     </div>
                 </div>
+
             </div>
 
             <h4 style="font-size: 16px; margin-bottom: 5px; color: #111827;">Inspeksi Fisik & Fungsi Utama</h4>
-            <div style="font-size:13px; color:#374151; background:#f9fafb; border:1px solid #e5e7eb; border-radius:8px; padding:12px 15px; margin-bottom:20px; line-height:1.6;">
-                <div><strong>Fungsi Normal</strong>: berfungsi baik.</div>
-                <div><strong>Ada Kendala</strong>, lalu pilih klasifikasi:</div>
-                <div style="padding-left:15px;">• <strong class="text-minor">Minor</strong>: rusak tapi masih bisa dipakai bekerja (casing baret/bocel, dead pixel &lt; 50% layar)</div>
-                <div style="padding-left:15px;">• <strong class="text-fatal">Fatal</strong>: tidak bisa dipakai dan mengganggu pekerjaan (layar mati, keyboard/trackpad mati)</div>
-                <div><strong>N/A</strong>: fitur memang tidak ada di perangkat ini (tidak dihitung). Jangan dipakai untuk fitur yang belum dicek.</div>
-            </div>
-
+            <p style="font-size:13px; color:var(--text-muted); margin-top:0; margin-bottom:20px;">*Pilih "Ada Kendala" untuk membuka kolom catatan kerusakan.</p>
+            
             <div class="sop-section" id="checklistArea"></div>
-
-            <div style="margin-top:30px; border:1px solid #fca5a5; background:#fef2f2; border-radius:8px; padding:15px;">
-                <label style="display:flex; align-items:center; gap:10px; font-weight:600; cursor:pointer; color:#991b1b;">
-                    <input type="checkbox" id="chkTidakDiuji" onchange="toggleTidakDiuji()" style="width:auto;">
-                    Perangkat Tidak Dapat Diuji Penuh
-                </label>
-                <div style="font-size:12px; color:#6b7280; margin-top:6px; line-height:1.5;">
-                    Gunakan hanya jika perangkat tidak bisa booting, hang terus-menerus, atau bluescreen sehingga item tidak bisa diperiksa. Perangkat otomatis berlabel <strong>Rusak Berat</strong>. Item yang sudah terisi tetap disimpan. Setelah diperbaiki, lakukan audit ulang lewat tombol Edit.
-                </div>
-                <div id="panelTidakDiuji" style="display:none; margin-top:12px;">
-                    <label style="display:block; font-size:13px; font-weight:600; margin-bottom:6px;">Alasan (wajib, min. 10 karakter)</label>
-                    <textarea id="alasanTidakDiuji" rows="2" placeholder="Contoh: Laptop bluescreen setelah login, tidak bisa membuka Device Manager" style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:6px; box-sizing:border-box; font-family:inherit; font-size:13px;"></textarea>
-                </div>
-            </div>
-
-            <div style="margin-top: 20px;">
+            
+            <div style="margin-top: 30px;">
                 <button type="submit" class="btn" id="submitBtn">Simpan Hasil Audit</button>
                 <button type="button" class="btn" style="background:#f3f4f6; color:#374151; border:1px solid #d1d5db; margin-top:10px; display:none;" id="cancelEditBtn" onclick="resetFormToNew()">Batal Edit & Kembali</button>
             </div>
@@ -376,8 +383,6 @@
             <div style="text-align: right;"><p style="margin:0; font-size:12px; font-weight:700; color:#6b7280; letter-spacing: 1px;">KONDISI</p><h3 id="detKondisi" style="margin:8px 0 0 0;">-</h3></div>
         </div>
 
-        <div id="detTidakDiuji" style="display:none; background:#fef2f2; border:1px solid #fecaca; color:#991b1b; padding:12px 15px; border-radius:8px; margin-bottom:20px; font-size:13px;"></div>
-
         <div id="uiDataBaru">
             <div id="printHideSummary">
                 <h4 class="detail-group-title">Ringkasan Pengecekan</h4>
@@ -402,64 +407,53 @@
             <div class="result-group" id="resFatalArea" style="display:none;"><h5 class="text-fatal" style="background:#fef2f2; border-bottom-color:#fecaca;">🚨 Masalah Fatal</h5><div id="listFatal"></div></div>
             <div class="result-group" id="resMinorArea" style="display:none;"><h5 class="text-minor" style="background:#fffbeb; border-bottom-color:#fde68a;">⚠️ Catatan Minor</h5><div id="listMinor"></div></div>
         </div>
-
+        
         <div style="margin-top: 35px; border-top: 1px solid #e5e7eb; padding-top: 25px; text-align: right;">
             <button class="btn" id="btnPrintModal" onclick="window.print()" style="width: auto; padding: 12px 24px; display: inline-flex; align-items: center; gap: 8px;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                Cetak Laporan
+                Cetak Laporan (A5)
             </button>
         </div>
     </div>
 </div>
 
 <script>
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx5XwZa470YMQKwNYLhw3xMe6oQ0aCH241mC0-AknseQNGbp04V49XqBmZtdTzNfKLy/exec";
-
-    let globalData = [];
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwi5c00aDBa7hoUXiWVXU-pNeBWUr9g-qwospPa0uK46YSUT8iBuUb3qOVn_RvKwO5ZFw/exec";
+    
+    let globalData = []; 
     let editModeRowNumber = null;
     let editModeTanggal = null;
     let ramIdCounter = 0;
     let storageIdCounter = 0;
 
     const CHECKLIST_ITEMS = {
-        'Laptop': ['Casing, Body Fisik & Engsel', 'Layar (LCD/LED)', 'Keyboard', 'Touchpad / Trackpad', 'Port USB', 'Port LAN (RJ45)', 'Port Display (HDMI/VGA)', 'Konektivitas (Wi-Fi & Bluetooth)', 'Webcam / Kamera', 'Speaker Audio', 'Microphone', 'Adaptor Charger', 'Performa & Responsivitas Sistem', 'Lisensi Windows', 'Lisensi MS Office'],
+        'Laptop': ['Casing, Body Fisik & Engsel', 'Layar (LCD/LED)', 'Keyboard', 'Touchpad / Trackpad', 'Port USB', 'Port LAN (RJ45)', 'Port Display (HDMI/VGA)', 'Konektivitas (Wi-Fi & Bluetooth)', 'Webcam / Kamera', 'Speaker Audio', 'Microphone', 'Kesehatan Baterai', 'Adaptor Charger', 'Performa & Responsivitas Sistem', 'Lisensi Windows', 'Lisensi MS Office'],
         'iMac': ['Body Fisik & Stand', 'Layar Retina / Monitor', 'Magic Keyboard / Keyboard External', 'Magic Mouse / Trackpad', 'Port USB / Thunderbolt', 'Port LAN (RJ45)', 'Konektivitas (Wi-Fi & Bluetooth)', 'Kamera FaceTime', 'Speaker Audio', 'Microphone', 'Performa & Responsivitas Sistem', 'Lisensi macOS', 'Keamanan Akun iCloud'],
         'Tablet': ['Layar Sentuh (Touchscreen)', 'Kondisi Fisik Bezel/Body', 'Fungsi Tombol Fisik', 'Kondisi Stylus Pen', 'Port Pengisian Daya', 'Konektivitas Wi-Fi & Bluetooth', 'Koneksi Seluler (SIM)', 'Kamera Depan & Belakang', 'Speaker Audio', 'Microphone', 'Performa & Responsivitas Sistem', 'Keamanan Akun (Kosong dari iCloud/Google)'],
         'Smartphone': ['Layar Sentuh & Fungsi Display', 'Kondisi Casing & Bezel', 'Sensor Biometrik (Sidik Jari/FaceID)', 'Tombol Fisik', 'Port Pengisian Daya', 'Kamera Utama', 'Kamera Depan', 'Speaker & Earpiece', 'Microphone', 'Konektivitas (Wi-Fi & Bluetooth)', 'Penangkapan Sinyal Seluler & IMEI', 'Performa & Responsivitas Sistem', 'Keamanan Akun (Kosong dari iCloud/Google)']
     };
 
-    // === HELPER PERSEN (Sheets sering mengubah "75%" menjadi 0.75) ===
-    function normPctLines(raw) {
-        return String(raw === undefined || raw === null || raw === "" ? "-" : raw).split('\n').map(l => {
-            l = l.trim();
-            if (l === "" || l === "-" || l.includes('%')) return l || "-";
-            const n = parseFloat(l);
-            if (isNaN(n)) return l;
-            return Math.round(n <= 1 ? n * 100 : n) + "%";
-        }).join('\n');
-    }
-
-    function pctLineToNumber(l) {
-        l = String(l || "").trim();
-        if (l === "" || l === "-") return "";
-        const n = parseFloat(l);
-        if (isNaN(n)) return "";
-        return l.includes('%') ? n : Math.round(n <= 1 ? n * 100 : n);
-    }
-
-    // === BARIS DINAMIS RAM & STORAGE ===
+    // === FUNGSI TAMBAH BARIS DINAMIS ===
     function addRamRow(kapasitas = "", usage = "") {
         ramIdCounter++;
         const rowId = `ramRow_${ramIdCounter}`;
+        const device = document.getElementById('jenisPerangkat') ? document.getElementById('jenisPerangkat').value : '';
+        const isMobile = (device === 'Tablet' || device === 'Smartphone');
+        
+        // CSS untuk menyembunyikan input RAM Terpakai dan menyesuaikan kolom grid khusus HP/Tablet
+        const displayStyle = isMobile ? 'display: none;' : 'display: block;';
+        const gridStyle = isMobile ? 'grid-template-columns: 1fr auto;' : 'grid-template-columns: 1fr 1fr auto;';
+        const requiredAttr = isMobile ? '' : 'required';
+
         const html = `
-            <div class="dynamic-row" id="${rowId}">
+            <div class="dynamic-row" id="${rowId}" style="${gridStyle}">
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Kapasitas (Slot ${document.getElementById('ramList').children.length + 1})</label>
                     <input type="text" class="ram-cap-input" placeholder="Misal: 8GB" value="${kapasitas}" required>
                 </div>
-                <div class="form-group" style="margin-bottom:0;">
+                <div class="form-group ram-use-group" style="margin-bottom:0; ${displayStyle}">
                     <label>RAM Terpakai (%)</label>
-                    <input type="number" class="ram-use-input" min="0" max="100" placeholder="Misal: 75" value="${usage}" required>
+                    <input type="number" class="ram-use-input" min="0" max="100" placeholder="Misal: 75" value="${usage}" ${requiredAttr}>
                 </div>
                 <button type="button" class="btn-remove" onclick="removeDynamicRow('${rowId}', 'ramList')" title="Hapus Baris">✖</button>
             </div>
@@ -470,13 +464,20 @@
     function addStorageRow(kapasitas = "", health = "") {
         storageIdCounter++;
         const rowId = `storageRow_${storageIdCounter}`;
+        const device = document.getElementById('jenisPerangkat') ? document.getElementById('jenisPerangkat').value : '';
+        const isMobile = (device === 'Tablet' || device === 'Smartphone');
+        
+        // CSS untuk menyembunyikan input Kesehatan SSD dan menyesuaikan kolom grid khusus HP/Tablet
+        const displayStyle = isMobile ? 'display: none;' : 'display: block;';
+        const gridStyle = isMobile ? 'grid-template-columns: 1fr auto;' : 'grid-template-columns: 1fr 1fr auto;';
+
         const html = `
-            <div class="dynamic-row" id="${rowId}">
+            <div class="dynamic-row" id="${rowId}" style="${gridStyle}">
                 <div class="form-group" style="margin-bottom:0;">
                     <label>Kapasitas & Tipe (Drive ${document.getElementById('storageList').children.length + 1})</label>
                     <input type="text" class="storage-cap-input" placeholder="Misal: 256GB SSD" value="${kapasitas}" required>
                 </div>
-                <div class="form-group" style="margin-bottom:0;">
+                <div class="form-group storage-health-group" style="margin-bottom:0; ${displayStyle}">
                     <label>Kesehatan SSD (%)</label>
                     <input type="number" class="storage-health-input" min="0" max="100" placeholder="Misal: 100 (Kosongi jika HDD)" value="${health}">
                 </div>
@@ -493,8 +494,8 @@
             let count = 1;
             list.querySelectorAll('.dynamic-row').forEach(row => {
                 let label = row.querySelector('label');
-                if (listId === 'ramList') label.innerText = `Kapasitas (Slot ${count})`;
-                if (listId === 'storageList') label.innerText = `Kapasitas & Tipe (Drive ${count})`;
+                if(listId === 'ramList') label.innerText = `Kapasitas (Slot ${count})`;
+                if(listId === 'storageList') label.innerText = `Kapasitas & Tipe (Drive ${count})`;
                 count++;
             });
         } else {
@@ -502,26 +503,23 @@
         }
     }
 
-    // === NAVIGASI ===
     function switchView(viewName, isNewAudit = false) {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav-links button').forEach(el => el.classList.remove('active'));
         document.getElementById('view-' + viewName).classList.add('active');
-
-        if (viewName === 'dashboard') { document.getElementById('btnDashboard').classList.add('active'); loadData(); }
-        else if (viewName === 'history') { document.getElementById('btnHistory').classList.add('active'); loadData(); }
-        else { document.getElementById('btnAudit').classList.add('active'); if (isNewAudit) resetFormToNew(); }
+        
+        if(viewName === 'dashboard') { document.getElementById('btnDashboard').classList.add('active'); loadData(); } 
+        else if(viewName === 'history') { document.getElementById('btnHistory').classList.add('active'); loadData(); } 
+        else { document.getElementById('btnAudit').classList.add('active'); if(isNewAudit) resetFormToNew(); }
     }
 
     function resetFormToNew() {
         editModeRowNumber = null;
         editModeTanggal = null;
         document.getElementById('auditForm').reset();
-        document.getElementById('chkTidakDiuji').checked = false;
-        toggleTidakDiuji();
         document.getElementById('auditForm').style.display = 'none';
         document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
-
+        
         document.getElementById('viewTitleAudit').innerText = "Pilih Kategori Perangkat";
         document.getElementById('deviceCards').style.display = "grid";
         document.getElementById('formTitle').innerText = "Form Audit Baru";
@@ -534,18 +532,34 @@
         addRamRow(); addStorageRow();
     }
 
-    function toggleTidakDiuji() {
-        const on = document.getElementById('chkTidakDiuji').checked;
-        document.getElementById('panelTidakDiuji').style.display = on ? 'block' : 'none';
-        document.getElementById('auditForm').noValidate = on; // izinkan kolom spesifikasi kosong
-        if (!on) document.getElementById('alasanTidakDiuji').value = '';
-    }
-
     function selectDevice(device, cardElement) {
         document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
-        if (cardElement) cardElement.classList.add('selected');
+        if(cardElement) cardElement.classList.add('selected');
         document.getElementById('jenisPerangkat').value = device;
-        document.getElementById('formTitle').innerText = (editModeRowNumber !== null ? "Update Data Audit: " : "Form Inspeksi: ") + device;
+        
+        const isMobile = (device === 'Tablet' || device === 'Smartphone');
+
+        // Sembunyikan atau tampilkan field berdasarkan jenis perangkat
+        document.querySelectorAll('.dynamic-row').forEach(row => {
+            row.style.gridTemplateColumns = isMobile ? '1fr auto' : '1fr 1fr auto';
+        });
+
+        document.querySelectorAll('.ram-use-group').forEach(el => {
+            el.style.display = isMobile ? 'none' : 'block';
+        });
+        document.querySelectorAll('.ram-use-input').forEach(el => {
+            if (isMobile) { el.removeAttribute('required'); el.value = ''; } 
+            else { el.setAttribute('required', 'true'); }
+        });
+
+        document.querySelectorAll('.storage-health-group').forEach(el => {
+            el.style.display = isMobile ? 'none' : 'block';
+        });
+        document.querySelectorAll('.storage-health-input').forEach(el => {
+            if (isMobile) { el.value = ''; }
+        });
+
+        document.getElementById('formTitle').innerText = (editModeRowNumber ? "Update Data Audit: " : "Form Inspeksi: ") + device;
         document.getElementById('auditForm').style.display = 'block';
 
         const area = document.getElementById('checklistArea');
@@ -579,156 +593,130 @@
     function setCheck(itemId, status, btnElement) {
         const group = btnElement.parentElement;
         group.querySelectorAll('.btn-check').forEach(btn => btn.classList.remove('selected-ok', 'selected-not-ok', 'selected-na'));
-        if (status === 'OK') btnElement.classList.add('selected-ok');
-        if (status === 'Tidak OK') btnElement.classList.add('selected-not-ok');
-        if (status === 'NA') btnElement.classList.add('selected-na');
+        if(status === 'OK') btnElement.classList.add('selected-ok');
+        if(status === 'Tidak OK') btnElement.classList.add('selected-not-ok');
+        if(status === 'NA') btnElement.classList.add('selected-na');
         document.getElementById(itemId + '_val').value = status;
         const panel = document.getElementById(itemId + '_notok_panel');
-        if (status === 'Tidak OK') { panel.classList.add('active'); }
-        else {
-            panel.classList.remove('active');
-            document.getElementById(itemId + '_severity').value = '';
-            document.getElementById(itemId + '_note').value = '';
-            panel.querySelectorAll('.btn-sev').forEach(b => b.classList.remove('selected-minor', 'selected-rusak'));
-        }
+        if(status === 'Tidak OK') { panel.classList.add('active'); } else { panel.classList.remove('active'); document.getElementById(itemId + '_severity').value = ''; document.getElementById(itemId + '_note').value = ''; panel.querySelectorAll('.btn-sev').forEach(b => b.classList.remove('selected-minor', 'selected-rusak')); }
     }
 
     function setSeverity(itemId, severity, btnElement) {
         const group = btnElement.parentElement;
         group.querySelectorAll('.btn-sev').forEach(btn => btn.classList.remove('selected-minor', 'selected-rusak'));
-        if (severity === 'Minor') btnElement.classList.add('selected-minor');
-        if (severity === 'Rusak Total') btnElement.classList.add('selected-rusak');
+        if(severity === 'Minor') btnElement.classList.add('selected-minor');
+        if(severity === 'Rusak Total') btnElement.classList.add('selected-rusak');
         document.getElementById(itemId + '_severity').value = severity;
     }
 
-    // === SIMPAN AUDIT ===
     function submitForm(e) {
         e.preventDefault();
-
-        const tidakDiuji = document.getElementById('chkTidakDiuji').checked;
-        const alasan = document.getElementById('alasanTidakDiuji').value.trim();
-
-        // --- VALIDASI ---
+        
         let isValid = true; let errorMessage = "";
-        if (!document.getElementById('noInventori').value.trim()) { isValid = false; errorMessage = "No Inventori wajib diisi."; }
-        else if (!document.getElementById('merekTipe').value.trim()) { isValid = false; errorMessage = "Merek & Tipe wajib diisi."; }
-        else if (tidakDiuji && alasan.length < 10) { isValid = false; errorMessage = "Alasan 'Tidak Dapat Diuji' wajib diisi (minimal 10 karakter)."; }
+        document.querySelectorAll('.chk-value').forEach(input => {
+            if(input.value === "") { isValid = false; errorMessage = "Lengkapi pengisian fungsi pada semua komponen."; }
+            if(input.value === "Tidak OK") {
+                let itemId = input.id.replace('_val', '');
+                if(document.getElementById(itemId + '_severity').value === "") { isValid = false; errorMessage = "Pilih klasifikasi kerusakan."; }
+                if(document.getElementById(itemId + '_note').value.trim() === "") { isValid = false; errorMessage = "Deskripsi kerusakan wajib diisi."; }
+            }
+        });
+        if(!isValid) { alert(errorMessage); return; }
 
-        if (isValid) {
-            document.querySelectorAll('.chk-value').forEach(input => {
-                if (input.value === "" && !tidakDiuji) { isValid = false; errorMessage = "Lengkapi pengisian fungsi pada semua komponen."; }
-                if (input.value === "Tidak OK") {
-                    let itemId = input.id.replace('_val', '');
-                    if (document.getElementById(itemId + '_severity').value === "") { isValid = false; errorMessage = "Pilih klasifikasi kerusakan."; }
-                    if (document.getElementById(itemId + '_note').value.trim() === "") { isValid = false; errorMessage = "Deskripsi kerusakan wajib diisi."; }
-                }
-            });
-        }
-        if (!isValid) { alert(errorMessage); return; }
-
-        // --- HITUNG CHECKLIST ---
-        let okItems = 0, minorItems = 0, fatalItems = 0, naItems = 0;
-        let jsonPayload = { ok: [], minor: [], fatal: [], na: [], belumDiperiksa: [] };
+        let okItems = 0; let minorItems = 0; let fatalItems = 0; let naItems = 0;
+        let jsonPayload = { ok: [], minor: [], fatal: [], na: [] };
+        
+        const deviceType = document.getElementById('jenisPerangkat').value;
+        const isMobile = (deviceType === 'Tablet' || deviceType === 'Smartphone');
 
         document.querySelectorAll('.chk-value').forEach(input => {
             let status = input.value; let label = input.getAttribute('data-label'); let itemId = input.id.replace('_val', '');
-            if (status === '') { jsonPayload.belumDiperiksa.push(label); }
-            else if (status === 'NA') { naItems++; jsonPayload.na.push(label); }
-            else if (status === 'OK') { okItems++; jsonPayload.ok.push(label); }
-            else if (status === 'Tidak OK') {
+            if(status === 'NA') { naItems++; jsonPayload.na.push(label); } 
+            else if(status === 'OK') { okItems++; jsonPayload.ok.push(label); } 
+            else if(status === 'Tidak OK') {
                 let sev = document.getElementById(itemId + '_severity').value;
                 let note = document.getElementById(itemId + '_note').value;
-                if (sev === 'Minor') { minorItems++; jsonPayload.minor.push({ label: label, note: note }); }
-                else if (sev === 'Rusak Total') { fatalItems++; jsonPayload.fatal.push({ label: label, note: note }); }
+                if(sev === 'Minor') { minorItems++; jsonPayload.minor.push({ label: label, note: note }); } 
+                else if(sev === 'Rusak Total') { fatalItems++; jsonPayload.fatal.push({ label: label, note: note }); }
             }
         });
 
-        // --- RAM ---
+        // --- PENGOLAHAN DATA RAM DINAMIS ---
         let ramArray = []; let ramUsageArray = [];
-        let maxRamUsage = 0; let hasRamUse = false;
+        let maxRamUsage = 0;
         document.querySelectorAll('.ram-cap-input').forEach((el, index) => {
             let cap = el.value.trim();
-            let use = parseFloat(document.querySelectorAll('.ram-use-input')[index].value);
-            ramArray.push(cap || "-");
-            if (!isNaN(use)) {
+            let useField = document.querySelectorAll('.ram-use-input')[index];
+            let use = parseFloat(useField.value);
+            
+            ramArray.push(cap);
+            if (!isNaN(use) && !isMobile) {
                 ramUsageArray.push(use + "%");
-                hasRamUse = true;
                 if (use > maxRamUsage) maxRamUsage = use;
             } else { ramUsageArray.push("-"); }
         });
 
-        if (hasRamUse) {
-            if (maxRamUsage > 85) { fatalItems++; jsonPayload.fatal.push({ label: `RAM Terpakai Kritis`, note: 'Kapasitas RAM Kritis (Bottleneck). Wajib upgrade.' }); }
-            else if (maxRamUsage > 70) { minorItems++; jsonPayload.minor.push({ label: `RAM Terpakai Menipis`, note: 'Kapasitas RAM menipis (Warning). Pertimbangkan upgrade.' }); }
+        // Pengecualian penilaian skor RAM jika device adalah Tablet/HP
+        if (!isMobile) {
+            if (maxRamUsage > 85) { fatalItems++; jsonPayload.fatal.push({ label: `RAM Terpakai Kritis`, note: 'Kapasitas RAM Kritis (Bottleneck). Wajib upgrade.' }); } 
+            else if (maxRamUsage > 70) { minorItems++; jsonPayload.minor.push({ label: `RAM Terpakai Menipis`, note: 'Kapasitas RAM menipis (Warning). Pertimbangkan upgrade.' }); } 
             else { okItems++; jsonPayload.ok.push(`Kapasitas RAM - Aman`); }
         }
 
-        // --- STORAGE ---
+        // --- PENGOLAHAN DATA STORAGE DINAMIS ---
         let storageArray = []; let ssdHealthArray = [];
         let minSsdHealth = 100; let hasSsd = false;
         document.querySelectorAll('.storage-cap-input').forEach((el, index) => {
             let cap = el.value.trim();
-            let health = parseFloat(document.querySelectorAll('.storage-health-input')[index].value);
-            storageArray.push(cap || "-");
-            if (!isNaN(health)) {
+            let healthField = document.querySelectorAll('.storage-health-input')[index];
+            let health = parseFloat(healthField.value);
+            
+            storageArray.push(cap);
+            if (!isNaN(health) && !isMobile) {
                 ssdHealthArray.push(health + "%");
                 hasSsd = true;
                 if (health < minSsdHealth) minSsdHealth = health;
             } else { ssdHealthArray.push("-"); }
         });
 
-        if (hasSsd) {
-            if (minSsdHealth < 60) { fatalItems++; jsonPayload.fatal.push({ label: `Kesehatan SSD Kritis`, note: 'Kesehatan SSD <60%. Risiko data hilang, wajib ganti.' }); }
-            else if (minSsdHealth <= 84) { minorItems++; jsonPayload.minor.push({ label: `Kesehatan SSD Menurun`, note: 'Kesehatan SSD menurun (Warning).' }); }
+        // Pengecualian penilaian skor Storage/SSD jika device adalah Tablet/HP
+        if (!isMobile && hasSsd) {
+            if (minSsdHealth < 60) { fatalItems++; jsonPayload.fatal.push({ label: `Kesehatan SSD Kritis`, note: 'Kesehatan SSD <60%. Risiko data hilang, wajib ganti.' }); } 
+            else if (minSsdHealth <= 84) { minorItems++; jsonPayload.minor.push({ label: `Kesehatan SSD Menurun`, note: 'Kesehatan SSD menurun (Warning).' }); } 
             else { okItems++; jsonPayload.ok.push(`Kesehatan SSD - Baik`); }
         }
 
-        // --- BATERAI ---
+        // --- LOGIKA KESEHATAN BATERAI ---
         const dCap = parseFloat(document.getElementById('designCapacity').value);
         const fCap = parseFloat(document.getElementById('fullChargeCapacity').value);
         let batteryText = "-";
         if (!isNaN(dCap) && !isNaN(fCap) && dCap > 0) {
             const batteryVal = Math.round((fCap / dCap) * 100);
             batteryText = (dCap === 100) ? `${batteryVal}%` : `${batteryVal}% (${fCap}/${dCap} mWh)`;
-            if (batteryVal < 50) { fatalItems++; jsonPayload.fatal.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Sangat drop / kritis (<50%). Wajib diganti.' }); }
-            else if (batteryVal < 80) { minorItems++; jsonPayload.minor.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Mulai drop / bocor halus (Warning).' }); }
+            if (batteryVal < 50) { fatalItems++; jsonPayload.fatal.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Sangat drop / kritis (<50%). Wajib diganti.' }); } 
+            else if (batteryVal < 80) { minorItems++; jsonPayload.minor.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Mulai drop / bocor halus (Warning).' }); } 
             else { okItems++; jsonPayload.ok.push(`Kesehatan Baterai (${batteryVal}%) - Aman`); }
         }
 
-        // --- SCORING BERBASIS JUMLAH TEMUAN ---
-        const PENALTI_MINOR = 12;
-        const PENALTI_FATAL = 25;
-
-        let finalCondition, batasMin, batasMax;
-        if (tidakDiuji || fatalItems >= 2 || minorItems >= 5) {
-            finalCondition = "Rusak Berat";  batasMin = 0;  batasMax = 49;
-        } else if (fatalItems === 1 || minorItems >= 2) {
-            finalCondition = "Rusak Ringan"; batasMin = 50; batasMax = 79;
-        } else {
-            finalCondition = "Baik";         batasMin = 80; batasMax = 100;
-        }
-        let nilaiMentah = 100 - (minorItems * PENALTI_MINOR) - (fatalItems * PENALTI_FATAL);
-        let scorePercent = Math.max(batasMin, Math.min(batasMax, nilaiMentah));
-
-        // --- CATATAN TIDAK DAPAT DIUJI ---
-        jsonPayload.tidakDiuji = tidakDiuji;
-        jsonPayload.alasanTidakDiuji = tidakDiuji ? alasan : "";
+        let itemDinilai = okItems + minorItems + fatalItems;
+        let scorePercent = itemDinilai === 0 ? 100 : Math.round(( ((okItems * 1) + (minorItems * 0.5)) / itemDinilai) * 10000) / 100;
+        let finalCondition = scorePercent === 100 ? "Baik" : (fatalItems > 0 ? "Rusak Berat" : "Rusak Ringan");
 
         const data = {
-            action: editModeRowNumber !== null ? 'update' : 'insert',
+            action: editModeRowNumber ? 'update' : 'insert',
             rowNumber: editModeRowNumber,
             tanggal: editModeTanggal,
             noInventori: document.getElementById('noInventori').value,
-            sn: document.getElementById('serialNumber').value || "-",
+            sn: document.getElementById('serialNumber').value || "-", 
             jenisPerangkat: document.getElementById('jenisPerangkat').value,
             merekTipe: document.getElementById('merekTipe').value,
-            processor: document.getElementById('processor').value || "-",
-            ram: ramArray.join('\n'),
-            ramUsage: ramUsageArray.join('\n'),
-            storage: storageArray.join('\n'),
-            ssdHealth: ssdHealthArray.join('\n'),
-            batteryHealth: batteryText,
-            os: document.getElementById('os').value || "-",
+            processor: document.getElementById('processor').value,
+            ram: ramArray.join('\n'),               
+            ramUsage: ramUsageArray.join('\n'),     
+            storage: storageArray.join('\n'),       
+            ssdHealth: ssdHealthArray.join('\n'),   
+            batteryHealth: batteryText, 
+            os: document.getElementById('os').value,
             gpu: document.getElementById('gpu').value || "-",
             skor: scorePercent,
             kondisi: finalCondition,
@@ -736,34 +724,30 @@
         };
 
         const submitBtn = document.getElementById('submitBtn');
-        const isEdit = editModeRowNumber !== null;
-        submitBtn.innerText = isEdit ? "Memproses Pembaruan..." : "Menyimpan ke Database...";
+        submitBtn.innerText = editModeRowNumber ? "Memproses Pembaruan..." : "Menyimpan ke Database...";
         submitBtn.disabled = true;
 
         fetch(APPS_SCRIPT_URL, { redirect: "follow", method: 'POST', headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) })
         .then(res => res.json())
         .then(result => {
-            if (result.status === "success") {
+            if(result.status === "success") {
                 alert(`Data Berhasil Disimpan!\nKondisi: ${finalCondition} (${scorePercent}%)`);
                 resetFormToNew(); switchView('history');
             } else alert("Gagal menyimpan data: " + result.message);
-        })
-        .catch(() => alert("Terjadi kesalahan koneksi."))
-        .finally(() => { submitBtn.innerText = "Simpan Hasil Audit"; submitBtn.disabled = false; });
+        }).catch(() => alert("Terjadi kesalahan koneksi.")).finally(() => { submitBtn.innerText = "Simpan Hasil Audit"; submitBtn.disabled = false; });
     }
 
-    // === EDIT AUDIT ===
     function editAudit(originalIndex) {
         const row = globalData[originalIndex];
         editModeRowNumber = row.rowNumber;
         editModeTanggal = row['Tanggal'];
 
-        switchView('audit');
+        switchView('audit'); 
         document.getElementById('viewTitleAudit').innerText = "Mengedit Audit";
         document.getElementById('deviceCards').style.display = "none";
-
+        
         let perngktLengkap = row['Jenis Perangkat'];
-        if (perngktLengkap.includes('iMac') || perngktLengkap.includes('PC')) perngktLengkap = 'iMac';
+        if(perngktLengkap.includes('iMac') || perngktLengkap.includes('PC')) perngktLengkap = 'iMac';
         selectDevice(perngktLengkap, null);
 
         document.getElementById('noInventori').value = row['No Inventori'] !== "-" ? row['No Inventori'] : "";
@@ -776,122 +760,136 @@
         document.getElementById('ramList').innerHTML = ""; ramIdCounter = 0;
         let ramListRaw = (row['RAM'] || "").toString().split('\n');
         let ramUseRaw = (row['RAM Terpakai'] || "").toString().split('\n');
-        if (ramListRaw.length === 1 && (ramListRaw[0] === "-" || ramListRaw[0] === "")) { addRamRow(); }
+        if(ramListRaw.length === 1 && ramListRaw[0] === "-") { addRamRow(); } 
         else {
             ramListRaw.forEach((capRaw, idx) => {
-                let cap = capRaw.trim();
-                addRamRow(cap === "-" ? "" : cap, pctLineToNumber(ramUseRaw[idx]));
+                let useVal = (ramUseRaw[idx] || "").replace('%', '').trim();
+                if (useVal && useVal !== "-" && !isNaN(parseFloat(useVal))) {
+                    useVal = parseFloat(useVal);
+                    if(useVal < 1) useVal = useVal * 100;
+                }
+                addRamRow(capRaw.trim(), useVal === "-" ? "" : useVal);
             });
         }
 
         document.getElementById('storageList').innerHTML = ""; storageIdCounter = 0;
         let storageListRaw = (row['Storage'] || "").toString().split('\n');
         let ssdHealthRaw = (row['SSD Health'] || "").toString().split('\n');
-        if (storageListRaw.length === 1 && (storageListRaw[0] === "-" || storageListRaw[0] === "")) { addStorageRow(); }
+        if(storageListRaw.length === 1 && storageListRaw[0] === "-") { addStorageRow(); } 
         else {
             storageListRaw.forEach((capRaw, idx) => {
-                let cap = capRaw.trim();
-                addStorageRow(cap === "-" ? "" : cap, pctLineToNumber(ssdHealthRaw[idx]));
+                let healthVal = (ssdHealthRaw[idx] || "").replace('%', '').trim();
+                if (healthVal && healthVal !== "-" && !isNaN(parseFloat(healthVal))) {
+                     healthVal = parseFloat(healthVal);
+                     if(healthVal <= 1) healthVal = healthVal * 100;
+                }
+                addStorageRow(capRaw.trim(), healthVal === "-" ? "" : healthVal);
             });
         }
 
-        let batStr = normPctLines(row['Battery Health']);
+        let batStr = row['Battery Health'] || "";
         document.getElementById('designCapacity').value = ""; document.getElementById('fullChargeCapacity').value = "";
         if (batStr !== "-" && batStr !== "") {
             let matchMwh = batStr.match(/\((\d+)\/(\d+)\s*mWh\)/);
-            if (matchMwh) { document.getElementById('fullChargeCapacity').value = matchMwh[1]; document.getElementById('designCapacity').value = matchMwh[2]; }
+            if (matchMwh) { document.getElementById('fullChargeCapacity').value = matchMwh[1]; document.getElementById('designCapacity').value = matchMwh[2]; } 
             else { let matchPct = batStr.match(/(\d+)%/); if (matchPct) { document.getElementById('designCapacity').value = "100"; document.getElementById('fullChargeCapacity').value = matchPct[1]; } }
         }
 
-        let chkData = null;
-        try { chkData = JSON.parse(row['Catatan']); } catch (e) {}
-
-        if (chkData && chkData.ok) {
-            document.querySelectorAll('.chk-value').forEach(input => {
-                let label = input.getAttribute('data-label'); let itemId = input.id.replace('_val', ''); let btnGroup = input.previousElementSibling;
-                if (chkData.ok.includes(label)) { setCheck(itemId, 'OK', btnGroup.querySelector('.btn-check:nth-child(1)')); }
-                else if (chkData.na && chkData.na.includes(label)) { setCheck(itemId, 'NA', btnGroup.querySelector('.btn-check:nth-child(3)')); }
-                else {
-                    let minorItem = (chkData.minor || []).find(i => i.label === label);
-                    let fatalItem = (chkData.fatal || chkData.notOk || []).find(i => i.label === label);
-                    let sevGroup = document.getElementById(itemId + '_severity').previousElementSibling;
-                    if (minorItem) {
-                        setCheck(itemId, 'Tidak OK', btnGroup.querySelector('.btn-check:nth-child(2)'));
-                        setSeverity(itemId, 'Minor', sevGroup.querySelector('.btn-minor'));
-                        document.getElementById(itemId + '_note').value = minorItem.note;
-                    } else if (fatalItem) {
-                        setCheck(itemId, 'Tidak OK', btnGroup.querySelector('.btn-check:nth-child(2)'));
-                        setSeverity(itemId, 'Rusak Total', sevGroup.querySelector('.btn-rusak'));
-                        document.getElementById(itemId + '_note').value = fatalItem.note;
+        try {
+            let chkData = JSON.parse(row['Catatan']);
+            if(chkData && chkData.ok) {
+                document.querySelectorAll('.chk-value').forEach(input => {
+                    let label = input.getAttribute('data-label'); let itemId = input.id.replace('_val', ''); let btnGroup = input.previousElementSibling;
+                    if(chkData.ok.includes(label)) { setCheck(itemId, 'OK', btnGroup.querySelector('.btn-check:nth-child(1)')); } 
+                    else if(chkData.na && chkData.na.includes(label)) { setCheck(itemId, 'NA', btnGroup.querySelector('.btn-check:nth-child(3)')); } 
+                    else {
+                        let minorItem = (chkData.minor || []).find(i => i.label === label); let fatalItem = (chkData.fatal || chkData.notOk || []).find(i => i.label === label);
+                        if(minorItem) { setCheck(itemId, 'Tidak OK', btnGroup.querySelector('.btn-check:nth-child(2)')); setSeverity(itemId, 'Minor', document.getElementById(itemId + '_severity').previousElementSibling.querySelector('.btn-minor')); document.getElementById(itemId + '_note').value = minorItem.note; } 
+                        else if(fatalItem) { setCheck(itemId, 'Tidak OK', btnGroup.querySelector('.btn-check:nth-child(2)')); setSeverity(itemId, 'Rusak Total', document.getElementById(itemId + '_severity').previousElementSibling.querySelector('.btn-rusak')); document.getElementById(itemId + '_note').value = fatalItem.note; }
                     }
-                }
-            });
-        }
-
-        document.getElementById('chkTidakDiuji').checked = !!(chkData && chkData.tidakDiuji);
-        toggleTidakDiuji();
-        document.getElementById('alasanTidakDiuji').value = (chkData && chkData.alasanTidakDiuji) || '';
+                });
+            }
+        } catch(e) {}
 
         document.getElementById('submitBtn').innerText = "Perbarui Data Audit";
         document.getElementById('cancelEditBtn').style.display = "block";
-        window.scrollTo(0, 0);
+        window.scrollTo(0,0);
     }
 
-    // === HAPUS AUDIT ===
     function deleteAudit(originalIndex) {
         const row = globalData[originalIndex];
-        if (confirm(`PERINGATAN HAPUS DATA\n\nAnda yakin ingin menghapus catatan audit untuk aset:\nNo Inventori: ${row['No Inventori']}\n\nTindakan ini bersifat permanen.`)) {
+        if(confirm(`PERINGATAN HAPUS DATA\n\nAnda yakin ingin menghapus catatan audit untuk aset:\nNo Inventori: ${row['No Inventori']}\n\nTindakan ini bersifat permanen.`)) {
             const btn = event.target;
             const originalText = btn.innerText;
             btn.innerText = "⏳";
             btn.disabled = true;
 
-            fetch(APPS_SCRIPT_URL, {
-                redirect: "follow", method: 'POST',
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({ action: 'delete', rowNumber: row.rowNumber })
+            fetch(APPS_SCRIPT_URL, { 
+                redirect: "follow", method: 'POST', 
+                headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+                body: JSON.stringify({ action: 'delete', rowNumber: row.rowNumber }) 
             })
             .then(res => res.json())
             .then(result => {
-                if (result.status === "success") { loadData(); }
-                else { alert("Gagal menghapus: " + result.message); btn.innerText = originalText; btn.disabled = false; }
+                if(result.status === "success") {
+                    loadData(); 
+                } else alert("Gagal menghapus: " + result.message);
             })
             .catch(() => { alert("Gangguan koneksi saat menghapus."); btn.innerText = originalText; btn.disabled = false; });
         }
     }
 
-    // === MODAL DETAIL ===
     function openModal(originalIndex) {
         const row = globalData[originalIndex];
-
+        
         document.getElementById('detSkor').innerText = row['Skor'];
         document.getElementById('detKondisi').innerHTML = getBadge(row['Kondisi']);
-        document.getElementById('detInv').innerText = row['No Inventori'];
-        document.getElementById('detMerek').innerText = row['Merek & Tipe'];
-        document.getElementById('detProc').innerText = row['Processor'];
+        
+        // Membaca Nama Field menggunakan For In Loop agar Tahan Kebal dari Spasi Kolom Google Sheets
+        let valInv = ""; let valTgl = "";
+        for (let key in row) {
+            let lowerKey = key.trim().toLowerCase();
+            if (lowerKey === "no inventori") { valInv = row[key]; }
+            if (lowerKey === "tanggal") { valTgl = row[key]; }
+        }
+
+        document.getElementById('detInv').innerText = valInv || "-";
+        document.getElementById('detMerek').innerText = row['Merek & Tipe'] || row['Merek & Model'] || "-";
+        document.getElementById('detProc').innerText = row['Processor'] || "-";
         document.getElementById('detRam').innerText = row['RAM'] || "-";
-        document.getElementById('detRamUsage').innerText = normPctLines(row['RAM Terpakai']);
+        
+        let ramUsageText = row['RAM Terpakai'] || "-";
+        if (ramUsageText !== "-" && !isNaN(parseFloat(ramUsageText))) {
+            let useVal = parseFloat(ramUsageText);
+            if (useVal < 1) useVal = useVal * 100;
+            ramUsageText = Math.round(useVal) + "%";
+        }
+        document.getElementById('detRamUsage').innerText = ramUsageText;
+        
         document.getElementById('detStorage').innerText = row['Storage'] || "-";
-        document.getElementById('detSSDHealth').innerText = normPctLines(row['SSD Health']);
-        document.getElementById('detBattery').innerText = normPctLines(row['Battery Health']);
-        document.getElementById('detOS').innerText = row['Operating System'];
 
+        let ssdHealthText = row['SSD Health'] || "-";
+        if(ssdHealthText !== "-" && !isNaN(parseFloat(ssdHealthText))){
+             let healthVal = parseFloat(ssdHealthText);
+             if (healthVal <= 1) healthVal = healthVal * 100;
+             ssdHealthText = Math.round(healthVal) + "%";
+        }
+        document.getElementById('detSSDHealth').innerText = ssdHealthText;
+        
+        document.getElementById('detBattery').innerText = row['Battery Health'] || "-";
+        document.getElementById('detOS').innerText = row['Operating System'] || "-";
+        
+        let rawCatatan = row['Catatan'] || "";
         let chkData = null;
-        try { chkData = JSON.parse(row['Catatan'] || ""); } catch (e) {}
 
-        const boxTd = document.getElementById('detTidakDiuji');
-        if (chkData && chkData.tidakDiuji) {
-            boxTd.style.display = 'block';
-            boxTd.innerHTML = '<strong>⚠️ Perangkat tidak dapat diuji penuh.</strong><br>Alasan: ' + (chkData.alasanTidakDiuji || '-') +
-                ((chkData.belumDiperiksa && chkData.belumDiperiksa.length) ? '<br>Belum diperiksa: ' + chkData.belumDiperiksa.length + ' item. Lakukan audit ulang setelah diperbaiki.' : '');
-        } else { boxTd.style.display = 'none'; }
+        try { chkData = JSON.parse(rawCatatan); } catch(e) {}
 
-        if (chkData && chkData.ok) {
-            let totalOk = chkData.ok.length;
+        if(chkData && chkData.ok) {
+            let totalOk = chkData.ok ? chkData.ok.length : 0;
             let arrMinor = chkData.minor || [];
-            let arrFatal = chkData.fatal || [];
+            let arrFatal = chkData.fatal || []; 
             let totalNa = chkData.na ? chkData.na.length : 0;
-
+            
             document.getElementById('detTotalChk').innerText = totalOk + arrMinor.length + arrFatal.length + totalNa;
             document.getElementById('detTotalOk').innerText = totalOk;
             document.getElementById('detTotalMinor').innerText = arrMinor.length;
@@ -899,7 +897,7 @@
 
             const areaFatal = document.getElementById('resFatalArea');
             const listFatal = document.getElementById('listFatal');
-            if (arrFatal.length > 0) {
+            if(arrFatal.length > 0) {
                 areaFatal.style.display = "block"; let html = "";
                 arrFatal.forEach(item => html += `<div class="result-item"><span class="result-item-title text-fatal">❌ ${item.label}</span><span class="result-item-note">Catatan: ${item.note}</span></div>`);
                 listFatal.innerHTML = html;
@@ -907,7 +905,7 @@
 
             const areaMinor = document.getElementById('resMinorArea');
             const listMinor = document.getElementById('listMinor');
-            if (arrMinor.length > 0) {
+            if(arrMinor.length > 0) {
                 areaMinor.style.display = "block"; let html = "";
                 arrMinor.forEach(item => html += `<div class="result-item"><span class="result-item-title text-minor">⚠️ ${item.label}</span><span class="result-item-note">Catatan: ${item.note}</span></div>`);
                 listMinor.innerHTML = html;
@@ -917,9 +915,8 @@
     }
 
     function closeModal() { document.getElementById('detailModal').style.display = "none"; }
-    window.onclick = function(event) { if (event.target == document.getElementById('detailModal')) closeModal(); };
+    window.onclick = function(event) { if (event.target == document.getElementById('detailModal')) closeModal(); }
 
-    // === LOAD DATA ===
     function loadData() {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Menyinkronkan data dari Spreadsheet...</td></tr>';
@@ -927,38 +924,24 @@
         fetch(APPS_SCRIPT_URL, { redirect: "follow", method: 'GET' })
         .then(res => res.json())
         .then(data => {
-            if (data.length === 0) {
-                globalData = [];
+            if(data.length === 0) {
                 tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Belum ada arsip data audit.</td></tr>';
-                document.getElementById('filterInfo').innerText = "Menampilkan 0 dari 0 audit";
                 document.querySelectorAll('.stat-card h3').forEach(el => el.innerText = "0");
                 return;
-            }
-
-            globalData = data.map((item, index) => {
-                Object.keys(item).forEach(k => {
-                    if (k !== 'rowNumber' && item[k] !== null && item[k] !== undefined) {
-                        item[k] = String(item[k]);
-                    }
-                });
-                // Sheets mengubah "64%" jadi 0.64, kembalikan ke format persen
-                let s = parseFloat(item['Skor']);
-                if (!isNaN(s) && !String(item['Skor']).includes('%')) {
-                    item['Skor'] = (s <= 1 ? Math.round(s * 10000) / 100 : s) + '%';
-                }
-                item.originalIndex = index;
-                return item;
-            });
+            } 
+            
+            globalData = data.map((item, index) => { item.originalIndex = index; return item; });
 
             let counts = { 'Laptop': 0, 'iMac': 0, 'Tablet': 0, 'Smartphone': 0 };
             let conds = { 'Baik': 0, 'Rusak Ringan': 0, 'Rusak Berat': 0 };
-
+            
             globalData.forEach(row => {
                 let p = row['Jenis Perangkat'];
-                if (p && (p.includes('iMac') || p.includes('PC'))) counts['iMac']++;
-                else if (p && counts[p] !== undefined) counts[p]++;
+                if(p && (p.includes('iMac') || p.includes('PC'))) counts['iMac']++;
+                else if(p && counts[p] !== undefined) counts[p]++;
+                
                 let k = row['Kondisi'];
-                if (k && conds[k] !== undefined) conds[k]++;
+                if(k && conds[k] !== undefined) conds[k]++;
             });
 
             document.getElementById('statTotal').innerText = globalData.length;
@@ -970,33 +953,22 @@
             document.getElementById('statRingan').innerText = conds['Rusak Ringan'];
             document.getElementById('statBerat').innerText = conds['Rusak Berat'];
 
-            document.getElementById('lastUpdatedText').innerText = 'Data dari Spreadsheet · diperbarui ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
             applyFilters();
         })
-        .catch(err => {
-            console.error("LOADDATA ERROR:", err);
-            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--danger);">Error: ' + err.message + '</td></tr>';
-        });
+        .catch((err) => { console.error(err); tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:var(--danger);">Gagal terhubung ke database. Cek Console.</td></tr>'; });
     }
 
     function getBadge(kondisi) {
-        if (kondisi === 'Baik') return '<span class="badge badge-baik">Baik</span>';
-        if (kondisi === 'Rusak Ringan') return '<span class="badge badge-ringan">Rusak Ringan</span>';
+        if(kondisi === 'Baik') return '<span class="badge badge-baik">Baik</span>';
+        if(kondisi === 'Rusak Ringan') return '<span class="badge badge-ringan">Rusak Ringan</span>';
         return '<span class="badge badge-berat">Rusak Berat</span>';
     }
 
     function toggleCustomDate() {
         const filter = document.getElementById('filterTanggal').value;
         const customContainer = document.getElementById('customDateContainer');
-        if (filter === 'Custom') {
-            customContainer.style.display = 'grid';
-        } else {
-            customContainer.style.display = 'none';
-            document.getElementById('startDate').value = '';
-            document.getElementById('endDate').value = '';
-            applyFilters();
-        }
+        if (filter === 'Custom') { customContainer.style.display = 'grid'; } 
+        else { customContainer.style.display = 'none'; document.getElementById('startDate').value = ''; document.getElementById('endDate').value = ''; applyFilters(); }
     }
 
     function applyFilters() {
@@ -1009,97 +981,74 @@
         const endVal = document.getElementById('endDate').value;
 
         let filteredData = globalData.filter(row => {
-            let inv = String(row['No Inventori'] || "").toLowerCase();
-            let merek = String(row['Merek & Tipe'] || "").toLowerCase();
-            let sn = String(row['SN'] || "").toLowerCase();
-            let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt) || sn.includes(searchTxt);
-
-            let jenis = String(row['Jenis Perangkat'] || "");
-            let matchDevice = true;
-            if (deviceFltr !== "Semua") {
-                if (deviceFltr === "iMac") matchDevice = jenis.includes('iMac') || jenis.includes('PC');
-                else matchDevice = jenis === deviceFltr;
+            let inv = ""; let tglStr = "";
+            for (let key in row) {
+                let lowerKey = key.trim().toLowerCase();
+                if (lowerKey === "no inventori") { inv = (row[key] || "").toLowerCase(); }
+                if (lowerKey === "tanggal") { tglStr = row[key]; }
             }
 
+            let merek = (row['Merek & Tipe'] || row['Merek & Model'] || "").toLowerCase(); 
+            let sn = (row['SN'] || "").toLowerCase(); 
+            let matchSearch = inv.includes(searchTxt) || merek.includes(searchTxt) || sn.includes(searchTxt);
+            
+            let matchDevice = true;
+            let jenisPerangkat = row['Jenis Perangkat'] || "";
+            if(deviceFltr !== "Semua") { if(deviceFltr === "iMac" && (jenisPerangkat.includes('iMac') || jenisPerangkat.includes('PC'))) matchDevice = true; else matchDevice = jenisPerangkat === deviceFltr; }
+
             let matchKondisi = kondisiFltr === "Semua" || row['Kondisi'] === kondisiFltr;
-
             let matchTanggal = true;
-            if (tanggalFltr !== 'Semua' && row['Tanggal']) {
-                let parts = String(row['Tanggal']).split(',')[0].trim().split('/');
-                if (parts.length === 3) {
-                    let rowDate = new Date(parts[2], parts[1] - 1, parts[0]);
-                    rowDate.setHours(0, 0, 0, 0);
-                    let today = new Date();
-                    today.setHours(0, 0, 0, 0);
-
-                    if (tanggalFltr === 'Hari ini') {
-                        matchTanggal = (rowDate.getTime() === today.getTime());
-                    } else if (tanggalFltr === 'Kemarin') {
-                        let yesterday = new Date(today);
-                        yesterday.setDate(yesterday.getDate() - 1);
-                        matchTanggal = (rowDate.getTime() === yesterday.getTime());
-                    } else if (tanggalFltr === 'Minggu ini') {
-                        let startOfWeek = new Date(today);
-                        let day = startOfWeek.getDay() || 7;
-                        startOfWeek.setDate(startOfWeek.getDate() - (day - 1));
-                        matchTanggal = (rowDate >= startOfWeek && rowDate <= today);
-                    } else if (tanggalFltr === 'Custom') {
-                        if (startVal) { let sd = new Date(startVal); sd.setHours(0, 0, 0, 0); if (rowDate < sd) matchTanggal = false; }
-                        if (endVal) { let ed = new Date(endVal); ed.setHours(0, 0, 0, 0); if (rowDate > ed) matchTanggal = false; }
-                    }
+            if(tanggalFltr !== 'Semua' && tglStr) {
+                let parts = tglStr.split(',')[0].trim().split('/');
+                if(parts.length === 3) {
+                    let rowDate = new Date(parts[2], parts[1] - 1, parts[0]); rowDate.setHours(0,0,0,0);
+                    let today = new Date(); today.setHours(0,0,0,0);
+                    if(tanggalFltr === 'Hari ini') { matchTanggal = (rowDate.getTime() === today.getTime()); } 
+                    else if(tanggalFltr === 'Kemarin') { let yesterday = new Date(today); yesterday.setDate(yesterday.getDate() - 1); matchTanggal = (rowDate.getTime() === yesterday.getTime()); } 
+                    else if(tanggalFltr === 'Minggu ini') { let startOfWeek = new Date(today); let day = startOfWeek.getDay() || 7; startOfWeek.setDate(startOfWeek.getDate() - (day - 1)); matchTanggal = (rowDate >= startOfWeek && rowDate <= today); } 
+                    else if(tanggalFltr === 'Custom') { if(startVal) { let sd = new Date(startVal); sd.setHours(0,0,0,0); if(rowDate < sd) matchTanggal = false; } if(endVal) { let ed = new Date(endVal); ed.setHours(0,0,0,0); if(rowDate > ed) matchTanggal = false; } }
                 }
             }
             return matchSearch && matchDevice && matchKondisi && matchTanggal;
         });
 
         filteredData.sort((a, b) => {
-            if (sortMode === 'Terbaru') return b.originalIndex - a.originalIndex;
-            if (sortMode === 'Terlama') return a.originalIndex - b.originalIndex;
-            let scoreA = parseFloat(a['Skor']) || 0;
-            let scoreB = parseFloat(b['Skor']) || 0;
-            if (sortMode === 'SkorTinggi') return scoreB - scoreA;
-            if (sortMode === 'SkorRendah') return scoreA - scoreB;
+            if(sortMode === 'Terbaru') return b.originalIndex - a.originalIndex;
+            if(sortMode === 'Terlama') return a.originalIndex - b.originalIndex;
+            let scoreA = parseFloat(a['Skor']) || 0; let scoreB = parseFloat(b['Skor']) || 0;
+            if(sortMode === 'SkorTinggi') return scoreB - scoreA;
+            if(sortMode === 'SkorRendah') return scoreA - scoreB;
             return 0;
         });
-
         renderTable(filteredData);
-    }
-
-    function temuanText(row) {
-        let f = 0, m = 0, td = false;
-        try {
-            const c = JSON.parse(row['Catatan']);
-            f = (c.fatal || []).length;
-            m = (c.minor || []).length;
-            td = !!c.tidakDiuji;
-        } catch (e) {}
-        const parts = [];
-        if (td) parts.push('⚠️ Tidak dapat diuji');
-        if (f) parts.push(`${f} Fatal`);
-        if (m) parts.push(`${m} Minor`);
-        return parts.length ? parts.join(' · ') : 'Tidak ada temuan';
     }
 
     function renderTable(dataArray) {
         const tbody = document.getElementById('tableBody');
         tbody.innerHTML = '';
-
+        
         let startCount = dataArray.length > 0 ? 1 : 0;
         document.getElementById('filterInfo').innerText = `Menampilkan ${startCount}–${dataArray.length} dari ${globalData.length} audit`;
 
-        if (dataArray.length === 0) {
+        if(dataArray.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align: center; padding:40px; color:#6b7280;">Pencarian tidak menemukan hasil.</td></tr>';
             return;
         }
 
         dataArray.forEach(row => {
-            let displayDate = String(row['Tanggal'] || "").split(',')[0];
+            let tglTampil = "-"; let invTampil = "-";
+            for (let key in row) {
+                let lowerKey = key.trim().toLowerCase();
+                if (lowerKey === "tanggal" && row[key]) { tglTampil = row[key].split(',')[0]; }
+                if (lowerKey === "no inventori") { invTampil = row[key]; }
+            }
+
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td style="color:#6b7280;">${displayDate}</td>
-                <td style="font-weight:600; color:var(--primary-blue);">${row['No Inventori']}</td>
-                <td>${row['Jenis Perangkat']}</td>
-                <td><strong>${row['Skor']}</strong><br><span style="font-size:12px; color:#6b7280;">${temuanText(row)}</span></td>
+                <td style="color:#6b7280;">${tglTampil}</td>
+                <td style="font-weight:600; color:var(--primary-blue);">${invTampil}</td>
+                <td>${row['Jenis Perangkat'] || "-"}</td>
+                <td><strong>${row['Skor'] || "-"}</strong></td>
                 <td>${getBadge(row['Kondisi'])}</td>
                 <td style="text-align:center;">
                     <div class="aksi-container" style="justify-content:center;">
@@ -1113,7 +1062,7 @@
         });
     }
 
-    window.onload = loadData;
+    window.onload = loadData; 
 </script>
 
 </body>
