@@ -168,7 +168,6 @@
             }
             .top-navbar, .main-container { display: none !important; }
             
-            /* Sembunyikan Ringkasan Pengecekan saat diprint */
             #printHideSummary { display: none !important; }
             
             .modal { position: static !important; display: block !important; background: transparent !important; backdrop-filter: none !important; padding: 0 !important; margin: 0 !important; }
@@ -343,7 +342,15 @@
             
             <div class="sop-section" id="checklistArea"></div>
             
-            <div style="margin-top: 30px;">
+            <!-- === CHECKBOX UNTESTABLE === -->
+            <div style="margin-top: 15px; padding: 15px; background: #fef2f2; border: 1px dashed #fca5a5; border-radius: 8px; margin-bottom: 20px;">
+                <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 13px; color: var(--danger); font-weight: 600;">
+                    <input type="checkbox" id="untestableCheck" style="width: 18px; height: 18px; margin-top: 0px; cursor: pointer;">
+                    <span>Centang jika perangkat mati total, Blue Screen, atau Stuck/Lemot sehingga fungsi gagal diuji seluruhnya. (Otomatis dinilai Rusak Berat & melewati validasi form).</span>
+                </label>
+            </div>
+
+            <div style="margin-top: 10px;">
                 <button type="submit" class="btn" id="submitBtn">Simpan Hasil Audit</button>
                 <button type="button" class="btn" style="background:#f3f4f6; color:#374151; border:1px solid #d1d5db; margin-top:10px; display:none;" id="cancelEditBtn" onclick="resetFormToNew()">Batal Edit & Kembali</button>
             </div>
@@ -408,6 +415,8 @@
 
             <h4 class="detail-group-title">Identitas Aset</h4>
             <div class="detail-row"><span>Nomor Inventori</span><span id="detInv"></span></div>
+            <!-- TAMBAHAN BARIS SERIAL NUMBER -->
+            <div class="detail-row"><span>Serial Number (SN)</span><span id="detSn"></span></div>
             <div class="detail-row"><span>Merek & Model</span><span id="detMerek"></span></div>
             <div class="detail-row"><span>Processor</span><span id="detProc"></span></div>
             <div class="detail-row"><span>RAM / Memory</span><span id="detRam"></span></div>
@@ -533,6 +542,7 @@
         document.getElementById('auditForm').reset();
         document.getElementById('auditForm').style.display = 'none';
         document.querySelectorAll('.card').forEach(el => el.classList.remove('selected'));
+        if(document.getElementById('untestableCheck')) document.getElementById('untestableCheck').checked = false;
         
         document.getElementById('viewTitleAudit').innerText = "Pilih Kategori Perangkat";
         document.getElementById('deviceCards').style.display = "grid";
@@ -641,15 +651,20 @@
     function submitForm(e) {
         e.preventDefault();
         
+        let isUntestable = document.getElementById('untestableCheck').checked;
         let isValid = true; let errorMessage = "";
+        
         document.querySelectorAll('.chk-value').forEach(input => {
-            if(input.value === "") { isValid = false; errorMessage = "Lengkapi pengisian fungsi pada semua komponen."; }
+            // Bypass checklist validation jika dicentang rusak total/untestable
+            if(input.value === "" && !isUntestable) { isValid = false; errorMessage = "Lengkapi pengisian fungsi pada semua komponen."; }
+            
             if(input.value === "Tidak OK") {
                 let itemId = input.id.replace('_val', '');
-                if(document.getElementById(itemId + '_severity').value === "") { isValid = false; errorMessage = "Pilih klasifikasi kerusakan."; }
-                if(document.getElementById(itemId + '_note').value.trim() === "") { isValid = false; errorMessage = "Deskripsi kerusakan wajib diisi."; }
+                if(document.getElementById(itemId + '_severity').value === "") { isValid = false; errorMessage = "Pilih klasifikasi kerusakan pada komponen yang berkendala."; }
+                if(document.getElementById(itemId + '_note').value.trim() === "") { isValid = false; errorMessage = "Deskripsi kerusakan wajib diisi pada komponen yang berkendala."; }
             }
         });
+        
         if(!isValid) { alert(errorMessage); return; }
 
         let okItems = 0; let minorItems = 0; let fatalItems = 0; let naItems = 0;
@@ -660,7 +675,10 @@
 
         document.querySelectorAll('.chk-value').forEach(input => {
             let status = input.value; let label = input.getAttribute('data-label'); let itemId = input.id.replace('_val', '');
-            if(status === 'NA') { naItems++; jsonPayload.na.push(label); } 
+            
+            if(status === 'NA' || (status === '' && isUntestable)) { 
+                naItems++; jsonPayload.na.push(label); 
+            } 
             else if(status === 'OK') { okItems++; jsonPayload.ok.push(label); } 
             else if(status === 'Tidak OK') {
                 let sev = document.getElementById(itemId + '_severity').value;
@@ -669,6 +687,12 @@
                 else if(sev === 'Rusak Total') { fatalItems++; jsonPayload.fatal.push({ label: label, note: note }); }
             }
         });
+
+        // Paksa status rusak berat jika checkbox gagal uji dicentang
+        if (isUntestable) {
+            fatalItems++;
+            jsonPayload.fatal.push({ label: "Kondisi Sistem (Gagal Uji)", note: "Perangkat tidak dapat diuji seluruhnya (Mati Total / BSOD / Lemot Parah / Stuck)." });
+        }
 
         // --- PENGOLAHAN DATA RAM DINAMIS ---
         let ramArray = []; let ramUsageArray = [];
@@ -685,7 +709,7 @@
             } else { ramUsageArray.push("-"); }
         });
 
-        if (!isMobile) {
+        if (!isMobile && !isUntestable) {
             if (maxRamUsage > 85) { fatalItems++; jsonPayload.fatal.push({ label: `RAM Terpakai Kritis`, note: 'Kapasitas RAM Kritis (Bottleneck). Wajib upgrade.' }); } 
             else if (maxRamUsage > 70) { minorItems++; jsonPayload.minor.push({ label: `RAM Terpakai Menipis`, note: 'Kapasitas RAM menipis (Warning). Pertimbangkan upgrade.' }); } 
             else { okItems++; jsonPayload.ok.push(`Kapasitas RAM - Aman`); }
@@ -707,7 +731,7 @@
             } else { ssdHealthArray.push("-"); }
         });
 
-        if (!isMobile && hasSsd) {
+        if (!isMobile && hasSsd && !isUntestable) {
             if (minSsdHealth < 60) { fatalItems++; jsonPayload.fatal.push({ label: `Kesehatan SSD Kritis`, note: 'Kesehatan SSD <60%. Risiko data hilang, wajib ganti.' }); } 
             else if (minSsdHealth <= 84) { minorItems++; jsonPayload.minor.push({ label: `Kesehatan SSD Menurun`, note: 'Kesehatan SSD menurun (Warning).' }); } 
             else { okItems++; jsonPayload.ok.push(`Kesehatan SSD - Baik`); }
@@ -720,15 +744,17 @@
             const mobBat = document.getElementById('mobileBatteryStatus').value;
             if (mobBat !== "") {
                 batteryText = mobBat;
-                if (mobBat === "Good") {
-                    okItems++; 
-                    jsonPayload.ok.push(`Kesehatan Baterai (${mobBat})`);
-                } else if (mobBat === "Fair") {
-                    minorItems++; 
-                    jsonPayload.minor.push({ label: `Kesehatan Baterai (${mobBat})`, note: 'Performa baterai mulai menurun (Fair).' });
-                } else if (mobBat === "Poor / Bad") {
-                    fatalItems++; 
-                    jsonPayload.fatal.push({ label: `Kesehatan Baterai (${mobBat})`, note: 'Baterai drop drastis / rusak (Poor/Bad). Disarankan ganti.' });
+                if(!isUntestable) {
+                    if (mobBat === "Good") {
+                        okItems++; 
+                        jsonPayload.ok.push(`Kesehatan Baterai (${mobBat})`);
+                    } else if (mobBat === "Fair") {
+                        minorItems++; 
+                        jsonPayload.minor.push({ label: `Kesehatan Baterai (${mobBat})`, note: 'Performa baterai mulai menurun (Fair).' });
+                    } else if (mobBat === "Poor / Bad") {
+                        fatalItems++; 
+                        jsonPayload.fatal.push({ label: `Kesehatan Baterai (${mobBat})`, note: 'Baterai drop drastis / rusak (Poor/Bad). Disarankan ganti.' });
+                    }
                 }
             }
         } else {
@@ -737,14 +763,17 @@
             if (!isNaN(dCap) && !isNaN(fCap) && dCap > 0) {
                 const batteryVal = Math.round((fCap / dCap) * 100);
                 batteryText = (dCap === 100) ? `${batteryVal}%` : `${batteryVal}% (${fCap}/${dCap} mWh)`;
-                if (batteryVal < 50) { fatalItems++; jsonPayload.fatal.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Sangat drop / kritis (<50%). Wajib diganti.' }); } 
-                else if (batteryVal < 80) { minorItems++; jsonPayload.minor.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Mulai drop / bocor halus (Warning).' }); } 
-                else { okItems++; jsonPayload.ok.push(`Kesehatan Baterai (${batteryVal}%) - Aman`); }
+                
+                if(!isUntestable) {
+                    if (batteryVal < 50) { fatalItems++; jsonPayload.fatal.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Sangat drop / kritis (<50%). Wajib diganti.' }); } 
+                    else if (batteryVal < 80) { minorItems++; jsonPayload.minor.push({ label: `Kesehatan Baterai (${batteryVal}%)`, note: 'Mulai drop / bocor halus (Warning).' }); } 
+                    else { okItems++; jsonPayload.ok.push(`Kesehatan Baterai (${batteryVal}%) - Aman`); }
+                }
             }
         }
 
         let itemDinilai = okItems + minorItems + fatalItems;
-        let scorePercent = itemDinilai === 0 ? 100 : Math.round(( ((okItems * 1) + (minorItems * 0.5)) / itemDinilai) * 10000) / 100;
+        let scorePercent = itemDinilai === 0 ? (isUntestable ? 0 : 100) : Math.round(( ((okItems * 1) + (minorItems * 0.5)) / itemDinilai) * 10000) / 100;
         let finalCondition = scorePercent === 100 ? "Baik" : (fatalItems > 0 ? "Rusak Berat" : "Rusak Ringan");
 
         const data = {
@@ -795,8 +824,16 @@
         if(perngktLengkap.includes('iMac') || perngktLengkap.includes('PC')) perngktLengkap = 'iMac';
         selectDevice(perngktLengkap, null);
 
+        document.getElementById('untestableCheck').checked = false;
+
+        let valSn = "";
+        for (let key in row) {
+            let lowerKey = key.trim().toLowerCase();
+            if (lowerKey === "sn") { valSn = row[key]; }
+        }
+
         document.getElementById('noInventori').value = row['No Inventori'] !== "-" ? row['No Inventori'] : "";
-        document.getElementById('serialNumber').value = (row['SN'] && row['SN'] !== "-") ? row['SN'] : "";
+        document.getElementById('serialNumber').value = valSn !== "-" ? valSn : "";
         document.getElementById('merekTipe').value = row['Merek & Tipe'] !== "-" ? row['Merek & Tipe'] : "";
         document.getElementById('processor').value = row['Processor'] !== "-" ? row['Processor'] : "";
         document.getElementById('os').value = row['Operating System'] !== "-" ? row['Operating System'] : "";
@@ -838,7 +875,6 @@
         document.getElementById('mobileBatteryStatus').value = "";
 
         if (batStr !== "-" && batStr !== "") {
-            // Parsing untuk Mobile (Good/Fair/Poor) vs Laptop (mWh)
             if (batStr.includes("Good") || batStr.includes("Fair") || batStr.includes("Poor") || batStr.includes("Bad")) {
                 if (batStr.includes("Good")) document.getElementById('mobileBatteryStatus').value = "Good";
                 else if (batStr.includes("Fair")) document.getElementById('mobileBatteryStatus').value = "Fair";
@@ -858,17 +894,25 @@
 
         try {
             let chkData = JSON.parse(row['Catatan']);
-            if(chkData && chkData.ok) {
-                document.querySelectorAll('.chk-value').forEach(input => {
-                    let label = input.getAttribute('data-label'); let itemId = input.id.replace('_val', ''); let btnGroup = input.previousElementSibling;
-                    if(chkData.ok.includes(label)) { setCheck(itemId, 'OK', btnGroup.querySelector('.btn-check:nth-child(1)')); } 
-                    else if(chkData.na && chkData.na.includes(label)) { setCheck(itemId, 'NA', btnGroup.querySelector('.btn-check:nth-child(3)')); } 
-                    else {
-                        let minorItem = (chkData.minor || []).find(i => i.label === label); let fatalItem = (chkData.fatal || chkData.notOk || []).find(i => i.label === label);
-                        if(minorItem) { setCheck(itemId, 'Tidak OK', btnGroup.querySelector('.btn-check:nth-child(2)')); setSeverity(itemId, 'Minor', document.getElementById(itemId + '_severity').previousElementSibling.querySelector('.btn-minor')); document.getElementById(itemId + '_note').value = minorItem.note; } 
-                        else if(fatalItem) { setCheck(itemId, 'Tidak OK', btnGroup.querySelector('.btn-check:nth-child(2)')); setSeverity(itemId, 'Rusak Total', document.getElementById(itemId + '_severity').previousElementSibling.querySelector('.btn-rusak')); document.getElementById(itemId + '_note').value = fatalItem.note; }
-                    }
-                });
+            if(chkData) {
+                // Mengecek apakah perangkat ini ditandai sebagai gagal uji
+                let isUntestableFlag = (chkData.fatal || []).find(i => i.label === "Kondisi Sistem (Gagal Uji)");
+                if(isUntestableFlag) {
+                    document.getElementById('untestableCheck').checked = true;
+                }
+
+                if(chkData.ok) {
+                    document.querySelectorAll('.chk-value').forEach(input => {
+                        let label = input.getAttribute('data-label'); let itemId = input.id.replace('_val', ''); let btnGroup = input.previousElementSibling;
+                        if(chkData.ok.includes(label)) { setCheck(itemId, 'OK', btnGroup.querySelector('.btn-check:nth-child(1)')); } 
+                        else if(chkData.na && chkData.na.includes(label)) { setCheck(itemId, 'NA', btnGroup.querySelector('.btn-check:nth-child(3)')); } 
+                        else {
+                            let minorItem = (chkData.minor || []).find(i => i.label === label); let fatalItem = (chkData.fatal || []).find(i => i.label === label);
+                            if(minorItem) { setCheck(itemId, 'Tidak OK', btnGroup.querySelector('.btn-check:nth-child(2)')); setSeverity(itemId, 'Minor', document.getElementById(itemId + '_severity').previousElementSibling.querySelector('.btn-minor')); document.getElementById(itemId + '_note').value = minorItem.note; } 
+                            else if(fatalItem) { setCheck(itemId, 'Tidak OK', btnGroup.querySelector('.btn-check:nth-child(2)')); setSeverity(itemId, 'Rusak Total', document.getElementById(itemId + '_severity').previousElementSibling.querySelector('.btn-rusak')); document.getElementById(itemId + '_note').value = fatalItem.note; }
+                        }
+                    });
+                }
             }
         } catch(e) {}
 
@@ -906,14 +950,18 @@
         document.getElementById('detSkor').innerText = row['Skor'];
         document.getElementById('detKondisi').innerHTML = getBadge(row['Kondisi']);
         
-        let valInv = ""; let valTgl = "";
+        let valInv = ""; let valTgl = ""; let valSn = "";
         for (let key in row) {
             let lowerKey = key.trim().toLowerCase();
             if (lowerKey === "no inventori") { valInv = row[key]; }
             if (lowerKey === "tanggal") { valTgl = row[key]; }
+            if (lowerKey === "sn") { valSn = row[key]; }
         }
 
         document.getElementById('detInv').innerText = valInv || "-";
+        // SET SERIAL NUMBER KE POPUP MODAL
+        document.getElementById('detSn').innerText = valSn || "-";
+
         document.getElementById('detMerek').innerText = row['Merek & Tipe'] || row['Merek & Model'] || "-";
         document.getElementById('detProc').innerText = row['Processor'] || "-";
         document.getElementById('detRam').innerText = row['RAM'] || "-";
