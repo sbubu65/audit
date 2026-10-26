@@ -471,16 +471,13 @@
         const storageCaps = document.querySelectorAll('.storage-cap-input');
 
         if (isChecked) {
-            // Hapus wajib isi pada spek (opsional)
             fieldsToToggle.forEach(el => { if(el) el.removeAttribute('required'); });
             ramCaps.forEach(el => el.removeAttribute('required'));
             ramUses.forEach(el => el.removeAttribute('required'));
             storageCaps.forEach(el => el.removeAttribute('required'));
             
-            // Jadikan Serial Number (SN) wajib isi
             document.getElementById('serialNumber').setAttribute('required', 'true');
         } else {
-            // Kembalikan wajib isi pada spek
             fieldsToToggle.forEach(el => { if(el) el.setAttribute('required', 'true'); });
             ramCaps.forEach(el => el.setAttribute('required', 'true'));
             if (!isMobile) {
@@ -488,7 +485,6 @@
             }
             storageCaps.forEach(el => el.setAttribute('required', 'true'));
             
-            // Kembalikan Serial Number (SN) ke bentuk asal (tidak wajib)
             document.getElementById('serialNumber').removeAttribute('required'); 
         }
     }
@@ -505,7 +501,6 @@
         const gridStyle = isMobile ? 'grid-template-columns: 1fr auto;' : 'grid-template-columns: 1fr 1fr auto;';
         const removeBtnStyle = isMobile ? 'display: none;' : 'display: flex;';
         
-        // Logika Required berdasarkan status mati total
         const capRequiredAttr = isUntestable ? '' : 'required';
         const useRequiredAttr = (isMobile || isUntestable) ? '' : 'required';
 
@@ -536,7 +531,6 @@
         const gridStyle = isMobile ? 'grid-template-columns: 1fr auto;' : 'grid-template-columns: 1fr 1fr auto;';
         const removeBtnStyle = isMobile ? 'display: none;' : 'display: flex;';
         
-        // Logika Required berdasarkan status mati total
         const capRequiredAttr = isUntestable ? '' : 'required';
 
         const html = `
@@ -590,7 +584,7 @@
         
         if(document.getElementById('untestableCheck')) {
             document.getElementById('untestableCheck').checked = false;
-            toggleUntestable(); // Reset aturan validasi ke normal
+            toggleUntestable();
         }
         
         document.getElementById('viewTitleAudit').innerText = "Pilih Kategori Perangkat";
@@ -612,12 +606,10 @@
         
         const isMobile = (device === 'Tablet' || device === 'Smartphone');
 
-        // LOGIKA PENYEMBUNYIAN UNTUK HP/TABLET
         document.getElementById('btnAddRam').style.display = isMobile ? 'none' : 'inline-flex';
         document.getElementById('btnAddStorage').style.display = isMobile ? 'none' : 'inline-flex';
         document.getElementById('gpuContainer').style.display = isMobile ? 'none' : 'grid';
 
-        // Logika Switch Baterai
         if (isMobile) {
             document.getElementById('batteryContainerLaptop').style.display = 'none';
             document.getElementById('batteryContainerMobile').style.display = 'grid';
@@ -642,7 +634,6 @@
         document.querySelectorAll('.ram-use-group').forEach(el => { el.style.display = isMobile ? 'none' : 'block'; });
         document.querySelectorAll('.storage-health-group').forEach(el => { el.style.display = isMobile ? 'none' : 'block'; });
         
-        // Memastikan toggle untestable sinkron kembali setelah merubah device
         toggleUntestable();
 
         document.getElementById('formTitle').innerText = (editModeRowNumber ? "Update Data Audit: " : "Form Inspeksi: ") + device;
@@ -702,7 +693,6 @@
         let isValid = true; let errorMessage = "";
         
         document.querySelectorAll('.chk-value').forEach(input => {
-            // Bypass checklist validation jika dicentang rusak total/untestable
             if(input.value === "" && !isUntestable) { isValid = false; errorMessage = "Lengkapi pengisian fungsi pada semua komponen."; }
             
             if(input.value === "Tidak OK") {
@@ -735,7 +725,6 @@
             }
         });
 
-        // Paksa status rusak berat jika checkbox gagal uji dicentang
         if (isUntestable) {
             fatalItems++;
             jsonPayload.fatal.push({ label: "Kondisi Sistem (Gagal Uji)", note: "Perangkat tidak dapat diuji seluruhnya (Mati Total / BSOD / Lemot Parah / Stuck)." });
@@ -745,7 +734,7 @@
         let ramArray = []; let ramUsageArray = [];
         let maxRamUsage = 0;
         document.querySelectorAll('.ram-cap-input').forEach((el, index) => {
-            let cap = el.value.trim() || "-"; // Jika dikosongi, isikan strip
+            let cap = el.value.trim() || "-"; 
             let useField = document.querySelectorAll('.ram-use-input')[index];
             let use = parseFloat(useField.value);
             
@@ -766,7 +755,7 @@
         let storageArray = []; let ssdHealthArray = [];
         let minSsdHealth = 100; let hasSsd = false;
         document.querySelectorAll('.storage-cap-input').forEach((el, index) => {
-            let cap = el.value.trim() || "-"; // Jika dikosongi, isikan strip
+            let cap = el.value.trim() || "-"; 
             let healthField = document.querySelectorAll('.storage-health-input')[index];
             let health = parseFloat(healthField.value);
             
@@ -819,9 +808,37 @@
             }
         }
 
+        // ==========================================
+        // LOGIKA PENENTUAN STATUS & SKOR (BARU)
+        // ==========================================
+        
+        // 1. Tentukan Status Mutlak Terlebih Dahulu
+        let finalCondition = "Baik";
+        if (isUntestable || fatalItems >= 2 || minorItems >= 3) {
+            finalCondition = "Rusak Berat";
+        } else if (fatalItems === 1 || minorItems === 1 || minorItems === 2) {
+            finalCondition = "Rusak Ringan";
+        } else {
+            finalCondition = "Baik";
+        }
+
+        // 2. Hitung Nilai Mentah
         let itemDinilai = okItems + minorItems + fatalItems;
-        let scorePercent = itemDinilai === 0 ? (isUntestable ? 0 : 100) : Math.round(( ((okItems * 1) + (minorItems * 0.5)) / itemDinilai) * 10000) / 100;
-        let finalCondition = scorePercent === 100 ? "Baik" : (fatalItems > 0 ? "Rusak Berat" : "Rusak Ringan");
+        let rawScore = itemDinilai === 0 ? (isUntestable ? 0 : 100) : Math.round(( ((okItems * 1) + (minorItems * 0.5)) / itemDinilai) * 10000) / 100;
+        
+        // 3. Batasi (Cap) Nilai Berdasarkan Status
+        let scorePercent = rawScore;
+        if (finalCondition === "Rusak Berat") {
+            if (scorePercent > 49) scorePercent = 49; 
+            if (isUntestable) scorePercent = 0; 
+        } else if (finalCondition === "Rusak Ringan") {
+            if (scorePercent > 89) scorePercent = 89; 
+            if (scorePercent < 50) scorePercent = 50; 
+        } else if (finalCondition === "Baik") {
+            scorePercent = 100; 
+        }
+
+        // ==========================================
 
         const data = {
             action: editModeRowNumber ? 'update' : 'insert',
@@ -831,13 +848,13 @@
             sn: document.getElementById('serialNumber').value || "-", 
             jenisPerangkat: document.getElementById('jenisPerangkat').value,
             merekTipe: document.getElementById('merekTipe').value,
-            processor: document.getElementById('processor').value || "-", // Default ke strip jika kosong
+            processor: document.getElementById('processor').value || "-", 
             ram: ramArray.join('\n'),               
             ramUsage: ramUsageArray.join('\n'),     
             storage: storageArray.join('\n'),       
             ssdHealth: ssdHealthArray.join('\n'),   
             batteryHealth: batteryText, 
-            os: document.getElementById('os').value || "-", // Default ke strip jika kosong
+            os: document.getElementById('os').value || "-", 
             gpu: document.getElementById('gpu').value || "-",
             skor: scorePercent,
             kondisi: finalCondition,
@@ -942,7 +959,6 @@
         try {
             let chkData = JSON.parse(row['Catatan']);
             if(chkData) {
-                // Mengecek apakah perangkat ini ditandai sebagai gagal uji
                 let isUntestableFlag = (chkData.fatal || []).find(i => i.label === "Kondisi Sistem (Gagal Uji)");
                 if(isUntestableFlag) {
                     document.getElementById('untestableCheck').checked = true;
@@ -963,7 +979,6 @@
             }
         } catch(e) {}
         
-        // Sesuaikan kembali kewajiban pengisian form setelah semua data dimuat
         toggleUntestable();
 
         document.getElementById('submitBtn').innerText = "Perbarui Data Audit";
