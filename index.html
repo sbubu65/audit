@@ -482,6 +482,8 @@
             ramCaps.forEach(el => el.setAttribute('required', 'true'));
             if (!isMobile) {
                 ramUses.forEach(el => el.setAttribute('required', 'true'));
+            } else {
+                ramUses.forEach(el => el.removeAttribute('required'));
             }
             storageCaps.forEach(el => el.setAttribute('required', 'true'));
             
